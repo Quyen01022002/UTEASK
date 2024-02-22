@@ -168,42 +168,40 @@ class _LoginscreenState extends State<Loginscreen> {
                       ),
                     ),
                     const SizedBox(height: 36),
-                    Center(
-                      child: Column(
-                        children: [
+                    Column(
+                      children: [
 
-                          const SizedBox(height: 16),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                PageTransition(
-                                  type: PageTransitionType.rightToLeft,
-                                  child: SignUpScreeen(animated: false, state: false,
+                        const SizedBox(height: 16),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: SignUpScreeen(animated: false, state: false,
 
+                                ),
+                              ),
+                            );
+                          },
+                          child: RichText(
+                            text: const TextSpan(
+                              text: "Bạn chưa có tài khoản?",
+                              style: TextStyle(
+                                  color: Color(0xFF606060), fontSize: 14),
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text: 'Đăng Ký',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: 14,
                                   ),
                                 ),
-                              );
-                            },
-                            child: RichText(
-                              text: const TextSpan(
-                                text: "Bạn chưa có tài khoản?",
-                                style: TextStyle(
-                                    color: Color(0xFF606060), fontSize: 14),
-                                children: <TextSpan>[
-                                  TextSpan(
-                                    text: 'Đăng Ký',
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     )
                   ],
                 ),
