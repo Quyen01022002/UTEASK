@@ -33,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
             AnimatedPositioned(
               duration: const Duration(milliseconds: 800),
               top: animated ? 220 : 0,
-              left: animated ? 70 : 0,
+              left: animated ? 60 : 0,
               child: Transform.rotate(
                 angle: 0,
                 child: Center(
@@ -45,46 +45,54 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
             ),
-            // Đoạn code để di chuyển chữ UTE vào trung tâm
             Positioned(
-              top: MediaQuery.of(context).size.height / 2 - 40, // 40 là nửa chiều cao của mỗi chữ
-              left: MediaQuery.of(context).size.width / 2 - 15, // 15 là nửa chiều rộng của mỗi chữ
+              top: MediaQuery.of(context).size.height / 2 -40, // 40 là nửa chiều cao của mỗi chữ
+              left: MediaQuery.of(context).size.width / 2 - 45, // 15 là nửa chiều rộng của mỗi chữ
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  AnimatedOpacity(
-                    duration: Duration(milliseconds: 1000),
-                    opacity: animated ? 1.0 : 0.0,
-                    child: Text(
-                      'U',
-                      style: TextStyle(
-                        fontSize: 30,
-                        color: Colors.blue,
-                        fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: AnimatedOpacity(
+                      duration: Duration(milliseconds: 1000),
+                      opacity: animated ? 1.0 : 0.0,
+                      child: Text(
+                        'U',
+                        style: TextStyle(
+                          fontSize: 40,
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-                  AnimatedOpacity(
-                    duration: Duration(milliseconds: 1500),
-                    opacity: animated ? 1.0 : 0.0,
-                    child: Text(
-                      'T',
-                      style: TextStyle(
-                        fontSize: 30,
-                        color: Colors.green,
-                        fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: AnimatedOpacity(
+                      duration: Duration(milliseconds: 1500),
+                      opacity: animated ? 1.0 : 0.0,
+                      child: Text(
+                        'T',
+                        style: TextStyle(
+                          fontSize: 40,
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-                  AnimatedOpacity(
-                    duration: Duration(milliseconds: 2000),
-                    opacity: animated ? 1.0 : 0.0,
-                    child: Text(
-                      'E',
-                      style: TextStyle(
-                        fontSize: 30,
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: AnimatedOpacity(
+                      duration: Duration(milliseconds: 2000),
+                      opacity: animated ? 1.0 : 0.0,
+                      child: Text(
+                        'E',
+                        style: TextStyle(
+                          fontSize: 40,
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),

@@ -17,7 +17,7 @@ class LoginController extends GetxController
   void login(BuildContext context) async {
     final email = textControllerEmail.text;
     final password = textControllerPass.text;
-
+    print("trong");
     final AuthenticationResponse = await API_login.Login(email, password);
 
     if (AuthenticationResponse != null) {
