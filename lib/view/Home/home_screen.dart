@@ -48,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Hi, Trần Bửu Quyến',
+                                'Hi, Đỗ Duy Hào',
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
@@ -148,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             SizedBox(width: 8),
                             Text(
-                              'Trần Bửu Quyến',
+                              'Đỗ Duy Hào',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -296,7 +296,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             SizedBox(width: 8),
                             Text(
-                              'Trần Bửu Quyến',
+                              'Đỗ Duy Hào',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
