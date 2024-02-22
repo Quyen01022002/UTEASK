@@ -66,12 +66,6 @@ class _VerifyScreenState extends State<VerifyScreen> {
             height: MediaQuery.of(context).size.height,
             fit: BoxFit.cover,
           ),
-          Image.asset(
-            'assets/images/verify-back.png',
-            width: MediaQuery.of(context).size.width,
-            height: 280,
-            fit: BoxFit.cover,
-          ),
           AnimatedPositioned(
             duration: const Duration(milliseconds: 500),
             bottom: animated ? 0 : -200,
@@ -90,7 +84,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                 child: Column(
                   children: [
                     Text(
-                      "VERIFICATION",
+                      "Xác Thực",
                       style: TextStyle(
                           fontSize: 16,
                           color: Colors.blue,
@@ -137,7 +131,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                     ),
                     const SizedBox(height: 36),
                     Text(
-                      "DON'T RECEIVE THE CODE",
+                      "Đừng Chia Sẽ Đoạn Mã Của Bạn",
                       style: TextStyle(color: Color(0xFF606060), fontSize: 16),
                     ),
                     const SizedBox(height: 26),
@@ -153,9 +147,9 @@ class _VerifyScreenState extends State<VerifyScreen> {
                        // myController.checkotp(context);
                       },
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(120, 18, 125, 18),
+                        padding: const EdgeInsets.fromLTRB(100, 18, 100, 18),
                         child: Text(
-                          'VERIFY',
+                          'Xác Thực',
                           style: TextStyle(
                             color: Colors.white, // Màu chữ
                           ),
