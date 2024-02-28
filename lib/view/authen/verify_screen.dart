@@ -1,4 +1,6 @@
+import 'package:askute/controller/VerifyController.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import 'package:page_transition/page_transition.dart';
 
@@ -14,7 +16,7 @@ class VerifyScreen extends StatefulWidget {
 }
 
 class _VerifyScreenState extends State<VerifyScreen> {
-
+  final VerifyController myController = Get.put(VerifyController());
   late List<TextEditingController> _controllers;
   int _currentIndex = 0;
 
@@ -41,7 +43,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
 
     // Collect the OTP from the controllers
     String otp = _controllers.map((controller) => controller.text).join();
-   // myController.OTP.text=otp;
+    myController.OTP.text=otp;
   }
 
   late bool animated;
@@ -144,7 +146,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                         backgroundColor: Color(0xFF8587F1),
                       ),
                       onPressed: () {
-                       // myController.checkotp(context);
+                        myController.checkotp(context);
                       },
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(100, 18, 100, 18),
