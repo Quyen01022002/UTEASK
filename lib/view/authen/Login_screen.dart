@@ -1,9 +1,13 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:askute/view/authen/signUpScreen.dart';
+import 'package:askute/view/authen/verify_screen.dart';
 import 'package:flutter/material.dart';
+
 import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../controller/LoginController.dart';
+
 
 class Loginscreen extends StatefulWidget {
   final bool animated;
@@ -16,6 +20,7 @@ class Loginscreen extends StatefulWidget {
 
 class _LoginscreenState extends State<Loginscreen> {
   final LoginController myController = Get.put(LoginController());
+
   late bool animated;
   bool _isPasswordVisible = false;
 
@@ -33,22 +38,26 @@ class _LoginscreenState extends State<Loginscreen> {
         children: [
           Image.asset(
             'assets/images/login.png',
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
+            width: MediaQuery
+                .of(context)
+                .size
+                .width,
+            height: MediaQuery
+                .of(context)
+                .size
+                .height,
             fit: BoxFit.cover,
           ),
-          Image.asset(
-            'assets/images/login.png',
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            fit: BoxFit.cover,
-          ),
+
           AnimatedPositioned(
             duration: const Duration(milliseconds: 500),
             bottom: animated ? 0 : -200,
             child: Container(
-              width: MediaQuery.of(context).size.width,
-              height: 460,
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
+              height: 440,
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
@@ -62,16 +71,13 @@ class _LoginscreenState extends State<Loginscreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
+                      padding: const EdgeInsets.fromLTRB(8.0,0,0,16),
                       child: Text("Đăng Nhập"),
-                    ),
-                    const SizedBox(
-                      height: 8,
                     ),
                     TextField(
                       controller: myController.textControllerEmail,
                       decoration: const InputDecoration(
-                        labelText: 'Username',
+                        labelText: 'Email',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(
                             Radius.circular(50.0),
@@ -116,38 +122,64 @@ class _LoginscreenState extends State<Loginscreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      height: 36,
-                    ),
+                    const SizedBox(height: 36),
+
                     Center(
-                      child: Column(
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              backgroundColor: Color(0xFF8587F1),
-                            ),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(120, 18, 120, 18),
-                              child: Text(
-                                'LOGIN',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
+                      child: ElevatedButton(
+                        onPressed: ()  {
+                          myController.email.value =
+                              myController.textControllerEmail.text;
+                          myController.pass.value =
+                              myController.textControllerPass.text;
+                          myController.login(context);
+
+                          Future.delayed(Duration(milliseconds: 500), () {
+                            if (myController.stateLogin != null && myController.stateLogin != "") {
+                              Flushbar(
+                                flushbarPosition: FlushbarPosition.TOP,
+                                title: "Đăng nhập",
+                                duration: Duration(seconds: 2),
+                                icon: myController.stateLogin == "Đăng nhập thất bại"
+                                    ? Icon(
+                                  Icons.close,
+                                  size: 30,
+                                  color: Colors.red,
+                                )
+                                    : Icon(
+                                  Icons.check_circle,
+                                  size: 30,
+                                  color: Colors.green,
+                                ),
+                                message: myController.stateLogin.toString(),
+                              )..show(context);
+                            }
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
                           ),
-                          const SizedBox(height: 16,),
-                          GestureDetector(
-                            onTap: ()
-                            {
+                          backgroundColor: Color(0xFF8587F1),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(100, 18, 100, 18),
+                          child: Text('Đăng Nhập',style: TextStyle(color: Colors.white),),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 36),
+                    Column(
+                      children: [
+
+                        const SizedBox(height: 16),
+                        Center(
+                          child: GestureDetector(
+                            onTap: () {
                               Navigator.push(
                                 context,
                                 PageTransition(
                                   type: PageTransitionType.rightToLeft,
-                                  child: SignUpScreen(animated: false,
+                                  child: SignUpScreeen(animated: false, state: false,
 
                                   ),
                                 ),
@@ -160,7 +192,7 @@ class _LoginscreenState extends State<Loginscreen> {
                                     color: Color(0xFF606060), fontSize: 14),
                                 children: <TextSpan>[
                                   TextSpan(
-                                    text: 'Đăng ký',
+                                    text: 'Đăng Ký',
                                     style: TextStyle(
                                       color: Colors.blue,
                                       fontSize: 14,
@@ -170,9 +202,9 @@ class _LoginscreenState extends State<Loginscreen> {
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
+                        ),
+                      ],
+                    )
                   ],
                 ),
               ),
@@ -189,4 +221,6 @@ class _LoginscreenState extends State<Loginscreen> {
       animated = true;
     });
   }
+
+
 }
