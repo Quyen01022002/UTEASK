@@ -1,3 +1,4 @@
+import 'package:askute/view/setting/setting_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
@@ -16,7 +17,7 @@ class _DashBoardState extends State<DashBoard> {
   final List<Widget> screens = [
     HomeScreen(),
     HomeScreen(),
-    HomeScreen(),
+    SettingScreen(),
 
   ];
   final PageStorageBucket bucket = PageStorageBucket();
