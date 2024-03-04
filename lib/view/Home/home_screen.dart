@@ -147,12 +147,25 @@ class _HomeScreenState extends State<HomeScreen> {
                               // backgroundImage: NetworkImage('URL_TO_AVATAR'),
                             ),
                             SizedBox(width: 8),
-                            Text(
-                              'Đỗ Duy Hào',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Đỗ Duy Hào',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+
+                                Text(
+                                  'Công nghệ thông tin',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black45,
+                                  ),
+                                ),                              ],
                             ),
                           ],
                         ),
@@ -266,7 +279,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
-
                   Container(
                     padding: EdgeInsets.all(16),
                     margin: EdgeInsets.all(8),
@@ -295,12 +307,25 @@ class _HomeScreenState extends State<HomeScreen> {
                               // backgroundImage: NetworkImage('URL_TO_AVATAR'),
                             ),
                             SizedBox(width: 8),
-                            Text(
-                              'Đỗ Duy Hào',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Đỗ Duy Hào',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+
+                                Text(
+                                  'Công nghệ thông tin',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black45,
+                                  ),
+                                ),                              ],
                             ),
                           ],
                         ),

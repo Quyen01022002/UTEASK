@@ -64,12 +64,13 @@ class _SettingScreenState extends State<SettingScreen> {
         children: [
           GestureDetector(
             onTap: () {
-              Future.delayed(Duration(milliseconds: 600), () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfileUserScreen()),
-                );
-              });
+              Navigator.push(
+                context,
+                PageTransition(
+                  type: PageTransitionType.rightToLeft,
+                  child: ProfileUserScreen(),
+                ),
+              );
             },
             child: Container(
               width: 100.0,
@@ -85,7 +86,6 @@ class _SettingScreenState extends State<SettingScreen> {
           SizedBox(width: 10,),
           GestureDetector(
             onTap: () {
-              // TODO: Chuyển đến trang mong muốn khi nhấp vào tên
               print('Đã nhấp vào tên, chuyển trang...');
             },
             child: Column(
