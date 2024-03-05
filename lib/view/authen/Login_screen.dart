@@ -1,4 +1,5 @@
 import 'package:another_flushbar/flushbar.dart';
+import 'package:askute/view/authen/forgot_password_screen.dart';
 import 'package:askute/view/authen/signUpScreen.dart';
 import 'package:askute/view/authen/verify_screen.dart';
 import 'package:flutter/material.dart';
@@ -171,7 +172,7 @@ class _LoginscreenState extends State<Loginscreen> {
                     Column(
                       children: [
 
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 10),
                         Center(
                           child: GestureDetector(
                             onTap: () {
@@ -193,6 +194,35 @@ class _LoginscreenState extends State<Loginscreen> {
                                 children: <TextSpan>[
                                   TextSpan(
                                     text: 'Đăng Ký',
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 10,),
+                        Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                PageTransition(
+                                  type: PageTransitionType.rightToLeft,
+                                  child: ForgotPasswordScreen(animated: false, state: false,),
+                                ),
+                              );
+                            },
+                            child: RichText(
+                              text: const TextSpan(
+                                style: TextStyle(
+                                    color: Color(0xFF606060), fontSize: 14),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                    text: 'Quên mật khẩu?',
                                     style: TextStyle(
                                       color: Colors.blue,
                                       fontSize: 14,
