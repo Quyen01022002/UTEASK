@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../controller/LoginController.dart';
+import '../../controller/ResetPassword.dart';
 import 'Login_screen.dart';
 
 class NewPasswordScreen extends StatefulWidget {
@@ -18,8 +19,8 @@ class NewPasswordScreen extends StatefulWidget {
 }
 
 class _NewPasswordScreenState extends State<NewPasswordScreen> {
-  final LoginController myController = Get.put(LoginController());
-
+  //final LoginController myController = Get.put(LoginController());
+  final ResetPasswordController resetController = Get.put(ResetPasswordController());
   late bool animated;
   late bool state = false;
   bool _isPasswordVisible = false;
@@ -97,7 +98,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                       child: Text("Nhập mật khẩu mới cho tài khoản của bạn"),
                     ),
                     TextField(
-                      controller: myController.textControllerPass,
+                      controller: resetController.textControllerPassword,
                       obscureText: _isPasswordVisible,
                       decoration: InputDecoration(
                         labelText: 'Nhập mật khẩu mới',
@@ -128,7 +129,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                     ),
                     const SizedBox(height: 16),
                     TextField(
-                      controller: myController.textControllerPass,
+                      controller: resetController.textControllerPasswordConfirm,
                       obscureText: _isPasswordVisible,
                       decoration: InputDecoration(
                         labelText: 'Nhập lại mật khẩu mới',
@@ -162,13 +163,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                     Center(
                       child: ElevatedButton(
                         onPressed: ()  {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              type: PageTransitionType.rightToLeft,
-                              child: Loginscreen(animated: false),
-                            ),
-                          );
+                          resetController.ResetPassword(context);
                         },
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:another_flushbar/flushbar.dart';
+import 'package:askute/controller/ResetPassword.dart';
 import 'package:askute/view/authen/new_password_forgot_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,8 +20,8 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  final LoginController myController = Get.put(LoginController());
-
+ // final LoginController myController = Get.put(LoginController());
+  final ResetPasswordController resetController = Get.put(ResetPasswordController());
   late bool animated;
   late bool state = false;
   bool _isPasswordVisible = false;
@@ -98,7 +99,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       child: Text("Quên mật khẩu"),
                     ),
                     TextField(
-                      controller: myController.textControllerEmail,
+                      controller: resetController.textControllerEmail,
                       decoration: const InputDecoration(
                         labelText: 'Nhập email đăng nhập',
                         border: OutlineInputBorder(
@@ -116,7 +117,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                     const SizedBox(height: 16),
                     TextField(
-                      controller: myController.textControllerPass,
+                      controller: resetController.textControllerOTP,
                       obscureText: _isPasswordVisible,
                       decoration: InputDecoration(
                         labelText: 'Nhập OTP',
@@ -135,7 +136,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             ? null
                             : ElevatedButton(
                           onPressed: () {
-                            // Thực hiện hành động khi nút "Gửi OTP" được nhấn
+                            resetController.checkEmail(context);
                             setState(() {
                               isCountingDown = true;
                               secondsRemaining = 60;
@@ -166,13 +167,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     Center(
                       child: ElevatedButton(
                         onPressed: ()  {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              type: PageTransitionType.rightToLeft,
-                              child: NewPasswordScreen(animated: false, state: false,),
-                            ),
-                          );
+                          resetController.goToResetPassword(context);
                         },
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
