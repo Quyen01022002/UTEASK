@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../view/dashboard/DashBoard.dart';
+import 'SettingController.dart';
 
 class LoginController extends GetxController
 {
+  final SettingController settingController =Get.put(SettingController());
   final textControllerEmail = TextEditingController();
   final textControllerPass = TextEditingController();
 
@@ -25,6 +27,7 @@ class LoginController extends GetxController
      stateLogin.value ="Đăng nhập thành công";
      // String? fcmToken = await _firebaseMessaging.getToken();
      //  API_login.fcm(AuthenticationResponse.id,AuthenticationResponse.token!,fcmToken!);
+settingController.loadthongtin();
       Future.delayed(Duration(milliseconds: 500), () {
         Navigator.pushReplacement(
           context,
@@ -51,7 +54,12 @@ class LoginController extends GetxController
   static Future<void> Logout() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setBool('isLoggedIn', false);
-
+    prefs.remove('id');
+    prefs.remove('email');
+    prefs.remove('firstName');
+    prefs.remove('lastName');
+    prefs.remove('Avatar');
+    prefs.remove('token');
 
   }
 
