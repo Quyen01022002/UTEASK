@@ -1,35 +1,57 @@
-import 'package:another_flushbar/flushbar.dart';
-import 'package:askute/view/authen/forgot_password_screen.dart';
-import 'package:askute/view/authen/signUpScreen.dart';
-import 'package:askute/view/authen/verify_screen.dart';
-import 'package:flutter/material.dart';
+import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../controller/LoginController.dart';
+import '../../controller/ResetPassword.dart';
+import 'Login_screen.dart';
 
-
-class Loginscreen extends StatefulWidget {
+class NewPasswordScreen extends StatefulWidget {
   final bool animated;
+  final bool state;
+  const NewPasswordScreen({Key? key, required this.animated,required this.state}) : super(key: key);
 
-  const Loginscreen({Key? key, required this.animated}) : super(key: key);
 
   @override
-  State<Loginscreen> createState() => _LoginscreenState();
+  State<NewPasswordScreen> createState() => _NewPasswordScreenState();
 }
 
-class _LoginscreenState extends State<Loginscreen> {
-  final LoginController myController = Get.put(LoginController());
-
+class _NewPasswordScreenState extends State<NewPasswordScreen> {
+  //final LoginController myController = Get.put(LoginController());
+  final ResetPasswordController resetController = Get.put(ResetPasswordController());
   late bool animated;
+  late bool state = false;
   bool _isPasswordVisible = false;
-
+  bool isCountingDown = false;
+  int secondsRemaining = 60;
+  late Timer timer;
   @override
   void initState() {
     super.initState();
     animated = widget.animated;
     startAnimation();
+  }
+  @override
+  void dispose() {
+    timer.cancel(); // Hủy bỏ timer khi widget được hủy
+    super.dispose();
+  }
+  void startCountdown() {
+    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (secondsRemaining > 0) {
+        setState(() {
+          secondsRemaining--;
+        });
+      } else {
+        // Hết thời gian đếm ngược, đặt lại trạng thái và hủy timer
+        setState(() {
+          isCountingDown = false;
+        });
+        timer.cancel();
+      }
+    });
   }
 
   @override
@@ -73,13 +95,14 @@ class _LoginscreenState extends State<Loginscreen> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.fromLTRB(8.0,0,0,16),
-                      child: Text("Đăng Nhập"),
+                      child: Text("Nhập mật khẩu mới cho tài khoản của bạn"),
                     ),
                     TextField(
-                      controller: myController.textControllerEmail,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        border: OutlineInputBorder(
+                      controller: resetController.textControllerPassword,
+                      obscureText: _isPasswordVisible,
+                      decoration: InputDecoration(
+                        labelText: 'Nhập mật khẩu mới',
+                        border: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(
                             Radius.circular(50.0),
                           ),
@@ -90,14 +113,26 @@ class _LoginscreenState extends State<Loginscreen> {
                         hintStyle: TextStyle(
                           color: Colors.grey, // Đặt màu cho hint text
                         ),
+                        suffixIcon: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
+                          },
+                          child: Icon(
+                            _isPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),
                     TextField(
-                      controller: myController.textControllerPass,
+                      controller: resetController.textControllerPasswordConfirm,
                       obscureText: _isPasswordVisible,
                       decoration: InputDecoration(
-                        labelText: 'Password',
+                        labelText: 'Nhập lại mật khẩu mới',
                         border: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(
                             Radius.circular(50.0),
@@ -128,43 +163,18 @@ class _LoginscreenState extends State<Loginscreen> {
                     Center(
                       child: ElevatedButton(
                         onPressed: ()  {
-                          myController.email.value =
-                              myController.textControllerEmail.text;
-                          myController.pass.value =
-                              myController.textControllerPass.text;
-                          myController.login(context);
-
-                          Future.delayed(Duration(milliseconds: 500), () {
-                            if (myController.stateLogin != null && myController.stateLogin != "") {
-                              Flushbar(
-                                flushbarPosition: FlushbarPosition.TOP,
-                                title: "Đăng nhập",
-                                duration: Duration(seconds: 2),
-                                icon: myController.stateLogin == "Đăng nhập thất bại"
-                                    ? Icon(
-                                  Icons.close,
-                                  size: 30,
-                                  color: Colors.red,
-                                )
-                                    : Icon(
-                                  Icons.check_circle,
-                                  size: 30,
-                                  color: Colors.green,
-                                ),
-                                message: myController.stateLogin.toString(),
-                              )..show(context);
-                            }
-                          });
+                          resetController.ResetPassword(context);
                         },
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(50),
                           ),
                           backgroundColor: Color(0xFF8587F1),
+                          minimumSize: Size(500, 50),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(100, 18, 100, 18),
-                          child: Text('Đăng Nhập',style: TextStyle(color: Colors.white),),
+                          padding: const EdgeInsets.fromLTRB(10, 18, 10, 18),
+                          child: Text('Đổi mật khẩu',style: TextStyle(color: Colors.white),),
                         ),
                       ),
                     ),
@@ -172,7 +182,7 @@ class _LoginscreenState extends State<Loginscreen> {
                     Column(
                       children: [
 
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 16),
                         Center(
                           child: GestureDetector(
                             onTap: () {
@@ -180,58 +190,26 @@ class _LoginscreenState extends State<Loginscreen> {
                                 context,
                                 PageTransition(
                                   type: PageTransitionType.rightToLeft,
-                                  child: SignUpScreeen(animated: false, state: false,
+                                  child: Loginscreen(animated: false),
+                                ),
+                              );
+                            },
+                            child: RichText(
+                              text: TextSpan(
+                                text: "Nhớ ra mật khẩu rồi! Trở về trang ",
+                                style: TextStyle(color: Color(0xFF606060), fontSize: 14),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                    text: 'Đăng Nhập',
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      fontSize: 14,
+                                    ),
+                                  ),
 
-                                  ),
-                                ),
-                              );
-                            },
-                            child: RichText(
-                              text: const TextSpan(
-                                text: "Bạn chưa có tài khoản?",
-                                style: TextStyle(
-                                    color: Color(0xFF606060), fontSize: 14),
-                                children: <TextSpan>[
-                                  TextSpan(
-                                    text: 'Đăng Ký',
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                      fontSize: 14,
-                                    ),
-                                  ),
                                 ],
                               ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 10,),
-                        Center(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                PageTransition(
-                                  type: PageTransitionType.rightToLeft,
-                                  child: ForgotPasswordScreen(animated: false, state: false,),
-                                ),
-                              );
-                            },
-                            child: RichText(
-                              text: const TextSpan(
-                                style: TextStyle(
-                                    color: Color(0xFF606060), fontSize: 14),
-                                children: <TextSpan>[
-                                  TextSpan(
-                                    text: 'Quên mật khẩu?',
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                            ),),
                         ),
                       ],
                     )

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:askute/model/AuthenticationResponse.dart';
+import 'package:askute/model/UsersEnity.dart';
 import 'package:http/http.dart' as http;
 
 import 'const.dart';
@@ -58,6 +59,39 @@ print("api");
       body: jsonEncode(data),
     );
 
+  }
+
+  static Future<bool> checkEmail(String email) async {
+    final url = Uri.parse('$baseUrl/media/check/$email');
+    final headers = {
+      "Content-Type": "application/json",};
+    final response = await http.get(
+      url,
+      headers: headers,
+    );
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+      if (responseData.isNotEmpty)
+        return true;
+      return false;
+    }
+    return false;
+  }
+
+  static Future<void> resetPassword(String email, String password) async {
+    final url = Uri.parse('$baseUrl/media/reset-password');
+    final headers = {
+      "Content-Type": "application/json",};
+    final data = {
+      "email": email,
+      "newPassword": password,
+    };
+
+    await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(data),
+    );
   }
 
 
