@@ -1,3 +1,4 @@
+import 'package:askute/controller/SettingController.dart';
 import 'package:askute/view/user/user_proflie_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,17 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
+    final SettingController settingController =Get.put(SettingController());
+    @override
+    void initState() {
+      super.initState();
+      settingController.loadthongtin();
+    }
+
+    @override
+    void dispose() { // Hủy bỏ timer khi widget được hủy
+      super.dispose();
+    }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -79,7 +91,7 @@ class _SettingScreenState extends State<SettingScreen> {
               height: 100.0,
               child: CircleAvatar(
                 backgroundImage: NetworkImage(
-                  'https://i.pinimg.com/564x/6d/9c/23/6d9c2393908ad508854ed24224682608.jpg',
+                  settingController.avatar.value,
                 ),
                 radius: 50.0,
               ),
@@ -97,14 +109,14 @@ class _SettingScreenState extends State<SettingScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Duy Hào',
+                  settingController.first_name.value+' '+ settingController.last_name.value,
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
-                  '@weihao.7640',
+                  settingController.email.value,
                   style: TextStyle(
                     color: Color(0xFF4F4F4F),
                   ),
