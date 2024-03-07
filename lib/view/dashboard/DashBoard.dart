@@ -1,3 +1,4 @@
+import 'package:askute/view/Quetions/createQuetions.dart';
 import 'package:askute/view/setting/setting_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -35,15 +36,14 @@ class _DashBoardState extends State<DashBoard> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          // Navigator.push(
-          //   context,
-          //   PageTransition(
-          //     type: PageTransitionType.bottomToTop,
-          //     child: CreatePost(
-          //       statepost: false,
-          //     ),
-          //   ),
-          // );
+          Navigator.push(
+            context,
+            PageTransition(
+              type: PageTransitionType.bottomToTop,
+              child: CreatePost( statepost: false,
+              ),
+            ),
+          );
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
