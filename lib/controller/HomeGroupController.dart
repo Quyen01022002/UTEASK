@@ -64,6 +64,7 @@ class HomeGroupController extends GetxController{
     final groupModel = await API_Group.getGroupById(idgroup, token);
     if (groupModel !=  null)
       {
+        print("load");
         nameGroup.value = groupModel.name ?? "";
         descriptionGroup.value = groupModel.description ?? "";
         listUserMembers= groupModel.listMembers;
@@ -75,6 +76,18 @@ class HomeGroupController extends GetxController{
           isAdmin.value = false;
       }
     groupCurrent = Stream.fromIterable([groupModel!]);
+  }
+  void GetListPost(BuildContext context) async{
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id')??0;
+    final token = prefs.getString('token')??"";
+    final groupModel = await API_Group.LoadMainHome(adminId, token);
+    if (groupModel != null) {
+
+      listPost.clear();
+      listPost.addAll(groupModel);
+      update();
+    }
   }
 
   void addlistMembers(List<int> listuserid){
@@ -122,7 +135,7 @@ class HomeGroupController extends GetxController{
   Future<void> loadGroupsOfAdmin() async {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('id') ?? 0;
-    final token = prefs.getString('token') ?? "";
+      final token = prefs.getString('token') ?? "";
     List<GroupModel>? result = await API_Group.getAllGroups(token);
     if (result != null)
       groups = result;

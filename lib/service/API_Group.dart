@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:askute/model/ApiReponse.dart';
 import 'package:askute/model/GroupMemberRequest.dart';
 import 'package:askute/model/GroupModel.dart';
+import 'package:askute/model/PostModel.dart';
 import 'package:askute/model/UsersEnity.dart';
 import 'package:askute/service/const.dart';
 import 'package:http/http.dart' as http;
@@ -126,7 +127,33 @@ class API_Group{
       return null;
     }
   }
+  static Future<List<PostModel>?> LoadMainHome(int userid, String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/group/follow/post/$userid'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
 
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<PostModel>> listPost =
+        ApiReponse<List<PostModel>>.fromJson(
+          utf8Data,
+              (dynamic json) =>
+          List<PostModel>.from(json.map((x) => PostModel.fromJson(x))),
+        );
+        return listPost.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
   static Future<List<GroupModel>?> getAllGroupsOfAdmin(String token, int adminId) async {
     final url = Uri.parse('$baseUrl/group/admin/$adminId');
     final headers = {
