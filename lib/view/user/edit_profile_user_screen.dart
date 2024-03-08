@@ -21,63 +21,56 @@ class _EditProfileUserScreenState extends State<EditProfileUserScreen> with Sing
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              floating: false,
-              pinned: true,
-              backgroundColor: Color(0xFFDBE8EC),
-              title: Text('Chỉnh sửa thông tin cá nhân',
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,),
-            ),
-            SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildImage(),
-                  Container(
-                    margin: EdgeInsets.only(top: 20),
-                    height: 2, // Chiều cao của thanh ngang
-                    width: 500, // Độ dày của thanh ngang
-                    color: Color(0xC0C0C0C0),
-                  ),
-                  SizedBox(height: 5,),
-                  Padding(
-                    padding:const EdgeInsets.all(10),
-                    child: Container(
-                      color: Colors.white,
-                      child: TabBar(
-                        controller: _tabController,
-                        tabs: [
-                          _buildTab('Giới thiệu'),
-                          _buildTab('Thông tin'),
-                        ],
-                        indicator: BoxDecoration(
-                          color: Color(0xFFF1F1FE),
-                          borderRadius: BorderRadius.circular(12),
-                          shape: BoxShape.rectangle,
-                        ),
-                        labelColor: Color(0xFF2F80ED),
-                        unselectedLabelColor: Colors.black,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SliverFillRemaining(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  // Tab 1 content
-                  _buildInfomationAccountSimple(),
-                  _buildInfomationAccount()
-                ],
-              ),
-            ),
-          ],
+        appBar: AppBar(
+          title: Text('Chỉnh sửa thông tin tài khoản'),
         ),
+        body: Container(
+                child: Column(
+                  children: [
+                    Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildImage(),
+                          Container(
+                            margin: EdgeInsets.only(top: 20),
+                            height: 2, // Chiều cao của thanh ngang
+                            width: 500, // Độ dày của thanh ngang
+                            color: Color(0xC0C0C0C0),
+                          ),
+                          SizedBox(height: 5,),
+                          Padding(
+                            padding:const EdgeInsets.all(10),
+                            child: Container(
+                              color: Colors.white,
+                              child: TabBar(
+                                controller: _tabController,
+                                tabs: [
+                                  _buildTab('Giới thiệu'),
+                                  _buildTab('Thông tin'),
+                                ],
+                                indicator: BoxDecoration(
+                                  color: Color(0xFFF1F1FE),
+                                  borderRadius: BorderRadius.circular(12),
+                                  shape: BoxShape.rectangle,
+                                ),
+                                labelColor: Color(0xFF2F80ED),
+                                unselectedLabelColor: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    Expanded(child: TabBarView(
+                      controller: _tabController,
+                      children: <Widget>[
+                        // Tab 1 content
+                        _buildInfomationAccountSimple(),
+                        _buildInfomationAccount()
+                      ],
+                    ),)
+                  ],
+                ),
+              ),
       ),
     );
   }

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../../model/PostModel.dart';
+
 class PostScreen extends StatefulWidget {
-  const PostScreen({super.key});
+  //const PostScreen({super.key});
+  final PostModel post;
+  const PostScreen({Key? key, required this.post}) : super(key: key);
 
   @override
   State<PostScreen> createState() => _PostScreenState();
@@ -11,6 +15,7 @@ class _PostScreenState extends State<PostScreen> {
   List<String> imageUrls1 = [
     'https://royalceramic.com.vn/wp-content/uploads/2022/12/anh-khi-12-con-giap-trend-tiktok-sieu-dep-800x800.jpg',
   ];
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -36,7 +41,7 @@ class _PostScreenState extends State<PostScreen> {
               CircleAvatar(
                 radius: 20,
                 backgroundImage:
-                AssetImage('assets/images/search.png'),
+                NetworkImage(widget.post.createBy.profilePicture),
                 // Hoặc sử dụng NetworkImage nếu avatar từ một URL
                 // backgroundImage: NetworkImage('URL_TO_AVATAR'),
               ),
@@ -45,7 +50,7 @@ class _PostScreenState extends State<PostScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Đỗ Duy Hào',
+                    widget.post.createBy.firstName+" " + widget.post.createBy.lastName,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -53,7 +58,7 @@ class _PostScreenState extends State<PostScreen> {
                   ),
 
                   Text(
-                    'Công nghệ thông tin',
+                    widget.post.createBy.email,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -66,15 +71,18 @@ class _PostScreenState extends State<PostScreen> {
           SizedBox(height: 8),
           Container(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(height: 8),
                 Text(
-                  'Nội dung của bài viết hoặc tin nhắn sẽ được đặt ở đây. Bạn có thể thay đổi độ dài và nội dung theo ý muốn.',
+                  widget.post.contentPost,
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.black87,
                   ),
                 ),
-                _buildImages(imageUrls1),
+                SizedBox(height: 5),
+                _buildImages(widget.post.listAnh),
               ],
             ),
           ),
@@ -108,7 +116,7 @@ class _PostScreenState extends State<PostScreen> {
                                   fontWeight: FontWeight.bold
                               ),),]),
                     ),
-                    Text('832 lượt thích')
+                    Text(widget.post.like_count.toString()+' lượt thích')
                   ],
                 ),
                 Column(
@@ -136,7 +144,7 @@ class _PostScreenState extends State<PostScreen> {
                                   fontWeight: FontWeight.bold
                               ),),]),
                     ),
-                    Text('832 bình luận')
+                    Text(widget.post.comment_count.toString()+  ' bình luận')
                   ],
                 ),
                 Column(
@@ -164,7 +172,7 @@ class _PostScreenState extends State<PostScreen> {
                                   fontWeight: FontWeight.bold
                               ),),]),
                     ),
-                    Text('34 lượt theo dõi')
+                    Text('Không khả dụng')
                   ],
                 ),
               ],
