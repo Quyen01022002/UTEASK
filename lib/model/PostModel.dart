@@ -13,7 +13,7 @@ class PostModel {
   final int comment_count;
   final int like_count;
   final bool user_liked;
-  final List<Picture> listAnh;
+  final List<String> listAnh;
   final CreateBy createBy;
 
   PostModel({
@@ -31,7 +31,7 @@ class PostModel {
   factory PostModel.fromJson(Map<String, dynamic> json) {
     final createBy = CreateBy.fromJson(json['createBy']);
     final listImg = (json['listAnh'] as List)
-        .map((item) => Picture.fromJson(item))
+        .map((item) => item['linkPicture'].toString())
         .toList();
 
     return PostModel(

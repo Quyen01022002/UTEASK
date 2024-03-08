@@ -1,12 +1,16 @@
 import 'dart:ffi';
 import 'dart:ui';
 
+import 'package:askute/view/Home/hot_post_screen.dart';
 import 'package:askute/view/component/post_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
+
+import '../../controller/HomeController.dart';
+import '../../model/PostModel.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -15,10 +19,13 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+  final HomeController myController = Get.put(HomeController());
   double opacity = 0.0;
   bool isHeaderVisible = true;
   int heigth = 150;
+  List<PostModel> listpost = [];
+  late TabController _tabController;
   late ScrollController _scrollController;
   List<String> imageUrls1 = [
     'https://royalceramic.com.vn/wp-content/uploads/2022/12/anh-khi-12-con-giap-trend-tiktok-sieu-dep-800x800.jpg',
@@ -42,6 +49,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    myController.load10HotPost();
+    _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
+
   }
 
   @override
@@ -142,35 +152,38 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
-                  _buildPost0(),
-                  PostScreen(),
-                  _buildPost(),
-                  _buildPost2(),
-                  _buildPost3(),
-                  _buildPost4(),
-                  // Expanded(
-                  //   child: Obx(
-                  //         () =>
-                  //         NotificationListener<ScrollNotification>(
-                  //           onNotification: (scrollNotification) {
-                  //             return true;
-                  //           },
-                  //           child: ListView.builder(
-                  //             controller: _scrollController,
-                  //             itemCount:3,
-                  //             itemBuilder: (context, index) {
-                  //               return  AnimatedOpacity(
-                  //                   duration: Duration(milliseconds: 100),
-                  //                   opacity: opacity,
-                  //
-                  //               );
-                  //             },
-                  //           ),
-                  //         ),
-                  //   ),
-                  // ),
+                  SizedBox(height: 5,),
+                  Padding(
+                    padding:const EdgeInsets.all(10),
+                    child: Container(
+                      color: Colors.white,
+                      child: TabBar(
+                        controller: _tabController,
+                        tabs: [
+                          _buildTab('Tất cả'),
+                          _buildTab('Nổi bật'),
+                        ],
+                        indicator: BoxDecoration(
+                          color: Color(0xFFF1F1FE),
+                          borderRadius: BorderRadius.circular(12),
+                          shape: BoxShape.rectangle,
+                        ),
+                        labelColor: Color(0xFF2F80ED),
+                        unselectedLabelColor: Colors.black,
+                      ),
+                    ),
+                  ),
                 ],
               ),
+            ),
+          ),
+          SliverFillRemaining(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                HotPostQuestionScreen(listPost: [],),
+                HotPostQuestionScreen(listPost: myController.top10Post),
+              ],
             ),
           ),
         ]),
@@ -1173,6 +1186,22 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildTab(String title) {
+    return Tab(
+      child: Container(
+        padding: EdgeInsets.all(0),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+        child: Text(
+          title,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class ImageDetail extends StatelessWidget {
@@ -1202,4 +1231,5 @@ class ImageDetail extends StatelessWidget {
       ),
     );
   }
+
 }
