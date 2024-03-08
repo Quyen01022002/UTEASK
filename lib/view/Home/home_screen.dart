@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'dart:ui';
 
+import 'package:askute/controller/HomeGroupController.dart';
 import 'package:askute/view/component/post_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   double opacity = 0.0;
   bool isHeaderVisible = true;
+  bool _isLoading = false;
+  int _visibleItems = 10;
+  final HomeGroupController homeGroupController =
+      Get.put(HomeGroupController());
   int heigth = 150;
   late ScrollController _scrollController;
   List<String> imageUrls1 = [
@@ -39,11 +44,46 @@ class _HomeScreenState extends State<HomeScreen> {
     'https://royalceramic.com.vn/wp-content/uploads/2022/12/anh-khi-12-con-giap-trend-tiktok-sieu-dep-800x800.jpg',
   ];
   List<String> imNull = [];
+
   @override
   void initState() {
     super.initState();
+    homeGroupController.GetListPost(context);
+    homeGroupController.loadGroupsJoin();
+
+    _scrollController = ScrollController();
+    _scrollController.addListener(_scrollListener);
   }
 
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.position.pixels;
+    final delta = 100.0;
+
+    if (maxScroll - currentScroll <= delta && !_isLoading) {
+      _loadMore();
+    }
+  }
+
+  Future<void> _loadMore() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    // Simulate loading delay
+    await Future.delayed(Duration(seconds: 2));
+
+    setState(() {
+      _visibleItems += 10; // Ví dụ, tải thêm 10 mục
+      _isLoading = false;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -91,7 +131,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
-
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 10),
                     margin: EdgeInsets.all(10),
@@ -142,33 +181,47 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
-                  _buildPost0(),
-                  PostScreen(),
-                  _buildPost(),
-                  _buildPost2(),
-                  _buildPost3(),
-                  _buildPost4(),
-                  // Expanded(
-                  //   child: Obx(
-                  //         () =>
-                  //         NotificationListener<ScrollNotification>(
-                  //           onNotification: (scrollNotification) {
-                  //             return true;
-                  //           },
-                  //           child: ListView.builder(
-                  //             controller: _scrollController,
-                  //             itemCount:3,
-                  //             itemBuilder: (context, index) {
-                  //               return  AnimatedOpacity(
-                  //                   duration: Duration(milliseconds: 100),
-                  //                   opacity: opacity,
-                  //
-                  //               );
-                  //             },
-                  //           ),
-                  //         ),
-                  //   ),
-                  // ),
+                  Container(
+                    height: 50,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: homeGroupController.groupsJoin?.length,
+                      itemBuilder: (context, index) {
+                        final post = homeGroupController.groupsJoin?[index];
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            width: 150.0,
+                            color: Colors.blue,
+                            child: Center(
+                              child: Text(post!.name.toString(),
+                                  style: TextStyle(color: Colors.white)),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  Container(
+                    height: 450,
+                    margin: EdgeInsets.only(top: 10),
+                    child: ListView.builder(
+                      itemCount: _visibleItems + (_isLoading ? 1 : 0),
+                      controller: _scrollController,
+                      itemBuilder: (context, index) {
+                        if (index < _visibleItems) {
+                          final post = homeGroupController.listPost[index];
+                          return AnimatedOpacity(
+                            duration: Duration(milliseconds: 100),
+                            opacity: 1,
+                            child: PostScreen(),
+                          );
+                        } else {
+                          return _buildProgressIndicator();
+                        }
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -177,7 +230,16 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-  Widget _buildPost0(){
+  Widget _buildProgressIndicator() {
+    return Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+
+  Widget _buildPost0() {
     return Container(
       padding: EdgeInsets.all(16),
       margin: EdgeInsets.all(8),
@@ -200,8 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundImage:
-                AssetImage('assets/images/search.png'),
+                backgroundImage: AssetImage('assets/images/search.png'),
                 // Hoặc sử dụng NetworkImage nếu avatar từ một URL
                 // backgroundImage: NetworkImage('URL_TO_AVATAR'),
               ),
@@ -216,7 +277,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-
                   Text(
                     'Công nghệ thông tin',
                     style: TextStyle(
@@ -224,7 +284,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontWeight: FontWeight.bold,
                       color: Colors.black45,
                     ),
-                  ),                              ],
+                  ),
+                ],
               ),
             ],
           ),
@@ -257,21 +318,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.grey.withOpacity(0.5), // Màu của border
                           width: 1.0, // Độ rộng của border
                         ),
-                        borderRadius: BorderRadius.circular(10), // Độ bo góc của border
+                        borderRadius:
+                            BorderRadius.circular(10), // Độ bo góc của border
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                      child: Row(
-
-                          children: [
-                            Image.asset(
-                              'assets/images/like1.png',
-                              width: 15,
-                              height: 15,
-                            ),
-                            Text('Thích',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold
-                              ),),]),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      child: Row(children: [
+                        Image.asset(
+                          'assets/images/like1.png',
+                          width: 15,
+                          height: 15,
+                        ),
+                        Text(
+                          'Thích',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ]),
                     ),
                     Text('832 lượt thích')
                   ],
@@ -285,21 +347,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.grey.withOpacity(0.5), // Màu của border
                           width: 1.0, // Độ rộng của border
                         ),
-                        borderRadius: BorderRadius.circular(10), // Độ bo góc của border
+                        borderRadius:
+                            BorderRadius.circular(10), // Độ bo góc của border
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                      child: Row(
-
-                          children: [
-                            Image.asset(
-                              'assets/images/NOTIFICATIONS.png',
-                              width: 15,
-                              height: 15,
-                            ),
-                            Text('Bình luận',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold
-                              ),),]),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      child: Row(children: [
+                        Image.asset(
+                          'assets/images/NOTIFICATIONS.png',
+                          width: 15,
+                          height: 15,
+                        ),
+                        Text(
+                          'Bình luận',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ]),
                     ),
                     Text('832 bình luận')
                   ],
@@ -313,21 +376,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.grey.withOpacity(0.5), // Màu của border
                           width: 1.0, // Độ rộng của border
                         ),
-                        borderRadius: BorderRadius.circular(10), // Độ bo góc của border
+                        borderRadius:
+                            BorderRadius.circular(10), // Độ bo góc của border
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                      child: Row(
-
-                          children: [
-                            Image.asset(
-                              'assets/images/NOTIFICATIONS.png',
-                              width: 15,
-                              height: 15,
-                            ),
-                            Text('Theo dõi',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold
-                              ),),]),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      child: Row(children: [
+                        Image.asset(
+                          'assets/images/NOTIFICATIONS.png',
+                          width: 15,
+                          height: 15,
+                        ),
+                        Text(
+                          'Theo dõi',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ]),
                     ),
                     Text('34 lượt theo dõi')
                   ],
@@ -339,7 +403,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-  Widget _buildPost(){
+
+  Widget _buildPost() {
     return Container(
       padding: EdgeInsets.all(16),
       margin: EdgeInsets.all(8),
@@ -362,8 +427,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundImage:
-                AssetImage('assets/images/search.png'),
+                backgroundImage: AssetImage('assets/images/search.png'),
                 // Hoặc sử dụng NetworkImage nếu avatar từ một URL
                 // backgroundImage: NetworkImage('URL_TO_AVATAR'),
               ),
@@ -378,7 +442,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-
                   Text(
                     'Công nghệ thông tin',
                     style: TextStyle(
@@ -386,7 +449,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontWeight: FontWeight.bold,
                       color: Colors.black45,
                     ),
-                  ),                              ],
+                  ),
+                ],
               ),
             ],
           ),
@@ -419,21 +483,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.grey.withOpacity(0.5), // Màu của border
                           width: 1.0, // Độ rộng của border
                         ),
-                        borderRadius: BorderRadius.circular(10), // Độ bo góc của border
+                        borderRadius:
+                            BorderRadius.circular(10), // Độ bo góc của border
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                      child: Row(
-
-                          children: [
-                            Image.asset(
-                              'assets/images/like1.png',
-                              width: 15,
-                              height: 15,
-                            ),
-                            Text('Thích',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold
-                              ),),]),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      child: Row(children: [
+                        Image.asset(
+                          'assets/images/like1.png',
+                          width: 15,
+                          height: 15,
+                        ),
+                        Text(
+                          'Thích',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ]),
                     ),
                     Text('832 lượt thích')
                   ],
@@ -447,21 +512,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.grey.withOpacity(0.5), // Màu của border
                           width: 1.0, // Độ rộng của border
                         ),
-                        borderRadius: BorderRadius.circular(10), // Độ bo góc của border
+                        borderRadius:
+                            BorderRadius.circular(10), // Độ bo góc của border
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                      child: Row(
-
-                          children: [
-                            Image.asset(
-                              'assets/images/NOTIFICATIONS.png',
-                              width: 15,
-                              height: 15,
-                            ),
-                            Text('Bình luận',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold
-                              ),),]),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      child: Row(children: [
+                        Image.asset(
+                          'assets/images/NOTIFICATIONS.png',
+                          width: 15,
+                          height: 15,
+                        ),
+                        Text(
+                          'Bình luận',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ]),
                     ),
                     Text('832 bình luận')
                   ],
@@ -475,21 +541,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.grey.withOpacity(0.5), // Màu của border
                           width: 1.0, // Độ rộng của border
                         ),
-                        borderRadius: BorderRadius.circular(10), // Độ bo góc của border
+                        borderRadius:
+                            BorderRadius.circular(10), // Độ bo góc của border
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                      child: Row(
-
-                          children: [
-                            Image.asset(
-                              'assets/images/NOTIFICATIONS.png',
-                              width: 15,
-                              height: 15,
-                            ),
-                            Text('Theo dõi',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold
-                              ),),]),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      child: Row(children: [
+                        Image.asset(
+                          'assets/images/NOTIFICATIONS.png',
+                          width: 15,
+                          height: 15,
+                        ),
+                        Text(
+                          'Theo dõi',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ]),
                     ),
                     Text('34 lượt theo dõi')
                   ],
@@ -501,7 +568,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-  Widget _buildPost2(){
+
+  Widget _buildPost2() {
     return Container(
       padding: EdgeInsets.all(16),
       margin: EdgeInsets.all(8),
@@ -524,8 +592,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundImage:
-                AssetImage('assets/images/search.png'),
+                backgroundImage: AssetImage('assets/images/search.png'),
                 // Hoặc sử dụng NetworkImage nếu avatar từ một URL
                 // backgroundImage: NetworkImage('URL_TO_AVATAR'),
               ),
@@ -540,7 +607,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-
                   Text(
                     'Công nghệ thông tin',
                     style: TextStyle(
@@ -548,7 +614,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontWeight: FontWeight.bold,
                       color: Colors.black45,
                     ),
-                  ),                              ],
+                  ),
+                ],
               ),
             ],
           ),
@@ -581,21 +648,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.grey.withOpacity(0.5), // Màu của border
                           width: 1.0, // Độ rộng của border
                         ),
-                        borderRadius: BorderRadius.circular(10), // Độ bo góc của border
+                        borderRadius:
+                            BorderRadius.circular(10), // Độ bo góc của border
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                      child: Row(
-
-                          children: [
-                            Image.asset(
-                              'assets/images/like1.png',
-                              width: 15,
-                              height: 15,
-                            ),
-                            Text('Thích',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold
-                              ),),]),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      child: Row(children: [
+                        Image.asset(
+                          'assets/images/like1.png',
+                          width: 15,
+                          height: 15,
+                        ),
+                        Text(
+                          'Thích',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ]),
                     ),
                     Text('832 lượt thích')
                   ],
@@ -609,21 +677,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.grey.withOpacity(0.5), // Màu của border
                           width: 1.0, // Độ rộng của border
                         ),
-                        borderRadius: BorderRadius.circular(10), // Độ bo góc của border
+                        borderRadius:
+                            BorderRadius.circular(10), // Độ bo góc của border
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                      child: Row(
-
-                          children: [
-                            Image.asset(
-                              'assets/images/NOTIFICATIONS.png',
-                              width: 15,
-                              height: 15,
-                            ),
-                            Text('Bình luận',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold
-                              ),),]),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      child: Row(children: [
+                        Image.asset(
+                          'assets/images/NOTIFICATIONS.png',
+                          width: 15,
+                          height: 15,
+                        ),
+                        Text(
+                          'Bình luận',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ]),
                     ),
                     Text('832 bình luận')
                   ],
@@ -637,21 +706,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.grey.withOpacity(0.5), // Màu của border
                           width: 1.0, // Độ rộng của border
                         ),
-                        borderRadius: BorderRadius.circular(10), // Độ bo góc của border
+                        borderRadius:
+                            BorderRadius.circular(10), // Độ bo góc của border
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                      child: Row(
-
-                          children: [
-                            Image.asset(
-                              'assets/images/NOTIFICATIONS.png',
-                              width: 15,
-                              height: 15,
-                            ),
-                            Text('Theo dõi',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold
-                              ),),]),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      child: Row(children: [
+                        Image.asset(
+                          'assets/images/NOTIFICATIONS.png',
+                          width: 15,
+                          height: 15,
+                        ),
+                        Text(
+                          'Theo dõi',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ]),
                     ),
                     Text('34 lượt theo dõi')
                   ],
@@ -663,7 +733,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-  Widget _buildPost3(){
+
+  Widget _buildPost3() {
     return Container(
       padding: EdgeInsets.all(16),
       margin: EdgeInsets.all(8),
@@ -686,8 +757,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundImage:
-                AssetImage('assets/images/search.png'),
+                backgroundImage: AssetImage('assets/images/search.png'),
                 // Hoặc sử dụng NetworkImage nếu avatar từ một URL
                 // backgroundImage: NetworkImage('URL_TO_AVATAR'),
               ),
@@ -702,7 +772,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-
                   Text(
                     'Công nghệ thông tin',
                     style: TextStyle(
@@ -710,7 +779,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontWeight: FontWeight.bold,
                       color: Colors.black45,
                     ),
-                  ),                              ],
+                  ),
+                ],
               ),
             ],
           ),
@@ -743,21 +813,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.grey.withOpacity(0.5), // Màu của border
                           width: 1.0, // Độ rộng của border
                         ),
-                        borderRadius: BorderRadius.circular(10), // Độ bo góc của border
+                        borderRadius:
+                            BorderRadius.circular(10), // Độ bo góc của border
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                      child: Row(
-
-                          children: [
-                            Image.asset(
-                              'assets/images/like1.png',
-                              width: 15,
-                              height: 15,
-                            ),
-                            Text('Thích',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold
-                              ),),]),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      child: Row(children: [
+                        Image.asset(
+                          'assets/images/like1.png',
+                          width: 15,
+                          height: 15,
+                        ),
+                        Text(
+                          'Thích',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ]),
                     ),
                     Text('832 lượt thích')
                   ],
@@ -771,21 +842,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.grey.withOpacity(0.5), // Màu của border
                           width: 1.0, // Độ rộng của border
                         ),
-                        borderRadius: BorderRadius.circular(10), // Độ bo góc của border
+                        borderRadius:
+                            BorderRadius.circular(10), // Độ bo góc của border
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                      child: Row(
-
-                          children: [
-                            Image.asset(
-                              'assets/images/NOTIFICATIONS.png',
-                              width: 15,
-                              height: 15,
-                            ),
-                            Text('Bình luận',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold
-                              ),),]),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      child: Row(children: [
+                        Image.asset(
+                          'assets/images/NOTIFICATIONS.png',
+                          width: 15,
+                          height: 15,
+                        ),
+                        Text(
+                          'Bình luận',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ]),
                     ),
                     Text('832 bình luận')
                   ],
@@ -799,21 +871,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.grey.withOpacity(0.5), // Màu của border
                           width: 1.0, // Độ rộng của border
                         ),
-                        borderRadius: BorderRadius.circular(10), // Độ bo góc của border
+                        borderRadius:
+                            BorderRadius.circular(10), // Độ bo góc của border
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                      child: Row(
-
-                          children: [
-                            Image.asset(
-                              'assets/images/NOTIFICATIONS.png',
-                              width: 15,
-                              height: 15,
-                            ),
-                            Text('Theo dõi',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold
-                              ),),]),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      child: Row(children: [
+                        Image.asset(
+                          'assets/images/NOTIFICATIONS.png',
+                          width: 15,
+                          height: 15,
+                        ),
+                        Text(
+                          'Theo dõi',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ]),
                     ),
                     Text('34 lượt theo dõi')
                   ],
@@ -825,7 +898,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-  Widget _buildPost4(){
+
+  Widget _buildPost4() {
     return Container(
       padding: EdgeInsets.all(16),
       margin: EdgeInsets.all(8),
@@ -848,8 +922,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundImage:
-                AssetImage('assets/images/search.png'),
+                backgroundImage: AssetImage('assets/images/search.png'),
                 // Hoặc sử dụng NetworkImage nếu avatar từ một URL
                 // backgroundImage: NetworkImage('URL_TO_AVATAR'),
               ),
@@ -864,15 +937,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-
                   Text(
-                    'Công nghệ thông tin',
+                    'Công nghệ thông tinnè',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                       color: Colors.black45,
                     ),
-                  ),                              ],
+                  ),
+                ],
               ),
             ],
           ),
@@ -905,21 +978,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.grey.withOpacity(0.5), // Màu của border
                           width: 1.0, // Độ rộng của border
                         ),
-                        borderRadius: BorderRadius.circular(10), // Độ bo góc của border
+                        borderRadius:
+                            BorderRadius.circular(10), // Độ bo góc của border
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                      child: Row(
-
-                          children: [
-                            Image.asset(
-                              'assets/images/like1.png',
-                              width: 15,
-                              height: 15,
-                            ),
-                            Text('Thích',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold
-                              ),),]),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      child: Row(children: [
+                        Image.asset(
+                          'assets/images/like1.png',
+                          width: 15,
+                          height: 15,
+                        ),
+                        Text(
+                          'Thích',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ]),
                     ),
                     Text('832 lượt thích')
                   ],
@@ -933,21 +1007,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.grey.withOpacity(0.5), // Màu của border
                           width: 1.0, // Độ rộng của border
                         ),
-                        borderRadius: BorderRadius.circular(10), // Độ bo góc của border
+                        borderRadius:
+                            BorderRadius.circular(10), // Độ bo góc của border
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                      child: Row(
-
-                          children: [
-                            Image.asset(
-                              'assets/images/NOTIFICATIONS.png',
-                              width: 15,
-                              height: 15,
-                            ),
-                            Text('Bình luận',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold
-                              ),),]),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      child: Row(children: [
+                        Image.asset(
+                          'assets/images/NOTIFICATIONS.png',
+                          width: 15,
+                          height: 15,
+                        ),
+                        Text(
+                          'Bình luận',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ]),
                     ),
                     Text('832 bình luận')
                   ],
@@ -961,21 +1036,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.grey.withOpacity(0.5), // Màu của border
                           width: 1.0, // Độ rộng của border
                         ),
-                        borderRadius: BorderRadius.circular(10), // Độ bo góc của border
+                        borderRadius:
+                            BorderRadius.circular(10), // Độ bo góc của border
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                      child: Row(
-
-                          children: [
-                            Image.asset(
-                              'assets/images/NOTIFICATIONS.png',
-                              width: 15,
-                              height: 15,
-                            ),
-                            Text('Theo dõi',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold
-                              ),),]),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      child: Row(children: [
+                        Image.asset(
+                          'assets/images/NOTIFICATIONS.png',
+                          width: 15,
+                          height: 15,
+                        ),
+                        Text(
+                          'Theo dõi',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ]),
                     ),
                     Text('34 lượt theo dõi')
                   ],
@@ -997,14 +1073,15 @@ class _HomeScreenState extends State<HomeScreen> {
       return _buildTwoImages(images);
     } else if (imageCount == 3) {
       return _buildThreeImages(images);
-    }
-    else if (imageCount == 0) {
+    } else if (imageCount == 0) {
       return Container();
     } else {
       // Xử lý cho trường hợp có nhiều hơn 3 ảnh
-      return _buildFourImages(images); // Thay bằng xử lý tùy thuộc vào số lượng ảnh cần hiển thị
+      return _buildFourImages(
+          images); // Thay bằng xử lý tùy thuộc vào số lượng ảnh cần hiển thị
     }
   }
+
   Widget _buildSingleImage(List<String> list) {
     //Nếu list ảnh chỉ có một hình ảnh
     return Container(
@@ -1013,12 +1090,16 @@ class _HomeScreenState extends State<HomeScreen> {
       child: GestureDetector(
           onTap: () {
             Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => ImageDetail(index: 0, listAnh: list,),
+              builder: (context) => ImageDetail(
+                index: 0,
+                listAnh: list,
+              ),
             ));
           },
-          child:  _buildFirstImage(list[0])),
+          child: _buildFirstImage(list[0])),
     );
   }
+
   Widget _buildTwoImages(List<String> imageUrls) {
     //nếu list ảnh có 2 hình ảnh
     return Container(
@@ -1030,22 +1111,28 @@ class _HomeScreenState extends State<HomeScreen> {
           GestureDetector(
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ImageDetail(index: 0, listAnh: imageUrls,),
+                  builder: (context) => ImageDetail(
+                    index: 0,
+                    listAnh: imageUrls,
+                  ),
                 ));
               },
-              child:  _buildFirstImage(imageUrls[0])),
-
+              child: _buildFirstImage(imageUrls[0])),
           GestureDetector(
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ImageDetail(index: 0, listAnh: imageUrls,),
+                  builder: (context) => ImageDetail(
+                    index: 0,
+                    listAnh: imageUrls,
+                  ),
                 ));
               },
-              child:  _buildFirstImage(imageUrls[0])),
+              child: _buildFirstImage(imageUrls[0])),
         ],
       ),
     );
   }
+
   Widget _buildThreeImages(List<String> imageUrls) {
     // nếu list ảnh có 3 hình ảnh
     return Container(
@@ -1057,10 +1144,13 @@ class _HomeScreenState extends State<HomeScreen> {
           GestureDetector(
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ImageDetail(index: 0, listAnh: imageUrls,),
+                  builder: (context) => ImageDetail(
+                    index: 0,
+                    listAnh: imageUrls,
+                  ),
                 ));
               },
-              child:  _buildFirstImage(imageUrls[0])),
+              child: _buildFirstImage(imageUrls[0])),
           Container(
             height: 302,
             child: Column(
@@ -1069,17 +1159,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 GestureDetector(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => ImageDetail(index: 1, listAnh: imageUrls,),
+                        builder: (context) => ImageDetail(
+                          index: 1,
+                          listAnh: imageUrls,
+                        ),
                       ));
                     },
-                    child:  _buildSecondImage(imageUrls[1])),
+                    child: _buildSecondImage(imageUrls[1])),
                 GestureDetector(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => ImageDetail(index: 2, listAnh: imageUrls,),
+                        builder: (context) => ImageDetail(
+                          index: 2,
+                          listAnh: imageUrls,
+                        ),
                       ));
                     },
-                    child:  _buildSecondImage(imageUrls[2])),
+                    child: _buildSecondImage(imageUrls[2])),
               ],
             ),
           ),
@@ -1087,6 +1183,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
   Widget _buildFourImages(List<String> imageUrls) {
     //nếu list ảnh có 4 hình ảnh trở lên
     return Container(
@@ -1098,10 +1195,13 @@ class _HomeScreenState extends State<HomeScreen> {
           GestureDetector(
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ImageDetail(index: 0, listAnh: imageUrls,),
+                  builder: (context) => ImageDetail(
+                    index: 0,
+                    listAnh: imageUrls,
+                  ),
                 ));
               },
-              child:  _buildFirstImage(imageUrls[0])),
+              child: _buildFirstImage(imageUrls[0])),
           Container(
             height: 302,
             child: Column(
@@ -1110,27 +1210,32 @@ class _HomeScreenState extends State<HomeScreen> {
                 GestureDetector(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => ImageDetail(index: 1, listAnh: imageUrls,),
+                        builder: (context) => ImageDetail(
+                          index: 1,
+                          listAnh: imageUrls,
+                        ),
                       ));
                     },
-                    child:  _buildSecondImage(imageUrls[1])),
-
+                    child: _buildSecondImage(imageUrls[1])),
                 Stack(
                   children: [
                     _buildSecondImage(imageUrls[2]),
                     GestureDetector(
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => ImageDetail(index: 2, listAnh: imageUrls,),
+                          builder: (context) => ImageDetail(
+                            index: 2,
+                            listAnh: imageUrls,
+                          ),
                         ));
                       },
                       child: Container(
                         height: 150,
                         width: 150,
-                        color: Colors.black.withOpacity(0.5), // Độ mờ ở đây, giả sử 0.5
+                        color: Colors.black
+                            .withOpacity(0.5), // Độ mờ ở đây, giả sử 0.5
                       ),
                     ),
-
                     Positioned.fill(
                       child: Center(
                         child: Text(
@@ -1144,8 +1249,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-
-
               ],
             ),
           ),
@@ -1153,6 +1256,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
   Widget _buildFirstImage(String imageUrl) {
     //xây dựng khung ảnh đầu tiên của bộ đôi, bộ ba ảnh
     return Image.network(
@@ -1161,8 +1265,8 @@ class _HomeScreenState extends State<HomeScreen> {
       height: 302,
       fit: BoxFit.cover,
     );
-
   }
+
   Widget _buildSecondImage(String imageUrl) {
     //xây dựng khung ảnh thứ 2,3 của bộ ba ảnh trở lên
     return Image.network(
@@ -1172,7 +1276,6 @@ class _HomeScreenState extends State<HomeScreen> {
       fit: BoxFit.cover,
     );
   }
-
 }
 
 class ImageDetail extends StatelessWidget {
