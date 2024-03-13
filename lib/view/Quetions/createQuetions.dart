@@ -1,12 +1,17 @@
 import 'dart:convert';
 
 import 'package:askute/controller/CreatePost.dart';
+import 'package:askute/controller/HomeGroupController.dart';
+import 'package:askute/model/PostModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:get/get.dart';
 
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 class CreatePost extends StatefulWidget {
   final bool statepost;
@@ -21,12 +26,15 @@ class _CreatePostState extends State<CreatePost> {
   List<XFile> _images = [];
   late bool statepost;
   late bool statecontent = false;
+  late int groupid=0;
+  final HomeGroupController _homeController = Get.put(HomeGroupController());
   CreatePostController postController = new CreatePostController();
 
   @override
   void initState() {
     super.initState();
     statepost = widget.statepost;
+    _homeController.loadGroupsJoin();
   }
 
   Future<void> _getImagesFromGallery() async {
@@ -106,6 +114,7 @@ class _CreatePostState extends State<CreatePost> {
                           height: 60,
                           decoration: BoxDecoration(),
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Padding(
                                 padding: const EdgeInsets.only(left: 26.0),
@@ -116,101 +125,84 @@ class _CreatePostState extends State<CreatePost> {
                                 style: TextStyle(
                                     color: Colors.black,
                                     decoration: TextDecoration.none,
-                                    fontSize: 18),
+                                    fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                              // Padding(
-                              //   padding: EdgeInsets.only(right: 15),
-                              //   child: statecontent == true||_images!=null
-                              //       ? ElevatedButton(
-                              //       onPressed: () async {
-                              //         setState(() {
-                              //           statepost = true;
-                              //         });
-                              //         postController.contentpost.value =
-                              //             postController
-                              //                 .textControllerContent.text;
-                              //         await _uploadImages();
-                              //         postController.createpost(context);
-                              //       },
-                              //       style: ElevatedButton.styleFrom(
-                              //         primary: Colors.blue,
-                              //       ),
-                              //       child: Text("Đăng"))
-                              //       : ElevatedButton(
-                              //       onPressed: () async {},
-                              //       style: ElevatedButton.styleFrom(
-                              //         primary: Colors.grey,
-                              //       ),
-                              //       child: Text("Đăng")),
-                              // )
+                              Padding(
+                                padding: EdgeInsets.only(right: 15),
+                                child: statecontent == true
+                                    ? ElevatedButton(
+                                    onPressed: () async {
+                                      setState(() {
+                                        statepost = true;
+                                      });
+
+                                      postController.contentpost.value =
+                                          postController
+                                              .textControllerContent.text;
+                                      await _uploadImages();
+                                      postController.createpostGroup(context,groupid);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.blue,
+                                    ),
+                                    child: Text("Đăng"))
+                                    : ElevatedButton(
+                                    onPressed: () async {},
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.grey,
+                                    ),
+                                    child: Text("Đăng")),
+                              )
                             ],
                           ),
                         ),
-                        Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: ClipOval(
-                                child: Image.asset(
-                                  "assets/images/login.png",
-                                  fit: BoxFit.cover,
-                                  width: 50,
-                                  height: 50,
-                                ),
-                              ),
-                            ),
-                            Column(
-                              children: [
-                                Text(
-                                  "Trần Bửu Quyến",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                          ],
+                        CarouselSlider(
+                          options: CarouselOptions(
+                            height: 100.0,
+                            viewportFraction: 0.8,
+                            enlargeCenterPage: true,
+                            onPageChanged: (index, reason) {
+                              setState(() {
+                                groupid= index;
+                              });
+                            },
+                          ),
+                          items: _homeController.groupsJoin!.map((item) {
+                            return Builder(
+                              builder: (BuildContext context) {
+                                return Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  margin: EdgeInsets.symmetric(horizontal: 5.0),
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: NetworkImage(item.avatar.toString()), // Thay đổi đường dẫn tới ảnh của bạn
+                                      fit: BoxFit.cover, // Đảm bảo ảnh sẽ che đầy Container
+                                    ),
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      item.name.toString(),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 24.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          }).toList(),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(22.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Tiêu đề:",style: TextStyle(fontWeight: FontWeight.bold),),
-                              const SizedBox(height: 6,),
-                              Container(
-                                padding: EdgeInsets.all(6.0),
-                                decoration: BoxDecoration(
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5),
-                                      spreadRadius: 5,
-                                      blurRadius: 7,
-                                      offset: Offset(0, 3), // Độ dịch chuyển của bóng
-                                    ),
-                                  ],
-                                  borderRadius: BorderRadius.circular(20.0), // Bo góc
-                                  color: Colors.white,
-                                ),
-                                child: TextField(
-                                  focusNode: _focusNode,
-                                  controller: postController.textControllerContent,
-                                  maxLines: 1,
-                                  onChanged: (text) {
-                                    if (text == null || text.isEmpty) {
-                                      setState(() {
-                                        statecontent = false;
-                                      });
-                                    } else {
-                                      setState(() {
-                                        statecontent = true;
-                                      });
-                                    }
-                                  },
-                                  decoration: InputDecoration(
-                                    hintText: "Tiêu đề",
-                                    border: InputBorder.none,
-                                  ),
-                                ),
-                              ),
+
                               const SizedBox(
                                 height: 26,
                               ),
@@ -218,7 +210,7 @@ class _CreatePostState extends State<CreatePost> {
                               const SizedBox(height: 6,),
                               GestureDetector(
                                 onTap: (){
-
+                                  _showBottomSheet(context,this);
                                 },
                                 child: Container(
 
@@ -248,8 +240,10 @@ class _CreatePostState extends State<CreatePost> {
                                 ),
                               ),
                               const SizedBox(
-                                height: 6,
+                                height: 16,
                               ),
+                              Text("Câu hỏi:",style: TextStyle(fontWeight: FontWeight.bold),),
+                              const SizedBox(height: 6,),
                               Container(
                                 padding: EdgeInsets.all(16.0),
                                 decoration: BoxDecoration(
@@ -380,4 +374,32 @@ class _CreatePostState extends State<CreatePost> {
             ),
           );
   }
+}
+void _showBottomSheet(BuildContext context, _CreatePostState state) {
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext builderContext) {
+      return Container(
+        child: Wrap(
+          children: <Widget>[
+            ListTile(
+              leading: Icon(Icons.camera),
+              title: Text('Thư viện'),
+              onTap: () {
+                state._getImagesFromGallery();
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.camera_alt_outlined),
+              title: Text('Máy Ảnh'),
+              onTap: () {
+                state._getImagesFromCamera(); // Gọi phương thức từ thể hiện của _CreatePostState
+              },
+            ),
+            // Add more items as needed
+          ],
+        ),
+      );
+    },
+  );
 }
