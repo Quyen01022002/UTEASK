@@ -8,6 +8,7 @@ class GroupModel {
   final int? id;
   final String? name;
   final String? description;
+  final String? avatar;
   final DateTime? createdDate;
   final DateTime? updatedDate;
   final List<UserMember> listMembers;
@@ -18,6 +19,7 @@ class GroupModel {
     required this.id,
     required this.createdDate,
     required this.description,
+    required this.avatar,
     required this.updatedDate,
     required this.listMembers,
     required this.listPost,
@@ -43,6 +45,7 @@ class GroupModel {
         createdDate: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
         updatedDate: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
       description: json['description'] ?? '',
+      avatar: json['avatar'] ?? '',
       name: json['name'] ?? '',
       listMembers: listUser,
       listPost: listPost
