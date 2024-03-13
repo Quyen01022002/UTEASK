@@ -6,7 +6,10 @@ import '../component/post_screen.dart';
 
 class HotPostQuestionScreen extends StatefulWidget {
   final List<PostModel> listPost;
-  const HotPostQuestionScreen({Key? key, required this.listPost}) : super(key: key);
+
+  const HotPostQuestionScreen({Key? key, required this.listPost})
+      : super(key: key);
+
   @override
   State<HotPostQuestionScreen> createState() => _HotPostQuestionScreenState();
 }
@@ -16,7 +19,7 @@ class _HotPostQuestionScreenState extends State<HotPostQuestionScreen> {
   Widget build(BuildContext context) {
     return Center(
       child: widget.listPost == []
-          ? Image.asset("assets/images/khongbaiviet.png")
+          ? Container(child:Text("Hãy Theo Dõi Thêm Chủ đề"),)
           : ListView.builder(
 
         itemCount: widget.listPost.length,
@@ -32,3 +35,4 @@ class _HotPostQuestionScreenState extends State<HotPostQuestionScreen> {
     );
   }
 }
+

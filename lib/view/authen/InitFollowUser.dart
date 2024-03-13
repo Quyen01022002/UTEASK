@@ -172,9 +172,13 @@ class _GroupScreenState extends State<GroupScreen>
               child: Padding(
                 padding: const EdgeInsets.only(top: 28.0),
                 child: ListView.builder(
-                  itemCount: listgroup.length,
+                  itemCount:homeGroupController.groups!.length,
                   itemBuilder: (context, index) {
-                    return khoaItem();
+                    GroupModel group = homeGroupController.groups![index];
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: khoaItem(group: group,),
+                    );
                   },
                 ),
               ),
