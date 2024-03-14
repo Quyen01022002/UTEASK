@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../controller/LoginController.dart';
+import '../../controller/MyProfileController.dart';
 import '../authen/Login_screen.dart';
 
 class SettingScreen extends StatefulWidget {
@@ -18,6 +19,7 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
     final SettingController settingController =Get.put(SettingController());
+    MyProfileController myProfileController = Get.put(MyProfileController());
     @override
     void initState() {
       super.initState();
@@ -78,6 +80,7 @@ class _SettingScreenState extends State<SettingScreen> {
         children: [
           GestureDetector(
             onTap: () {
+              myProfileController.loadMyProfile();
               Navigator.push(
                 context,
                 PageTransition(
@@ -102,7 +105,14 @@ class _SettingScreenState extends State<SettingScreen> {
           ),
           GestureDetector(
             onTap: () {
-              print('Đã nhấp vào tên, chuyển trang...');
+              myProfileController.loadMyProfile();
+              Navigator.push(
+                context,
+                PageTransition(
+                  type: PageTransitionType.rightToLeft,
+                  child: ProfileUserScreen(),
+                ),
+              );
             },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

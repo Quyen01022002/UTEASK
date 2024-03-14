@@ -1,5 +1,12 @@
+import 'package:askute/controller/MyProfileController.dart';
 import 'package:askute/view/user/edit_profile_user_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
+
+import '../Home/hot_post_screen.dart';
+import '../component/post_screen.dart';
 
 class ProfileUserScreen extends StatefulWidget {
   const ProfileUserScreen({super.key});
@@ -10,76 +17,98 @@ class ProfileUserScreen extends StatefulWidget {
 
 class _ProfileUserScreenState extends State<ProfileUserScreen> {
 
+  MyProfileController myProfileController = Get.put(MyProfileController());
 
   @override
   void initState() {
     super.initState();
+    myProfileController.loadMyProfile();
+
   }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildAccount(),
-                  Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  10), // Điều chỉnh góc bo tròn
+        body: NestedScrollView(
+          headerSliverBuilder:(context,innerBoxIsScrolled){
+return [
+
+];
+          },
+          body: Container(
+            decoration: BoxDecoration(color: Colors.white),
+            child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildAccount(),
+                    Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    10), // Điều chỉnh góc bo tròn
+                              ),
+                              backgroundColor: Color(0xFFFFFFFF),
+                                fixedSize: Size(300, 50),
                             ),
-                            backgroundColor: Color(0xFFFFFFFF),
-                              fixedSize: Size(300, 50),
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => EditProfileUserScreen()), // Thay NewPage() bằng trang mới của bạn
-                            );
-                          },
-                          child: Container(
-                            margin: EdgeInsets.only(left: 10, bottom: 10, top: 10),
-                            width: 250,
-                            alignment: Alignment.center, // Align the text to the center
-                            child: Text(
-                              'Chỉnh sửa thông tin cá nhân',
-                              style: TextStyle(
-                                color: Colors.black,
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => EditProfileUserScreen()), // Thay NewPage() bằng trang mới của bạn
+                              );
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(left: 10, bottom: 10, top: 10),
+                              width: 250,
+                              alignment: Alignment.center, // Align the text to the center
+                              child: Text(
+                                'Chỉnh sửa thông tin cá nhân',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 20),
-                    height: 10, // Chiều cao của thanh ngang
-                    width: 500, // Độ dày của thanh ngang
-                    color: Color(0xC0C0C0C0),
-                  ),
-                  _buildCreatePost(),
-                  Container(
-                    margin: EdgeInsets.only(top: 5),
-                    height: 10, // Chiều cao của thanh ngang
-                    width: 500, // Độ dày của thanh ngang
-                    color: Color(0xC0C0C0C0),
-                  ),
-                  _buildContent(),
+                    Container(
+                      margin: EdgeInsets.only(top: 20),
+                      height: 10, // Chiều cao của thanh ngang
+                      width: 500, // Độ dày của thanh ngang
+                      color: Color(0xC0C0C0C0),
+                    ),
+                    _buildCreatePost(),
+                    Container(
+                      margin: EdgeInsets.only(top: 5),
+                      height: 10, // Chiều cao của thanh ngang
+                      width: 500, // Độ dày của thanh ngang
+                      color: Color(0xC0C0C0C0),
+                     ),
 
+                    Expanded(
+                        child: HotPostQuestionScreen(listPost: myProfileController.listPost.value)),
 
-                ],
+                    // Container(child: Center(
+                    //   child: ListView.builder(
+                    //     itemCount: myProfileController.listPost.length,
+                    //     itemBuilder: (context, index) {
+                    //       final post = myProfileController.listPost[index];
+                    //       return AnimatedOpacity(
+                    //         duration: Duration(milliseconds: 100),
+                    //         opacity: 1,
+                    //         child: PostScreen(post: post),
+                    //       );
+                    //     },
+                    //   ),
+                    // ))
+
+                  ],
               ),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -99,7 +128,7 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
               children: [
                 Container(
                     height: 150,
-                    child: Image.network('https://i.pinimg.com/564x/6d/9c/23/6d9c2393908ad508854ed24224682608.jpg',
+                    child: Image.network(myProfileController.BackGround.toString(),
                         fit: BoxFit.cover,
                         width: MediaQuery
                             .of(context)
@@ -112,7 +141,7 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
                   margin: EdgeInsets.only(top: 80, left: 10),
                   child: CircleAvatar(
                     backgroundImage: NetworkImage(
-                      'https://i.pinimg.com/564x/6d/9c/23/6d9c2393908ad508854ed24224682608.jpg',
+                      myProfileController.Avatar.toString(),
                     ),
                     radius: 50.0,
                   ),
@@ -131,21 +160,21 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Duy Hào',
+                    myProfileController.fisrt_name.toString() + " " + myProfileController.last_name.toString(),
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    '@weihao.7640',
+                    myProfileController.email.toString(),
                     style: TextStyle(
                       color: Color(0xFF4F4F4F),
                     ),
                   ),
                   SizedBox(height: 10,),
                   Text(
-                    'Trở về mọi thứ như vừa mới bắt đầu!',
+                    myProfileController.phone.toString(),
                     style: TextStyle(
                       fontSize: 14,
                     ),
