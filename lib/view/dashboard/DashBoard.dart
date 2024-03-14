@@ -17,7 +17,7 @@ class _DashBoardState extends State<DashBoard> {
   int currentTab = 0;
   final List<Widget> screens = [
     HomeScreen(),
-    HomeScreen(),
+
     SettingScreen(),
 
   ];
@@ -74,19 +74,8 @@ class _DashBoardState extends State<DashBoard> {
                     });
                   },
                   icon: Icon(
-                    Icons.notifications,
-                    color: currentTab == 1 ? Colors.blue : Colors.grey,
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      currentTab = 2;
-                    });
-                  },
-                  icon: Icon(
                     Icons.menu,
-                    color: currentTab == 2 ? Colors.blue : Colors.grey,
+                    color: currentTab == 1 ? Colors.blue : Colors.grey,
                   ),
                 ),
               ],

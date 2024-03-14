@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../model/PostModel.dart';
 
@@ -15,6 +16,13 @@ class _PostScreenState extends State<PostScreen> {
   List<String> imageUrls1 = [
     'https://royalceramic.com.vn/wp-content/uploads/2022/12/anh-khi-12-con-giap-trend-tiktok-sieu-dep-800x800.jpg',
   ];
+  late String formattedTime = '';
+  @override
+  void initState() {
+    super.initState();
+
+    formattedTime = formatTimeDifference(widget.post.timeStamp);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +73,13 @@ class _PostScreenState extends State<PostScreen> {
                       color: Colors.black45,
                     ),
                   ),                              ],
+              ),
+              Text(
+                formattedTime,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Color(0xFFCECECE),
+                ),
               ),
             ],
           ),
@@ -203,7 +218,7 @@ class _PostScreenState extends State<PostScreen> {
     //Nếu list ảnh chỉ có một hình ảnh
     return Container(
       height: 302,
-      width: 302,
+      width: MediaQuery.of(context).size.width,
       child: GestureDetector(
           onTap: () {
             Navigator.of(context).push(MaterialPageRoute(
@@ -217,7 +232,7 @@ class _PostScreenState extends State<PostScreen> {
     //nếu list ảnh có 2 hình ảnh
     return Container(
       height: 302,
-      width: 302,
+      width: MediaQuery.of(context).size.width,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -244,7 +259,7 @@ class _PostScreenState extends State<PostScreen> {
     // nếu list ảnh có 3 hình ảnh
     return Container(
       height: 302,
-      width: 302,
+      width: MediaQuery.of(context).size.width,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -285,7 +300,7 @@ class _PostScreenState extends State<PostScreen> {
     //nếu list ảnh có 4 hình ảnh trở lên
     return Container(
       height: 302,
-      width: 302,
+      width: MediaQuery.of(context).size.width,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -351,7 +366,7 @@ class _PostScreenState extends State<PostScreen> {
     //xây dựng khung ảnh đầu tiên của bộ đôi, bộ ba ảnh
     return Image.network(
       imageUrl,
-      width: 150,
+      width: MediaQuery.of(context).size.width*0.4,
       height: 302,
       fit: BoxFit.cover,
     );
@@ -393,5 +408,26 @@ class ImageDetail extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+String formatTimeDifference(String timeStamp) {
+  DateTime dateTime = DateTime.parse(timeStamp);
+  DateTime now = DateTime.now();
+  Duration difference = now.difference(dateTime);
+
+  if (difference.inDays > 30) {
+    return DateFormat('dd/MM/yyyy').format(dateTime);
+  } else if (difference.inDays >= 1) {
+    return '${difference.inDays} ngày trước';
+  } else if (difference.inHours > 0) {
+    if (difference.inMinutes > 0) {
+      return '${difference.inHours} giờ';
+    } else {
+      return '${difference.inHours} giờ trước';
+    }
+  } else if (difference.inMinutes > 0) {
+    return '${difference.inMinutes} phút trước';
+  } else {
+    return "Bây giờ";
   }
 }
