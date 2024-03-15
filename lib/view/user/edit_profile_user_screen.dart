@@ -1,6 +1,8 @@
+import 'package:askute/controller/MyProfileController.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 
 class EditProfileUserScreen extends StatefulWidget {
   const EditProfileUserScreen({super.key});
@@ -10,9 +12,12 @@ class EditProfileUserScreen extends StatefulWidget {
 }
 
 class _EditProfileUserScreenState extends State<EditProfileUserScreen> with SingleTickerProviderStateMixin {
+  MyProfileController myProfileController = Get.put(MyProfileController());
+
   late TabController _tabController;
   @override
   void initState() {
+    myProfileController.loadMyProfile();
     super.initState();
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
   }
@@ -81,7 +86,7 @@ class _EditProfileUserScreenState extends State<EditProfileUserScreen> with Sing
         children: [
           Container(
             height: 150,
-            child: Image.network('https://i.pinimg.com/564x/6d/9c/23/6d9c2393908ad508854ed24224682608.jpg',
+            child: Image.network(myProfileController.BackGround.toString(),
               fit: BoxFit.cover,
               width: MediaQuery
                   .of(context)
@@ -97,7 +102,7 @@ class _EditProfileUserScreenState extends State<EditProfileUserScreen> with Sing
                 margin: EdgeInsets.only(top: 80, left: 10),
                 child: CircleAvatar(
                   backgroundImage: NetworkImage(
-                    'https://i.pinimg.com/564x/6d/9c/23/6d9c2393908ad508854ed24224682608.jpg',
+                    myProfileController.Avatar.toString(),
                   ),
                   radius: 50.0,
                 ),
@@ -112,79 +117,6 @@ class _EditProfileUserScreenState extends State<EditProfileUserScreen> with Sing
                 ),),
               ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-  Widget _buildAccount() {
-    return Container(
-      //margin: EdgeInsets.only(right: 15),
-      //padding: EdgeInsets.only(top: 100, left: 20, right: 10, bottom: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          GestureDetector(
-            onTap: () {
-            },
-            child: Stack(
-              children: [
-                Container(
-                  height: 150,
-                  child: Image.network('https://i.pinimg.com/564x/6d/9c/23/6d9c2393908ad508854ed24224682608.jpg',
-                    fit: BoxFit.cover,
-                    width: MediaQuery
-                        .of(context)
-                        .size
-                        .width,),
-                ),
-                Container(
-                  width: 100.0,
-                  height: 100.0,
-                  margin: EdgeInsets.only(top: 80, left: 10),
-                  child: CircleAvatar(
-                    backgroundImage: NetworkImage(
-                      'https://i.pinimg.com/564x/6d/9c/23/6d9c2393908ad508854ed24224682608.jpg',
-                    ),
-                    radius: 50.0,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(width: 10,),
-          GestureDetector(
-            onTap: () {
-            },
-            child: Container(
-              margin: EdgeInsets.only(top: 15, left: 10, bottom: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Duy Hào',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    '@weihao.7640',
-                    style: TextStyle(
-                      color: Color(0xFF4F4F4F),
-                    ),
-                  ),
-                  SizedBox(height: 10,),
-                  Text(
-                    'Trở về mọi thứ như vừa mới bắt đầu!',
-                    style: TextStyle(
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ),
         ],
       ),
@@ -223,7 +155,7 @@ class _EditProfileUserScreenState extends State<EditProfileUserScreen> with Sing
                                       fontWeight: FontWeight.bold
                                   ),),
                                 SizedBox(height: 10,),
-                                Text('doduyhao2002@gmail.com',
+                                Text(myProfileController.email.toString(),
                                   style: TextStyle(
                                     color: Color(0xFF4F4F4F),
                                   ),),
@@ -275,7 +207,7 @@ class _EditProfileUserScreenState extends State<EditProfileUserScreen> with Sing
                                       fontWeight: FontWeight.bold
                                   ),),
                                 SizedBox(height: 10,),
-                                Text('0987 287 118',
+                                Text(myProfileController.phone.toString(),
                                   style: TextStyle(
                                     color: Color(0xFF4F4F4F),
                                   ),),
@@ -439,7 +371,7 @@ class _EditProfileUserScreenState extends State<EditProfileUserScreen> with Sing
                                       fontWeight: FontWeight.bold
                                   ),),
                                 SizedBox(height: 10,),
-                                Text('Đỗ Duy Hào',
+                                Text(myProfileController.fisrt_name.toString()+' '+ myProfileController.last_name.toString(),
                                   style: TextStyle(
                                     color: Color(0xFF4F4F4F),
                                   ),),
