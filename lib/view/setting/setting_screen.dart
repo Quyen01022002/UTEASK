@@ -1,4 +1,5 @@
 import 'package:askute/controller/SettingController.dart';
+import 'package:askute/view/Quetions/QuestionDetail.dart';
 import 'package:askute/view/user/user_proflie_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -275,6 +276,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
+
                     },
                     child: Container(
                       child: Column(
