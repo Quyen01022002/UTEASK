@@ -145,13 +145,13 @@ class _CreatePostState extends State<CreatePost> {
                                       postController.createpostGroup(context,groupid);
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      primary: Colors.blue,
+                                      backgroundColor: Colors.blue,
                                     ),
                                     child: Text("Đăng"))
                                     : ElevatedButton(
                                     onPressed: () async {},
                                     style: ElevatedButton.styleFrom(
-                                      primary: Colors.grey,
+                                      backgroundColor: Colors.grey,
                                     ),
                                     child: Text("Đăng")),
                               )

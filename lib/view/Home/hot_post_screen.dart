@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../controller/PostController.dart';
 import '../../model/PostModel.dart';
 import '../component/post_screen.dart';
 
@@ -15,6 +16,7 @@ class HotPostQuestionScreen extends StatefulWidget {
 }
 
 class _HotPostQuestionScreenState extends State<HotPostQuestionScreen> {
+  final PostController postController = Get.put(PostController());
   @override
   Widget build(BuildContext context) {
     return Center(
