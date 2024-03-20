@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'dart:ui';
 
 import 'package:askute/model/GroupModel.dart';
+import 'package:askute/view/Notification/notification_screen.dart';
 import 'package:askute/view/component/categoryItem.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -53,10 +54,22 @@ class _HomeScreenState extends State<HomeScreen>
               floating: true,
               pinned: true,
               actions: [
-                Image.asset(
-                  'assets/images/NOTIFICATIONS.png',
-                  width: 60,
-                  height: 60,
+                GestureDetector(
+                  onTap: (){
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.bottomToTop,
+                        child: NotificationScreen(
+                        ),
+                      ),
+                    );
+                  },
+                  child: Image.asset(
+                    'assets/images/NOTIFICATIONS.png',
+                    width: 60,
+                    height: 60,
+                  ),
                 ),
               ],
             ),
