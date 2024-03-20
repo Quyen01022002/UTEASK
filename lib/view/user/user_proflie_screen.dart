@@ -1,9 +1,12 @@
 import 'package:askute/controller/MyProfileController.dart';
+import 'package:askute/view/user/DisplayBackGroudImagePage.dart';
+import 'package:askute/view/user/DisplaySelectedImagePage.dart';
 import 'package:askute/view/user/edit_profile_user_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../Home/hot_post_screen.dart';
 import '../component/post_screen.dart';
@@ -75,13 +78,7 @@ return [
                         ],
                       ),
                     ),
-                    Container(
-                      margin: EdgeInsets.only(top: 20),
-                      height: 10, // Chiều cao của thanh ngang
-                      width: 500, // Độ dày của thanh ngang
-                      color: Color(0xC0C0C0C0),
-                    ),
-                    _buildCreatePost(),
+
                     Container(
                       margin: EdgeInsets.only(top: 5),
                       height: 10, // Chiều cao của thanh ngang
@@ -122,28 +119,42 @@ return [
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           GestureDetector(
-            onTap: () {
-            },
+            onTap: () {},
             child: Stack(
               children: [
-                Container(
+                GestureDetector(
+                  onTap:(){
+                    final Name = myProfileController.fisrt_name.toString() +
+                        " " +
+                        myProfileController.last_name.toString();
+                    _pickImageBackGroud(context, ImageSource.gallery,
+                        Name, myProfileController.Avatar.toString());                  },
+                  child: Container(
                     height: 150,
-                    child: Image.network(myProfileController.BackGround.toString(),
-                        fit: BoxFit.cover,
-                        width: MediaQuery
-                            .of(context)
-                            .size
-                            .width,),
+                    child: Image.network(
+                      myProfileController.BackGround.toString(),
+                      fit: BoxFit.cover,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width,),
+                  ),
                 ),
-                Container(
-                  width: 100.0,
-                  height: 100.0,
-                  margin: EdgeInsets.only(top: 80, left: 10),
-                  child: CircleAvatar(
-                    backgroundImage: NetworkImage(
-                      myProfileController.Avatar.toString(),
+                GestureDetector(
+                  onTap: (){
+
+                    _pickImage(context, ImageSource.gallery);
+                  },
+                  child: Container(
+                    width: 100.0,
+                    height: 100.0,
+                    margin: EdgeInsets.only(top: 80, left: 10),
+                    child: CircleAvatar(
+                      backgroundImage: NetworkImage(
+                        myProfileController.Avatar.toString(),
+                      ),
+                      radius: 50.0,
                     ),
-                    radius: 50.0,
                   ),
                 ),
               ],
@@ -151,8 +162,7 @@ return [
           ),
           SizedBox(width: 10,),
           GestureDetector(
-            onTap: () {
-            },
+            onTap: () {},
             child: Container(
               margin: EdgeInsets.only(top: 15, left: 10, bottom: 10),
               child: Column(
@@ -160,7 +170,8 @@ return [
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    myProfileController.fisrt_name.toString() + " " + myProfileController.last_name.toString(),
+                    myProfileController.fisrt_name.toString() + " " +
+                        myProfileController.last_name.toString(),
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -184,48 +195,6 @@ return [
             ),
           ),
         ],
-      ),
-    );
-  }
-  Widget _buildCreatePost() {
-    return Card(
-      elevation: 3,
-      margin: EdgeInsets.all(8),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  backgroundImage: NetworkImage('https://i.pinimg.com/564x/6d/9c/23/6d9c2393908ad508854ed24224682608.jpg'),
-                ),
-                SizedBox(width: 8),
-                Expanded(
-                  child: TextFormField(
-                    onTap: () {
-                    },
-                    decoration: InputDecoration(
-                      hintText: "Bạn nghĩ gì?",
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(width: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                  },
-                  child: Text("Đăng"),
-                ),
-              ],
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -557,4 +526,36 @@ Widget _buildContent(){
       ),
     );
 }
+}
+
+void _pickImage(BuildContext context, ImageSource source) async {
+  XFile? pickedImage = await ImagePicker().pickImage(source: source);
+
+  if (pickedImage != null) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            DisplaySelectedImagePage(imagePath: pickedImage.path),
+      ),
+    );
+  }
+}
+
+void _pickImageBackGroud(BuildContext context, ImageSource source, String Name,
+    String Avatar) async {
+  XFile? pickedImage = await ImagePicker().pickImage(source: source);
+
+  if (pickedImage != null) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DisplayBackGroudImagePage(
+          imagePath: pickedImage.path,
+          Avatar: Avatar,
+          Name: Name,
+        ),
+      ),
+    );
+  }
 }

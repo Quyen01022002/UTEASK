@@ -1,4 +1,5 @@
 import 'package:askute/controller/SettingController.dart';
+import 'package:askute/view/setting/SavedPostsPage.dart';
 import 'package:askute/view/user/user_proflie_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -168,6 +169,13 @@ class _SettingScreenState extends State<SettingScreen> {
                 children: [
                   GestureDetector(
                     onTap: () {
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                          type: PageTransitionType.rightToLeft,
+                          child: SavedPostsPage(),
+                        ),
+                      );
                     },
                     child: Container(
                       child: Column(
@@ -181,7 +189,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           ),
                           SizedBox(width: 8),
                           Text(
-                            'Đang theo dõi',
+                            'Đã Lưu',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
