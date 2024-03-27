@@ -102,14 +102,16 @@ class API_Post {
   }
 
   static Future<CommentEntity?> Comments(
-      int userid, int postid, String content) async {
-    final url = Uri.parse('$baseUrl/comments');
-    final headers = {"Content-Type": "application/json"};
+      int userid, int postid, String content, String token) async {
+    final url = Uri.parse('$baseUrl/comments/cmt2');
+    final headers = {"Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
     final Map<String, dynamic> data = {
       "user_id": userid,
       "post_id": postid,
       "content_post": content,
-      "timestamp": DateTime.now().toIso8601String()
+      "timeStamp": DateTime.now().toIso8601String()
     };
 
     final response = await http.post(
@@ -199,4 +201,33 @@ class API_Post {
     } else {
       return null;
     }}
+
+  static Future<List<CommentEntity>?> getAllComment(int postid, String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/comments/$postid/getcmnt'),
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<CommentEntity>> listPost =
+        ApiReponse<List<CommentEntity>>.fromJson(
+          utf8Data,
+              (dynamic json) =>
+          List<CommentEntity>.from(json.map((x) =>CommentEntity.fromJson(x))),
+        );
+        return listPost.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
 }
