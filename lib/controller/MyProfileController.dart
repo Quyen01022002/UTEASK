@@ -1,6 +1,9 @@
+import 'dart:ffi';
+
 import 'package:askute/model/UserProfile.dart';
 import 'package:askute/model/UsersEnity.dart';
 import 'package:askute/service/API_Profile.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,11 +20,21 @@ class MyProfileController extends GetxController {
   RxString last_name = "".obs;
   RxString phone = "".obs;
   RxString email = "".obs;
+  RxString Address = "".obs;
   RxString Avatar = "".obs;
   RxString BackGround = "".obs;
   RxBool isFriend = true.obs;
   RxList<PostModel> listPost = List<PostModel>.empty(growable: true).obs;
   RxList<UserEnity> listFriends = List<UserEnity>.empty(growable: true).obs;
+
+
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  final emailController = TextEditingController();
+  final phoneController = TextEditingController();
+  final passwordController = TextEditingController();
+  final newPasswordController = TextEditingController();
+
   void loadMyProfile() async {
     final prefs = await SharedPreferences.getInstance();
     myId.value = prefs.getInt('id')!;
@@ -39,6 +52,10 @@ class MyProfileController extends GetxController {
         Avatar.value = userProfile.avatarUrl!;
         BackGround.value = userProfile.backGround!;
         isFriend.value = userProfile.isFriends!;
+        firstNameController.text = userProfile.first_name!;
+        lastNameController.text = userProfile.last_name!;
+        emailController.text = userProfile.email!;
+        phoneController.text = userProfile.phone!;
         print(userProfile.isFriends);
       }
     } catch (e) {
@@ -98,5 +115,14 @@ class MyProfileController extends GetxController {
     }
     // Trigger reactive update
     listPost.refresh();
+  }
+
+
+  void updateUserProfile(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+    await API_Profile.UpdatePro(token,fisrt_name.value,last_name.value,email.value, phone.value,Avatar.value, BackGround.value ,userId);
+    loadMyProfile();
   }
 }

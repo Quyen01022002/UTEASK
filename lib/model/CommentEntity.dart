@@ -7,8 +7,8 @@ class CommentEntity {
   final int? comment_id;
   final int? user_id;
   final int? post_id;
-  final String? content_post;
-  final int? timestamp;
+  final String? content_cmt;
+  final String? timestamp;
   final String? first_name;
   final String? last_name;
   final String? avatar;
@@ -18,7 +18,7 @@ class CommentEntity {
     this.comment_id,
     this.user_id,
     this.post_id,
-    this.content_post,
+    this.content_cmt,
     this.timestamp,
     this.first_name,
     this.last_name,
@@ -27,14 +27,14 @@ class CommentEntity {
   });
 
   factory CommentEntity.fromJson(Map<String, dynamic> data) => CommentEntity(
-    comment_id: data["comment_id"] ?? 0,
-    user_id: data["user_id"] ?? 0,
-    post_id: data["post_id"] ?? 0,
-    content_post: data["content_post"] ?? "",
-    timestamp: data["postimestampt_id"] ?? 0,
-    first_name: data["first_name"] ?? "",
-    last_name: data["last_name"] ?? "",
-    avatar: data["avatar"] ?? "",
+    comment_id: data["commentId"] ?? 0,
+    user_id: data["createBy"]["id"] ?? 0,
+    post_id: data["postID"]["id"] ?? 0,
+    content_cmt: data["commentContent"] ?? "",
+    timestamp: data["timeStamp"] ?? 0,
+    first_name: data["createBy"]["firstName"] ?? "",
+    last_name: data["createBy"]["lastName"] ?? "",
+    avatar: data["createBy"]["profilePicture"] ?? "",
   );
 
 }

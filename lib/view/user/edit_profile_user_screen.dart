@@ -1,4 +1,5 @@
 import 'package:askute/controller/MyProfileController.dart';
+import 'package:askute/view/user/update_user/update_name_user_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -12,14 +13,20 @@ class EditProfileUserScreen extends StatefulWidget {
 }
 
 class _EditProfileUserScreenState extends State<EditProfileUserScreen> with SingleTickerProviderStateMixin {
-  MyProfileController myProfileController = Get.put(MyProfileController());
-
+  final MyProfileController myProfileController = Get.put(MyProfileController());
+  TextEditingController _firstNameController = TextEditingController();
+  TextEditingController _lastNameController = TextEditingController();
   late TabController _tabController;
+  bool _isPasswordVisible = false;
   @override
   void initState() {
-    myProfileController.loadMyProfile();
     super.initState();
+    myProfileController.loadMyProfile();
+
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
+    _firstNameController.text = myProfileController.fisrt_name.value;
+    _lastNameController.text = 'Xin chào';
+
   }
 
   @override
@@ -162,8 +169,7 @@ class _EditProfileUserScreenState extends State<EditProfileUserScreen> with Sing
                               ],
                             ),]),
                       GestureDetector(
-                        onTap: () {
-                        },
+                        onTap: _showEditEmailDialog,
                         child: Text(
                           'Chỉnh sửa',
                           style: TextStyle(
@@ -214,8 +220,7 @@ class _EditProfileUserScreenState extends State<EditProfileUserScreen> with Sing
                               ],
                             ),]),
                       GestureDetector(
-                        onTap: () {
-                        },
+                        onTap: _showEditPhoneDialog,
                         child: Text(
                           'Chỉnh sửa',
                           style: TextStyle(
@@ -266,8 +271,7 @@ class _EditProfileUserScreenState extends State<EditProfileUserScreen> with Sing
                               ],
                             ),]),
                       GestureDetector(
-                        onTap: () {
-                        },
+                        onTap: _showEditPasswordDialog,
                         child: Text(
                           'Chỉnh sửa',
                           style: TextStyle(
@@ -378,8 +382,7 @@ class _EditProfileUserScreenState extends State<EditProfileUserScreen> with Sing
                               ],
                             ),]),
                       GestureDetector(
-                        onTap: () {
-                        },
+                        onTap: _showEditNameDialog,
                         child: Text(
                           'Chỉnh sửa',
                           style: TextStyle(
@@ -417,13 +420,13 @@ class _EditProfileUserScreenState extends State<EditProfileUserScreen> with Sing
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(height: 5,),
-                                Text('Tag người dùng',
+                                Text('Giới tính',
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold
                                   ),),
                                 SizedBox(height: 10,),
-                                Text('@duyhao.7640',
+                                Text('Nam',
                                   style: TextStyle(
                                     color: Color(0xFF4F4F4F),
                                   ),),
@@ -518,6 +521,228 @@ class _EditProfileUserScreenState extends State<EditProfileUserScreen> with Sing
           ),
         ),
       ),
+    );
+  }
+  void _showEditNameDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Chỉnh sửa tên người dùng'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: myProfileController.firstNameController,
+                decoration: InputDecoration(
+                  labelText: 'First Name',
+                ),
+              ),
+              SizedBox(height: 20.0),
+              TextField(
+                controller: myProfileController.lastNameController,
+                decoration: InputDecoration(
+                  labelText: 'Last Name',
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+               myProfileController.fisrt_name.value = myProfileController.firstNameController.text;
+               myProfileController.last_name.value = myProfileController.lastNameController.text;
+               myProfileController.updateUserProfile(context);
+               Navigator.of(context).pop();
+              },
+              child: Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  void _showEditEmailDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Chỉnh sửa Email'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: myProfileController.emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                myProfileController.email.value = myProfileController.emailController.text;
+                myProfileController.updateUserProfile(context);
+                Navigator.of(context).pop();
+              },
+              child: Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  void _showEditPhoneDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Chỉnh sửa số điện thoại'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: myProfileController.phoneController,
+                decoration: InputDecoration(
+                  labelText: 'Số điện thoại',
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                myProfileController.phone.value = myProfileController.phoneController.text;
+                myProfileController.updateUserProfile(context);
+                Navigator.of(context).pop();
+              },
+              child: Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  void _showEditPasswordDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Đổi mật khẩu'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                //  controller: resetController.textControllerPasswordConfirm,
+                obscureText: _isPasswordVisible,
+                decoration: InputDecoration(
+                  labelText: 'Nhập mật khẩu cũ',
+                  filled: true,
+                  fillColor: Color(0xFFF3F5F7),
+                  hintStyle: TextStyle(
+                    color: Colors.grey, // Đặt màu cho hint text
+                  ),
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
+                    child: Icon(
+                      _isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20.0),
+              TextField(
+                //  controller: resetController.textControllerPasswordConfirm,
+                obscureText: _isPasswordVisible,
+                decoration: InputDecoration(
+                  labelText: 'Nhập mật khẩu mới',
+                  filled: true,
+                  fillColor: Color(0xFFF3F5F7),
+                  hintStyle: TextStyle(
+                    color: Colors.grey, // Đặt màu cho hint text
+                  ),
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
+                    child: Icon(
+                      _isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20.0),
+              TextField(
+              //  controller: resetController.textControllerPasswordConfirm,
+                obscureText: _isPasswordVisible,
+                decoration: InputDecoration(
+                  labelText: 'Nhập lại mật khẩu mới',
+                  filled: true,
+                  fillColor: Color(0xFFF3F5F7),
+                  hintStyle: TextStyle(
+                    color: Colors.grey, // Đặt màu cho hint text
+                  ),
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
+                    child: Icon(
+                      _isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Save'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
