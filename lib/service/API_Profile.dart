@@ -74,4 +74,35 @@ class API_Profile
     );
     return "Success";
   }
+  static Future<String?> UpdatePro(String token,String firstName,String lastName,String email,String phone,String avatar,String background, int id) async {
+    final url = Uri.parse('$baseUrl/user/up/$id');
+
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',};
+
+// Tạo một Map chứa dữ liệu người dùng
+    final data = {
+      "firstName":firstName,
+      "lastName":lastName,
+      "email": email,
+      "phone": phone,
+      "profilePicture": avatar,
+      "backGroundPicture": background,
+
+    };
+
+    final response = await http.put(
+      url,
+      headers: headers,
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+
+      return "Success";
+    } else {
+      return null;
+    }
+  }
 }
