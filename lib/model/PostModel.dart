@@ -15,6 +15,7 @@ class PostModel {
   final bool user_liked;
   final List<String> listAnh;
   final CreateBy createBy;
+  final int groupid;
 
   PostModel({
     required this.id,
@@ -26,6 +27,7 @@ class PostModel {
     required this.user_liked,
     required this.createBy,
     required this.listAnh,
+    required this.groupid,
   });
 
   factory PostModel.fromJson(Map<String, dynamic> json) {
@@ -43,7 +45,8 @@ class PostModel {
         like_count: json['like_count'] ?? 0,
         user_liked: json['user_liked'] ?? false,
         listAnh: listImg,
-        createBy: createBy);
+        createBy: createBy,
+    groupid: json['groupid']??0);
   }
 
 }

@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'dart:ui';
 
 import 'package:askute/model/GroupModel.dart';
+import 'package:askute/view/Home/search_screen.dart';
 import 'package:askute/view/Notification/notification_screen.dart';
 import 'package:askute/view/component/categoryItem.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,6 +13,8 @@ import 'package:page_transition/page_transition.dart';
 
 import '../../controller/HomeController.dart';
 import '../../controller/HomeGroupController.dart';
+
+import '../../controller/SearchController.dart';
 import '../../model/PostModel.dart';
 import 'hot_post_screen.dart';
 
@@ -27,8 +30,16 @@ class _HomeScreenState extends State<HomeScreen>
   final HomeController _homeController = Get.put(HomeController());
   final HomeGroupController _homeGroupController =
       Get.put(HomeGroupController());
-
+final SearchPostController _searchController = Get.put(SearchPostController());
   late TabController _tabController;
+  List<String> searchSuggestions = [
+    'Từ khóa gợi ý 1',
+    'Từ khóa gợi ý 2',
+    'Từ khóa gợi ý 3',
+    // Thêm các từ khóa gợi ý khác nếu cần
+  ];
+  double _searchBarHeight = 50.0; // Chiều cao của thanh tìm kiếm
+  bool _isSearchBarExpanded = false; // Trạng thái mở rộng của thanh tìm kiếm
 
   @override
   void initState() {
@@ -41,7 +52,21 @@ class _HomeScreenState extends State<HomeScreen>
       _homeGroupController.loadGroupsOfAdmin();
 
   }
-
+  void _showSearchSuggestions() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return _buildSearchSuggestions();
+      },
+    );
+  }
+  void _toggleSearchBar() {
+    setState(() {
+      _isSearchBarExpanded = !_isSearchBarExpanded;
+      _searchBarHeight = _isSearchBarExpanded ? 200.0 : 50.0; // Chiều cao mới của thanh tìm kiếm
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -113,6 +138,10 @@ class _HomeScreenState extends State<HomeScreen>
                           ),
                           Expanded(
                             child: TextField(
+                              controller: _searchController.textControllerKeyword,
+                              onTap: () {
+                                _showSearchSuggestions();
+                              },
                               decoration: InputDecoration(
                                 hintText: 'Search for.....',
                                 border: InputBorder.none,
@@ -125,10 +154,22 @@ class _HomeScreenState extends State<HomeScreen>
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Image.asset(
-                              'assets/images/FILTER.png',
-                              width: 30,
-                              height: 30,
+                            child: GestureDetector(
+                              onTap: () {
+_searchController.loadListResultController(context);
+                                Navigator.push(
+                                  context,
+                                  PageTransition(
+                                    type: PageTransitionType.bottomToTop,
+                                    child: SearchResultScreen(),
+                                  ),
+                                );
+                              },
+                              child: Image.asset(
+                                'assets/images/FILTER.png',
+                                width: 30,
+                                height: 30,
+                              ),
                             ),
                           ),
                         ],
@@ -188,6 +229,27 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           ],
         ),
+      ),
+    );
+  }
+  Widget _buildSearchSuggestions() {
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: ListView.builder(
+        itemCount: searchSuggestions.length,
+        itemBuilder: (BuildContext context, int index) {
+          return ListTile(
+            title: Text(searchSuggestions[index]),
+            onTap: () {
+              // Xử lý khi người dùng chọn từ khóa gợi ý
+              // Ví dụ: cập nhật giá trị của thanh tìm kiếm với từ khóa gợi ý đã chọn
+            },
+          );
+        },
       ),
     );
   }
