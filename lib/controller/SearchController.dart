@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,9 +28,10 @@ void loadListResultController(BuildContext context) async{
       topSearch.addAll(result);
       update();}
       else if (filterTheLikest.value == false && idKhoa.value != 0){
-
-
-      }
+        List<PostModel> sortedResult = sortResultByKhoa(result, idKhoa.value);
+        topSearch.clear();
+        topSearch.addAll(sortedResult);
+        update();}
       else if (filterTheLikest.value == true && idKhoa.value == 0){
         List<PostModel> sortedResult = sortResultByCountLike(result);
         topSearch.clear();
@@ -36,7 +39,11 @@ void loadListResultController(BuildContext context) async{
         update();
       }
       else if (filterTheLikest.value == true && idKhoa.value !=0){
-
+        List<PostModel> sortedResult = sortResultByCountLike(result);
+        sortedResult = sortResultByKhoa(sortedResult, idKhoa.value);
+        topSearch.clear();
+        topSearch.addAll(sortedResult);
+        update();
       }
     }
   }
@@ -58,4 +65,15 @@ void loadListResultController(BuildContext context) async{
 
     return sortedList;
   }
+  List<PostModel> sortResultByKhoa(List<PostModel> originalList, int idkhoa) {
+    // Sao chép danh sách ban đầu để tránh ảnh hưởng đến danh sách gốc
+    List<PostModel> filteredList = List.from(originalList);
+
+    // Lọc danh sách theo idKhoa
+    filteredList = filteredList.where((post) => post.groupid == idkhoa).toList();
+
+    return filteredList;
+  }
+
+
 }

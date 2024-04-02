@@ -1,3 +1,4 @@
+import 'package:askute/controller/HomeGroupController.dart';
 import 'package:askute/controller/SearchController.dart';
 import 'package:askute/view/Home/hot_post_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -5,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
+
+import '../../model/GroupModel.dart';
 
 class SearchResultScreen extends StatefulWidget {
   const SearchResultScreen({super.key});
@@ -16,6 +19,8 @@ class SearchResultScreen extends StatefulWidget {
 class _SearchResultScreenState extends State<SearchResultScreen> with SingleTickerProviderStateMixin {
 
   final SearchPostController _searchPostController = Get.put(SearchPostController());
+  final HomeGroupController _homeGroupController = Get.put(HomeGroupController());
+
   List<String> categories = [
     'Bài viết',
     'Khoa',
@@ -27,9 +32,12 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this, initialIndex: 0);
+    _rs_search_post.add(_ListPostResult());
+    _homeGroupController.loadGroupsOfAdmin();
 
   }
 
+  bool _shouldRebuildTabBarView = false;
   void _updateListSearchPost(){
     setState(() {
       _searchPostController.topSearch;
@@ -91,22 +99,24 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
               ),
             ];
           },
-          body:Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildCategoryContent('Bài viết'),
-                _buildCategoryContent('Bài viết'),
-                _buildCategoryContent('Người dùng'),
-                _buildCategoryContent('Chat'),
-              ]
-            ),
-          ),
+          body: _shouldRebuildTabBarView ? _buildTabBarView() : _buildTabBarView(),
+
         ),
       ),
     );
   }
 
+  Widget _buildTabBarView() {
+    return TabBarView(
+      controller: _tabController,
+      children: [
+        _buildCategoryContent('Bài viết'),
+        _buildCategoryContent('Bài viết'),
+        _buildCategoryContent('Người dùng'),
+        _buildCategoryContent('Chat'),
+      ],
+    );
+  }
   Widget _buildCategoryContent(String category) {
     // Kiểm tra loại category và trả về nội dung tương ứng
     switch (category) {
@@ -121,10 +131,6 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
       default:
         return Container(); // Trả về container trống nếu không khớp với bất kỳ category nào
     }
-  }
-
-  List<Widget> _buildTabs() {
-    return categories.map((title) => _buildTab(title)).toList();
   }
 
   Widget _buildTab(String title) {
@@ -357,6 +363,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
     );
   }
 
+  List<Widget> _rs_search_post = [];
   Widget _buildPostSearch(){
     return Expanded(
       child: Column(
@@ -366,7 +373,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
             children: [
               GestureDetector(
                 onTap: () {
-                  _showFilterKhoaDialog();
+                  _showFilterKhoaDialog(_homeGroupController.groups!);
                 },
                 child: Container(
                   margin: EdgeInsets.all(8),
@@ -449,16 +456,16 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
             color: Color(0xC0C0C0C0),
             alignment: Alignment.center,
           ),
-          Expanded(child: HotPostQuestionScreen(listPost: _searchPostController.topSearch)),
 
+          ..._rs_search_post
 
         ],
       ),
-
-
-
-
     );
+  }
+
+  Widget _ListPostResult(){
+    return Expanded(child: HotPostQuestionScreen(listPost: _searchPostController.topSearch));
   }
   void _showFilterSapXepDialog() {
     showDialog(
@@ -482,12 +489,16 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
               ),
               ListTile(
                 title: Text('Sắp xếp theo lượt thích'),
-                onTap: () {
+                onTap: () async {
                   // Sắp xếp danh sách theo lượt thích
+
                   _searchPostController.filterTheLikest.value= true;
                   _searchPostController.loadListResultController(context);
-               //   HotPostQuestionScreen(listPost: _searchPostController.topSearch,);
-                _updateListSearchPost();
+                  List<Widget> _rs_new = [];
+                  _rs_new.add(_ListPostResult());
+                  setState(() {
+                    _rs_search_post = _rs_new;
+                  });
                   Navigator.of(context).pop();
                 },
               ),
@@ -504,30 +515,63 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
         );
       },
     );}
-  void _showFilterKhoaDialog() {
+
+  void _updateTabBarView() {
+    // Cập nhật _rs_search_post
+    List<Widget> _rs_new = [];
+    _rs_new.add(_ListPostResult());
+    setState(() {
+      _rs_search_post = _rs_new;
+    });
+  }
+  void _showFilterKhoaDialog(List<GroupModel> khoaList) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Lọc theo khoa'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                title: Text('Sắp xếp theo thời gian gần nhất'),
-                onTap: () {
-                  // Sắp xếp danh sách theo thời gian gần nhất
-
-                },
-              ),
-              ListTile(
-                title: Text('Sắp xếp theo lượt thích'),
-                onTap: () {
-                  // Sắp xếp danh sách theo lượt thích
-
-                },
-              ),
-            ],
+          content: Container(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: khoaList.length + 1, // +1 để tính cả lựa chọn "Tất cả"
+              itemBuilder: (BuildContext context, int index) {
+                if (index == 0) {
+                  // Nếu index là 0, hiển thị lựa chọn "Tất cả"
+                  return ListTile(
+                    title: Text('Tất cả'),
+                    onTap: () {
+                      _searchPostController.idKhoa.value = 0;
+                      _searchPostController.loadListResultController(context);
+                      List<Widget> _rs_new = [];
+                      _rs_new.add(_ListPostResult());
+                      setState(() {
+                        _rs_search_post = _rs_new;
+                      });
+                      Navigator.of(context).pop();
+                    },
+                  );
+                } else {
+                  // Hiển thị các khoa khác
+                  final khoa = khoaList[index - 1]; // -1 để bỏ qua lựa chọn "Tất cả"
+                  return ListTile(
+                    title: Text(khoa.name.toString()), // Hiển thị tên khoa trong ListTile
+                    onTap: () {
+                      // Xử lý khi người dùng chọn một khoa
+                      // Ví dụ: Navigator.of(context).pop(khoa);
+                      _searchPostController.idKhoa.value = khoa.id!;
+                      _searchPostController.loadListResultController(context);
+                      List<Widget> _rs_new = [];
+                      _rs_new.add(_ListPostResult());
+                      setState(() {
+                        _rs_search_post = _rs_new;
+                      });
+                      Navigator.of(context).pop();
+                    },
+                  );
+                }
+              },
+            ),
           ),
           actions: [
             TextButton(
@@ -539,7 +583,10 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
           ],
         );
       },
-    );}
+    );
+  }
+
+
 
   // List<Widget> _buildTabs() {
   //   return categories
