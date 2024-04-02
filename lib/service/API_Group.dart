@@ -295,4 +295,32 @@ class API_Group{
       return null;
     }
   }
+
+
+  static Future<List<GroupModel>?> searchGroup(String token, String keyword) async {
+    final url = Uri.parse('$baseUrl/group/search?q=$keyword');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+    final response = await http.get(
+      url,
+      headers: headers,
+    );
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+      if (responseData.isNotEmpty){
+        ApiReponse<List<GroupModel>> listgroup = ApiReponse<List<GroupModel>>.fromJson(responseData, (dynamic json) => List<GroupModel>.from(json.map((x) => GroupModel.fromJson(x))),
+        );
+        return listgroup.payload;
+      }
+      else
+      {
+        return null;
+      }
+    } else {
+      // Handle error scenarios here
+      return null;
+    }
+  }
 }
