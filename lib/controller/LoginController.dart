@@ -39,12 +39,12 @@ class LoginController extends GetxController
           );
         });
       } else {
-        stateLogin.value = 'Đăng nhập thất bại';
+        stateLogin.value = 'Không có quyền truy cập';
       }
     }
     else
       {
-        stateLogin.value = 'Không có quyền truy cập';
+        stateLogin.value = 'Đăng nhập thất bại';
       }
   }
   void loginTeacher(BuildContext context) async {
