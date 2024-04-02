@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:askute/controller/HomeGroupController.dart';
 import 'package:askute/controller/SearchController.dart';
+import 'package:askute/model/PostModel.dart';
 import 'package:askute/view/Home/hot_post_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../model/GroupModel.dart';
+import '../../model/UsersEnity.dart';
 
 class SearchResultScreen extends StatefulWidget {
   const SearchResultScreen({super.key});
@@ -20,7 +24,14 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
 
   final SearchPostController _searchPostController = Get.put(SearchPostController());
   final HomeGroupController _homeGroupController = Get.put(HomeGroupController());
+  Stream<List<PostModel>>? listPostCurrent;
+List<PostModel>? allPost;
 
+  Stream<List<GroupModel>>? listGroupCurrent;
+  List<GroupModel>? allGroupSearch;
+
+  Stream<List<UserEnity>>? listUserCurrent;
+  List<UserEnity>? allUserSearch;
   List<String> categories = [
     'Bài viết',
     'Khoa',
@@ -32,18 +43,53 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this, initialIndex: 0);
-    _rs_search_post.add(_ListPostResult());
     _homeGroupController.loadGroupsOfAdmin();
+_startTimer();
 
   }
+  late Timer _timer;
+  void _startTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      // Gọi hàm cần thiết ở đây
+      listPostCurrent =_searchPostController.allSearchPostStream;
+      // Đây là Stream mà bạn cần theo dõi
+      listPostCurrent?.listen((List<PostModel>? updatedGroups) {
+        if (updatedGroups != null) {
+          setState(() {
+            allPost = updatedGroups;
+          });
+        }
+      });
 
-  bool _shouldRebuildTabBarView = false;
-  void _updateListSearchPost(){
-    setState(() {
-      _searchPostController.topSearch;
+      listGroupCurrent = _searchPostController.allSearchGroupStream;
+      listGroupCurrent?.listen((List<GroupModel>? updatedGroups) {
+        if (updatedGroups != null) {
+          setState(() {
+            allGroupSearch = updatedGroups;
+          });
+        }
+      });
+
+
+      listUserCurrent = _searchPostController.allSearchUserStream;
+      listUserCurrent?.listen((List<UserEnity>? updatedGroups) {
+        if (updatedGroups != null) {
+          setState(() {
+            allUserSearch = updatedGroups;
+          });
+        }
+      });
+
+
     });
   }
-
+  @override
+  void dispose() {
+    _timer.cancel();
+    _tabController.dispose();
+    super.dispose();
+  }
+  bool _shouldRebuildTabBarView = false;
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -78,6 +124,8 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
                       GestureDetector(
                         onTap: () {
                           // handle search icon tapped
+                          _searchPostController.loadListResultController(context);
+                          FocusScope.of(context).unfocus();
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -111,7 +159,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
       controller: _tabController,
       children: [
         _buildCategoryContent('Bài viết'),
-        _buildCategoryContent('Bài viết'),
+        _buildCategoryContent('Khoa'),
         _buildCategoryContent('Người dùng'),
         _buildCategoryContent('Chat'),
       ],
@@ -123,11 +171,11 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
       case 'Bài viết':
         return _buildPostSearch();
       case 'Khoa':
-        return _buildInfomationAccount();
+        return _ListGroupResult();
       case 'Người dùng':
-        return _buildInfomationAccount();
+        return _ListUserResult();
       case 'Chat':
-        return _buildInfomationAccount();
+        return Text('Không khả dụng');
       default:
         return Container(); // Trả về container trống nếu không khớp với bất kỳ category nào
     }
@@ -363,7 +411,6 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
     );
   }
 
-  List<Widget> _rs_search_post = [];
   Widget _buildPostSearch(){
     return Expanded(
       child: Column(
@@ -457,7 +504,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
             alignment: Alignment.center,
           ),
 
-          ..._rs_search_post
+          _ListPostResult()
 
         ],
       ),
@@ -465,8 +512,69 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
   }
 
   Widget _ListPostResult(){
-    return Expanded(child: HotPostQuestionScreen(listPost: _searchPostController.topSearch));
+    return Expanded(child: StreamBuilder<List<PostModel>>(
+      stream:listPostCurrent,
+        builder: (context, snapshot){
+          if (snapshot.hasData && snapshot.data != null){
+            return HotPostQuestionScreen(listPost: snapshot.data!);
+          }
+          else
+            return Container(child: Text('Không có kết quả tìm kiếm phù hợp'),);
+        },
+    ));
   }
+
+  Widget _ListGroupResult(){
+    return Expanded(child: StreamBuilder<List<GroupModel>>(
+      stream:listGroupCurrent,
+      builder: (context, snapshot){
+        if (snapshot.hasData && snapshot.data != null){
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                onTap: () {
+                },
+                leading: CircleAvatar(
+                  backgroundImage: NetworkImage(snapshot.data![index].avatar.toString()),
+                ),
+                title: Text(snapshot.data![index].name.toString()),
+              );
+            },
+          );
+        }
+        else
+          return Container(
+            child: Text('Không có kết quả tìm kiếm phù hợp'),
+          );
+      },
+    ));
+  }
+  Widget _ListUserResult(){
+    return Expanded(child: StreamBuilder<List<UserEnity>>(
+      stream:listUserCurrent,
+      builder: (context, snapshot){
+        if (snapshot.hasData && snapshot.data != null){
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                onTap: () {
+                },
+                leading: CircleAvatar(
+                  backgroundImage: NetworkImage(snapshot.data![index].avatarUrl.toString()),
+                ),
+                title: Text(snapshot.data![index].first_name.toString()+ ' '+ snapshot.data![index].last_name.toString()),
+              );
+            },
+          );
+        }
+        else
+          return Container(child: Text('Không có kết quả tìm kiếm phù hợp'),);
+      },
+    ));
+  }
+
   void _showFilterSapXepDialog() {
     showDialog(
       context: context,
@@ -482,8 +590,6 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
                   // Sắp xếp danh sách theo thời gian gần nhất
                   _searchPostController.filterTheLikest.value= false;
                   _searchPostController.loadListResultController(context);
-                 // HotPostQuestionScreen(listPost: _searchPostController.topSearch,);
-                  _updateListSearchPost();
                   Navigator.of(context).pop();
                 },
               ),
@@ -494,11 +600,6 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
 
                   _searchPostController.filterTheLikest.value= true;
                   _searchPostController.loadListResultController(context);
-                  List<Widget> _rs_new = [];
-                  _rs_new.add(_ListPostResult());
-                  setState(() {
-                    _rs_search_post = _rs_new;
-                  });
                   Navigator.of(context).pop();
                 },
               ),
@@ -515,15 +616,6 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
         );
       },
     );}
-
-  void _updateTabBarView() {
-    // Cập nhật _rs_search_post
-    List<Widget> _rs_new = [];
-    _rs_new.add(_ListPostResult());
-    setState(() {
-      _rs_search_post = _rs_new;
-    });
-  }
   void _showFilterKhoaDialog(List<GroupModel> khoaList) {
     showDialog(
       context: context,
@@ -543,11 +635,6 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
                     onTap: () {
                       _searchPostController.idKhoa.value = 0;
                       _searchPostController.loadListResultController(context);
-                      List<Widget> _rs_new = [];
-                      _rs_new.add(_ListPostResult());
-                      setState(() {
-                        _rs_search_post = _rs_new;
-                      });
                       Navigator.of(context).pop();
                     },
                   );
@@ -561,11 +648,6 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
                       // Ví dụ: Navigator.of(context).pop(khoa);
                       _searchPostController.idKhoa.value = khoa.id!;
                       _searchPostController.loadListResultController(context);
-                      List<Widget> _rs_new = [];
-                      _rs_new.add(_ListPostResult());
-                      setState(() {
-                        _rs_search_post = _rs_new;
-                      });
                       Navigator.of(context).pop();
                     },
                   );
@@ -585,35 +667,6 @@ class _SearchResultScreenState extends State<SearchResultScreen> with SingleTick
       },
     );
   }
-
-
-
-  // List<Widget> _buildTabs() {
-  //   return categories
-  //       .map(
-  //         (title) => _buildTab(title),
-  //   )
-  //       .toList()
-  //       .getRange(0, _tabController.length)
-  //       .toList();
-  // }
-
-  // Widget _buildTab(String title) {
-  //   return Tab(
-  //     child: Container(
-  //       padding: EdgeInsets.all(0),
-  //       decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-  //       child: Text(
-  //         title,
-  //         style: TextStyle(
-  //           fontSize: 14,
-  //           fontWeight: FontWeight.bold,
-  //           overflow: TextOverflow.ellipsis,
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
   Widget _toolSearch() {
     return Container(
       child: TextField(

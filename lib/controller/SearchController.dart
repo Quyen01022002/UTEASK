@@ -1,10 +1,15 @@
 import 'dart:ffi';
 
+import 'package:askute/model/UsersEnity.dart';
+import 'package:askute/service/API_Profile.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../model/GroupModel.dart';
 import '../model/PostModel.dart';
+import '../model/UserProfile.dart';
+import '../service/API_Group.dart';
 import '../service/API_Post.dart';
 
 class SearchPostController extends GetxController{
@@ -13,7 +18,9 @@ class SearchPostController extends GetxController{
   final textControllerKeyword = TextEditingController();
   RxBool filterTheLikest = false.obs;
   RxInt idKhoa = 0.obs;
-
+  Stream<List<PostModel>>? allSearchPostStream;
+  Stream<List<GroupModel>>? allSearchGroupStream;
+  Stream<List<UserEnity>>? allSearchUserStream;
 void loadListResultController(BuildContext context) async{
   try {
     final prefs = await SharedPreferences.getInstance();
@@ -22,6 +29,8 @@ void loadListResultController(BuildContext context) async{
     final token = prefs.getString('token') ?? "";
     final keyword = textControllerKeyword.text;
     List<PostModel>? result = await API_Post.searchPost(userId, token, keyword);
+    List<GroupModel>? resultKhoa = await API_Group.searchGroup(token, keyword);
+    List<UserEnity>? resultUser = await API_Profile.Search(userId, keyword, token);
     if (result != null) {
       if (filterTheLikest.value == false && idKhoa.value == 0){
       topSearch.clear();
@@ -46,6 +55,10 @@ void loadListResultController(BuildContext context) async{
         update();
       }
     }
+    allSearchPostStream= Stream.fromIterable([topSearch.value]);
+    allSearchGroupStream = Stream.fromIterable([resultKhoa!]);
+    allSearchUserStream = Stream.fromIterable([resultUser!]);
+
   }
   finally {
     isloaded(false);
