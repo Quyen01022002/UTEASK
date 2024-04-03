@@ -12,6 +12,33 @@ import '../model/CommentEntity.dart';
 import '../model/InteractionsEntity.dart';
 
 class API_Post {
+  static Future<List<PostModel>?> LoadSavedPost(int userid, String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/savedpost/$userid'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<PostModel>> listPost =
+        ApiReponse<List<PostModel>>.fromJson(
+          utf8Data,
+              (dynamic json) =>
+          List<PostModel>.from(json.map((x) => PostModel.fromJson(x))),
+        );
+        return listPost.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
   static Future<List<PostModel>?> LoadMainHome(int userid, String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/post/$userid'),

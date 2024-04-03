@@ -1,6 +1,13 @@
+import 'package:askute/controller/SavedPostController.dart';
+import 'package:askute/model/PostModel.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+
+import '../../controller/HomeController.dart';
 
 class SavedPostsPage extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,35 +20,25 @@ class SavedPostsPage extends StatelessWidget {
 }
 
 class SavedPostsList extends StatelessWidget {
+  final SavedPostController _savedPostController = Get.put(SavedPostController());
   @override
   Widget build(BuildContext context) {
     // You can replace this with your actual data retrieval logic
-    List<Post> savedPosts = getSavedPosts();
+
 
     return ListView.builder(
-      itemCount: savedPosts.length,
+      itemCount: _savedPostController.listPost.length,
       itemBuilder: (context, index) {
-        Post post = savedPosts[index];
+        PostModel post = _savedPostController.listPost[index];
         return SavedPostItem(post: post);
       },
     );
   }
 
-  List<Post> getSavedPosts() {
-    // Replace this with your data retrieval logic
-    // This is just a placeholder
-    return List.generate(
-      10,
-      (index) => Post(
-        title: 'Saved Post $index',
-        content: 'This is the content of the saved post $index',
-      ),
-    );
-  }
 }
 
 class SavedPostItem extends StatelessWidget {
-  final Post post;
+  final PostModel post;
 
   const SavedPostItem({Key? key, required this.post}) : super(key: key);
 
@@ -56,20 +53,20 @@ class SavedPostItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              post.title,
+              post.contentPost,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
             SizedBox(height: 8),
-            Text(post.content),
+            Text(post.contentPost),
             SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Author: ${post.author}', // Replace with your author data
+                  'Author: ${post.createBy.firstName}+' '+${post.createBy.lastName}', // Replace with your author data
                   style: TextStyle(
                     fontStyle: FontStyle.italic,
                   ),
@@ -89,14 +86,4 @@ class SavedPostItem extends StatelessWidget {
   }
 }
 
-class Post {
-  final String title;
-  final String content;
-  final String author;
 
-  Post({
-    required this.title,
-    required this.content,
-    this.author = 'Anonymous',
-  });
-}

@@ -183,7 +183,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           CircleAvatar(
                             radius: 20,
                             backgroundImage:
-                                AssetImage('assets/images/NOTIFICATIONS.png'),
+                                AssetImage('assets/images/luu.png'),
                             // Hoặc sử dụng NetworkImage nếu avatar từ một URL
                             // backgroundImage: NetworkImage('URL_TO_AVATAR'),
                           ),
