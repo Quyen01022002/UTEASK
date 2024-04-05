@@ -6,8 +6,21 @@ import 'package:get/get_core/src/get_main.dart';
 
 import '../../controller/HomeController.dart';
 
-class SavedPostsPage extends StatelessWidget {
 
+  class SavedPostsPage extends StatefulWidget {
+  const SavedPostsPage({Key? key}) : super(key: key);
+
+  @override
+  State<SavedPostsPage> createState() => _HomeScreenState();
+  }
+  class _HomeScreenState extends State<SavedPostsPage>
+  with SingleTickerProviderStateMixin {
+  final SavedPostController _savedPostController = Get.put(SavedPostController());
+  @override
+  void initState() {
+    super.initState();
+   _savedPostController.loadPost();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,6 +30,8 @@ class SavedPostsPage extends StatelessWidget {
       body: SavedPostsList(),
     );
   }
+
+
 }
 
 class SavedPostsList extends StatelessWidget {
@@ -52,21 +67,14 @@ class SavedPostItem extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              post.contentPost,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 8),
+            Image.network(post.listAnh.first.toString(),width: 80,height: 80,fit: BoxFit.cover,),
             Text(post.contentPost),
             SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Author: ${post.createBy.firstName}+' '+${post.createBy.lastName}', // Replace with your author data
+                  'Tác giả: ${post.createBy.firstName} ${post.createBy.lastName}', // Replace with your author data
                   style: TextStyle(
                     fontStyle: FontStyle.italic,
                   ),

@@ -32,21 +32,32 @@ class HomeController extends GetxController {
     }
   }
 
-  // void Like() async
-  // {
-  //   try {
-  //     final prefs = await SharedPreferences.getInstance();
-  //
-  //     isliked(true);
-  //     final userId = prefs.getInt('id') ?? 0;
-  //     final token = prefs.getString('token') ?? "";
-  //     await API_Post.Liked(token, postid.value, userId);
-  //   }
-  //   finally {
-  //     isloaded(false);
-  //   }
-  // }
+  void Like() async
+  {
+    try {
+      final prefs = await SharedPreferences.getInstance();
 
+      isliked(true);
+      final userId = prefs.getInt('id') ?? 0;
+      final token = prefs.getString('token') ?? "";
+      await API_Post.Liked(token, postid.value, userId);
+    }
+    finally {
+      isloaded(false);
+    }
+  }
+  void Saved() async
+  {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      final token = prefs.getString('token') ?? "";
+      await API_Post.Saved(token, postid.value);
+    }
+    finally {
+      isloaded(false);
+    }
+  }
   // void DeletePost() async
   // {
   //   try {
@@ -65,6 +76,7 @@ class HomeController extends GetxController {
     try {
       final prefs = await SharedPreferences.getInstance();
       isloaded(true);
+      print("load");
       final userId = prefs.getInt('id') ?? 0;
       final token = prefs.getString('token') ?? "";
       List<PostModel>? result = await API_Post.LoadTop10(userId, token);

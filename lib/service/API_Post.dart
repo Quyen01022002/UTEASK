@@ -127,6 +127,19 @@ class API_Post {
       headers: headers,
     );
   }
+  static Future<InteractionsEntity?> Saved(
+      String token, int postid) async {
+    final url = Uri.parse('$baseUrl/saved/$postid');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+
+    await http.post(
+      url,
+      headers: headers,
+    );
+  }
 
   static Future<CommentEntity?> Comments(
       int userid, int postid, String content, String token) async {

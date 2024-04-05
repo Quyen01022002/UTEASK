@@ -449,7 +449,7 @@ _startTimer();
                       SizedBox(width: 10,),
                       Text('Bộ lọc',
                         style: TextStyle(
-                            fontSize: 18
+                            fontSize: 15
                         ),
                       ),
                     ],
@@ -477,20 +477,23 @@ _startTimer();
                       ),
                     ],
                   ),
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        'assets/images/FILTER.png',
-                        width: 18,
-                        height: 18,
-                      ),
-                      SizedBox(width: 10,),
-                      Text('Sắp xếp',
-                        style: TextStyle(
-                            fontSize: 18
+                  child: Padding(
+                    padding: const EdgeInsets.all(0.0),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          'assets/images/FILTER.png',
+                          width: 18,
+                          height: 18,
                         ),
-                      ),
-                    ],
+                        SizedBox(width: 10,),
+                        Text('Sắp xếp',
+                          style: TextStyle(
+                              fontSize: 15
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

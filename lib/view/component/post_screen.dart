@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:askute/controller/HomeController.dart';
 import 'package:askute/controller/PostController.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ class PostScreen extends StatefulWidget {
 class _PostScreenState extends State<PostScreen> {
   late String formattedTime = '';
   final PostController postController = Get.put(PostController());
+  final HomeController homeController = Get.put(HomeController());
   late bool statelike=false;
   late int contlike=0;
   late RxInt curnetUser=0.obs;
@@ -220,18 +222,25 @@ class _PostScreenState extends State<PostScreen> {
                             borderRadius: BorderRadius.circular(10), // Độ bo góc của border
                           ),
                           padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                          child: Row(
+                          child: GestureDetector(
+                            onTap: ()
+                            {
+                              homeController.postid.value = widget.post.id;
+                              homeController.Saved();
+                            },
+                            child: Row(
 
-                              children: [
-                                Image.asset(
-                                  'assets/images/NOTIFICATIONS.png',
-                                  width: 15,
-                                  height: 15,
-                                ),
-                                Text('Theo dõi',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold
-                                  ),),]),
+                                children: [
+                                  Image.asset(
+                                    'assets/images/luu.png',
+                                    width: 20,
+                                    height: 20,
+                                  ),
+                                  Text('Lưu',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold
+                                    ),),]),
+                          ),
                         ),
                       ),
                       Text('Không khả dụng')
