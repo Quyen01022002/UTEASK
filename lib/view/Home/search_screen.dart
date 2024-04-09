@@ -32,6 +32,8 @@ List<PostModel>? allPost;
 
   Stream<List<UserEnity>>? listUserCurrent;
   List<UserEnity>? allUserSearch;
+
+  ScrollController _scrollController = ScrollController();
   List<String> categories = [
     'Bài viết',
     'Khoa',
@@ -45,11 +47,11 @@ List<PostModel>? allPost;
     _tabController = TabController(length: 4, vsync: this, initialIndex: 0);
     _homeGroupController.loadGroupsOfAdmin();
 _startTimer();
-
   }
   late Timer _timer;
   void _startTimer() {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      _searchPostController.loadListResultController(context);
       // Gọi hàm cần thiết ở đây
       listPostCurrent =_searchPostController.allSearchPostStream;
       // Đây là Stream mà bạn cần theo dõi
@@ -80,7 +82,6 @@ _startTimer();
         }
       });
 
-
     });
   }
   @override
@@ -96,6 +97,7 @@ _startTimer();
       length: categories.length,
       child: Scaffold(
         body: NestedScrollView(
+          controller: _scrollController,
           headerSliverBuilder: (context, innerBoxIsScrolled) {
             return [
               SliverAppBar(
@@ -113,11 +115,14 @@ _startTimer();
                           },
                           decoration: InputDecoration(
                             hintText: 'Search for.....',
+                            hintStyle: TextStyle(
+                              fontSize: 14,
+                              color: Color(0xFFB4BDC4),
+                            ),
                             border: InputBorder.none,
                           ),
                           style: TextStyle(
                             fontSize: 18,
-                            color: Color(0xFFB4BDC4),
                           ),
                         ),
                       ),
@@ -125,7 +130,13 @@ _startTimer();
                         onTap: () {
                           // handle search icon tapped
                           _searchPostController.loadListResultController(context);
+                          _scrollController.animateTo(
+                            0.0,
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
                           FocusScope.of(context).unfocus();
+
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),

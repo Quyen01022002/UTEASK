@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:askute/model/CommentEntity.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -53,6 +55,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
     _listController.add(_textFirst);
     _imageWidgets.add(_buildFirstTextFieldWidget());
   }
+
   List<ContentComment> parseContent(String contentString) {
     contentString = contentString.trim();
     List<String> parts = contentString.split(', ');
@@ -68,12 +71,13 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
 
     return contentList;
   }
+
   late Timer _timer;
 
   void _startTimer() {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       // Gọi hàm cần thiết ở đây
-      _loadData();
+      postController.loadOnePost(context, widget.post.id);
       postCurrent =
           postController.postState; // Đây là Stream mà bạn cần theo dõi
       // Cập nhật danh sách nhóm khi Stream thay đổi
@@ -89,15 +93,11 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
       listCommentStream?.listen((List<CommentEntity>? list) {
         if (list != null) {
           setState(() {
-  listCmt = list;
+            listCmt = list;
           });
         }
       });
     });
-  }
-
-  void _loadData() async {
-    await postController.loadOnePost;
   }
 
   @override
@@ -110,51 +110,136 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-            body: Stack(
-      children: [
-        CustomScrollView(
-          slivers: <Widget>[
-            SliverAppBar(
-              title: Text('Bài thảo luận của Duy Hào'),
-            ),
-            SliverToBoxAdapter(
-              child: StreamBuilder<PostModel>(
-                  stream: postCurrent,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildOwnerUser(),
-                          _buildContent(),
-                          _buildIInteraction(),
-                          Container(
-                            margin: EdgeInsets.only(top: 20),
-                            height: 5, // Chiều cao của thanh ngang
-                            width: 400, // Độ dày của thanh ngang
+      bottomNavigationBar: _buildInputAllField(),
+      body: CustomScrollView(
+        slivers: <Widget>[
+          SliverAppBar(
+            title: Text('Bài thảo luận của Duy Hào'),
+          ),
+          SliverToBoxAdapter(
+            child: StreamBuilder<PostModel>(
+                stream: postCurrent,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildOwnerUser(),
+                        _buildContent(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Container(
+                          alignment: Alignment.center,
+                          child: Container(
+                            margin: EdgeInsets.only(top: 5),
+                            height: 0.5, // Chiều cao của thanh ngang
+                            width: 330, // Độ dày của thanh ngang
                             color: Color(0xC0C0C0C0),
                           ),
-                        ],
-                      );
-                    } else {
-                      return Container();
-                    }
-                  }),
-            ),
-            SliverFillRemaining(
-              hasScrollBody: true,
-              child: _buildComment(),
-            )
-          ],
-        ),
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: _buildInputAllField(),
-        ),
-      ],
-    )));
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: 10, bottom: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Column(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      // setState(() {
+                                      //   statelike?contlike=contlike-1:contlike=contlike+1;
+                                      //   statelike = !statelike;
+                                      // });
+                                      // postController.postid.value = widget.post.id;
+                                      // postController.Like();
+                                      // print("Like");
+                                      postController.Like(
+                                          postController.postid.value);
+                                      print("đã bấm nút like");
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 8, horizontal: 12),
+                                      child: Row(children: [
+                                        Icon(
+                                          snapshot.data!.user_liked
+                                              ? Icons.thumb_up
+                                              : Icons.thumb_up_outlined,
+                                          size: 20,
+                                          color: snapshot.data!.user_liked
+                                              ? Colors.blue
+                                              : Colors.black,
+                                        ),
+                                        SizedBox(
+                                          width: 2,
+                                        ),
+                                        Text(
+                                          snapshot.data!.like_count.toString(),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ]),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {},
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 8, horizontal: 12),
+                                      child: GestureDetector(
+                                        onTap: () {},
+                                        child: Row(children: [
+                                          Icon(
+                                              false
+                                                  ? Icons.bookmark_outline
+                                                  : Icons
+                                                      .bookmark_border_outlined,
+                                              size: 20,
+                                              color: false
+                                                  ? Colors.blue
+                                                  : Colors.black),
+                                          SizedBox(
+                                            width: 2,
+                                          ),
+                                          Text(
+                                            0.toString(),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ]),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: 20),
+                          height: 5, // Chiều cao của thanh ngang
+                          width: 400, // Độ dày của thanh ngang
+                          color: Color(0xC0C0C0C0),
+                        ),
+                      ],
+                    );
+                  } else {
+                    return Container();
+                  }
+                }),
+          ),
+          SliverFillRemaining(
+            hasScrollBody: true,
+            child: _buildComment(),
+          )
+        ],
+      ),
+    ));
   }
 
   List<Widget> _contentWidgets = [];
@@ -393,44 +478,45 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
     );
   }
 
-  Widget _buildIInteraction() {
+  Widget _buildIInteraction(
+      bool user_liked, int like_count, bool user_saved, int save_count) {
     return Container(
       margin: EdgeInsets.only(top: 10, bottom: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  // setState(() {
+                  //   statelike?contlike=contlike-1:contlike=contlike+1;
+                  //   statelike = !statelike;
+                  // });
+                  // postController.postid.value = widget.post.id;
+                  // postController.Like();
+                  // print("Like");
+                  postController.Like(postController.postid.value);
+                  print("đã bấm nút like");
+                },
                 child: Container(
-                  width: 100,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Color(0xFFF4F4F4),
-                    border: Border.all(
-                      color: Colors.grey.withOpacity(0.5), // Màu của border
-                      width: 1.0, // Độ rộng của border
-                    ),
-                    borderRadius:
-                        BorderRadius.circular(10), // Độ bo góc của border
-                  ),
                   padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                   child: Row(children: [
-                    Image.asset(
-                      'assets/images/like1.png',
-                      width: 15,
-                      height: 15,
+                    Icon(
+                      user_liked ? Icons.thumb_up : Icons.thumb_up_outlined,
+                      size: 20,
+                      color: user_liked ? Colors.blue : Colors.black,
+                    ),
+                    SizedBox(
+                      width: 2,
                     ),
                     Text(
-                      widget.post.user_liked ? 'Đã thích' : 'Thích',
+                      like_count.toString(),
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ]),
                 ),
               ),
-              Text(widget.post.like_count.toString() + ' lượt thích')
             ],
           ),
           Column(
@@ -438,31 +524,27 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
               GestureDetector(
                 onTap: () {},
                 child: Container(
-                  width: 100,
-                  decoration: BoxDecoration(
-                    color: Color(0xFFF4F4F4),
-                    border: Border.all(
-                      color: Colors.grey.withOpacity(0.5), // Màu của border
-                      width: 1.0, // Độ rộng của border
-                    ),
-                    borderRadius:
-                        BorderRadius.circular(10), // Độ bo góc của border
-                  ),
                   padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                  child: Row(children: [
-                    Image.asset(
-                      'assets/images/NOTIFICATIONS.png',
-                      width: 15,
-                      height: 15,
-                    ),
-                    Text(
-                      'Theo dõi',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ]),
+                  child: GestureDetector(
+                    onTap: () {},
+                    child: Row(children: [
+                      Icon(
+                          user_saved
+                              ? Icons.bookmark_outline
+                              : Icons.bookmark_border_outlined,
+                          size: 20,
+                          color: user_saved ? Colors.blue : Colors.black),
+                      SizedBox(
+                        width: 2,
+                      ),
+                      Text(
+                        save_count.toString(),
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ]),
+                  ),
                 ),
               ),
-              Text('Không khả dụng')
             ],
           ),
         ],
@@ -478,7 +560,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
         child: Row(
           children: [
             CircleAvatar(
-              radius: 30,
+              radius: 25,
               backgroundImage:
                   NetworkImage(widget.post.createBy.profilePicture),
               // Hoặc sử dụng NetworkImage nếu avatar từ một URL
@@ -500,17 +582,14 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                Text(
+                  'cách đây 2 phút',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: Color(0xFFCECECE),
+                  ),
+                ),
               ],
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            Text(
-              'cách đây 2 phút',
-              style: TextStyle(
-                fontSize: 10,
-                color: Color(0xFFCECECE),
-              ),
             ),
           ],
         ),
@@ -518,94 +597,105 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
     );
   }
 
-
   Widget _buildComment() {
-    return StreamBuilder<List<CommentEntity>>(stream: listCommentStream,
-        builder: (context, snapshot){
-      if (snapshot.hasData && snapshot.data != null) {
-        return ListView.builder(
-          itemCount: snapshot.data!.length,
-            itemBuilder:(context, index) {
-            List<ContentComment> content = parseContent(snapshot.data![index].content_cmt!);
-            List<Widget> contentWg = [];
-            for (int i=0; i<content.length; i++){
-              if (content[i].type=='TEXT'){
-                contentWg.add(_buiText(content[i].content));
-              }
-              else if (content[i].type=='IMAGE'){
-                contentWg.add(_buiImage(content[i].content));
-              }
-            }
-              return _buildOneComment(snapshot.data![index], contentWg);
-            }
-        );
-      }
-      else
-        {
-          return Container();
-        }
-    });
+    return StreamBuilder<List<CommentEntity>>(
+        stream: listCommentStream,
+        builder: (context, snapshot) {
+          if (snapshot.hasData && snapshot.data != null) {
+            return ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  List<ContentComment> content =
+                      parseContent(snapshot.data![index].content_cmt!);
+                  List<Widget> contentWg = [];
+                  for (int i = 0; i < content.length; i++) {
+                    if (content[i].type == 'TEXT') {
+                      contentWg.add(_buiText(content[i].content));
+                    } else if (content[i].type == 'IMAGE') {
+                      contentWg.add(_buiImage(content[i].content));
+                    }
+                  }
+                  return _buildOneComment(snapshot.data![index], contentWg);
+                });
+          } else {
+            return Container();
+          }
+        });
   }
-  Widget _buiText(String ct){
+
+  Widget _buiText(String ct) {
     return Text(ct);
   }
-  Widget _buiImage(String link){
-    return Image.network(link);
+
+  Widget _buiImage(String link) {
+    return Container(
+        height: MediaQuery.of(context).size.width * 0.99,
+        width: MediaQuery.of(context).size.width * 0.65,
+        child: GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => ImageDetailOne(anh: link),
+              ));
+            },
+            child: Image.network(link)));
   }
 
   Widget _buildOneComment(CommentEntity cmt, List<Widget> contentWidget) {
     return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10), // Đặt bán kính của viền tròn
+        border: Border.all(
+          color: Colors.black, // Màu sắc của viền tròn
+          width: 0.1, // Độ dày của viền tròn
+        ),
+      ),
+      padding: EdgeInsets.all(5),
       margin: EdgeInsets.all(5.0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildUserComment(cmt),
           SizedBox(
-            height: 5,
+            height: 10,
+          ),
+          Container(
+              padding: EdgeInsets.only(left: 38, right: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ...contentWidget,
+                ],
+              )),
+          SizedBox(
+            height: 20,
           ),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                  flex: 2,
-                  child: Column(
-                    children: [
-                      Image.asset(
-                        'assets/images/FILTER.png',
-                        width: 30,
-                        height: 30,
-                      ),
-                      Text(
-                        '8',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Image.asset(
-                        'assets/images/FILTER.png',
-                        width: 30,
-                        height: 30,
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Image.asset(
-                        'assets/images/FILTER.png',
-                        width: 30,
-                        height: 40,
-                      ),
-                    ],
-                  )),
+                flex: 8,
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 38,
+                    ),
+                    Icon(Icons.reply_outlined, size: 15),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Icon(Icons.thumb_up_outlined, size: 15),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Icon(Icons.thumb_down_outlined, size: 15),
+                  ],
+                ),
+              ),
               Expanded(
-                  flex: 8,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ...contentWidget,
-                    ],
-                  ))
+                flex: 2,
+                child: Icon(Icons.bookmarks_outlined, size: 15),
+              ),
             ],
-          ),
+          )
         ],
       ),
     );
@@ -616,9 +706,8 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
       child: Row(
         children: [
           CircleAvatar(
-            radius: 20,
-            backgroundImage: NetworkImage(
-                cmt.avatar!),
+            radius: 15,
+            backgroundImage: NetworkImage(cmt.avatar!),
             // Hoặc sử dụng NetworkImage nếu avatar từ một URL
             // backgroundImage: NetworkImage('URL_TO_AVATAR'),
           ),
@@ -627,14 +716,14 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                cmt.first_name!+' '+cmt.last_name!,
+                cmt.first_name! + ' ' + cmt.last_name!,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               Text(
-                'buuquen2002',
+                cmt.timestamp.toString(),
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -642,13 +731,6 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                 ),
               ),
             ],
-          ),
-          Text(
-            'cách đây 2 phút',
-            style: TextStyle(
-              fontSize: 10,
-              color: Color(0xFFCECECE),
-            ),
           ),
         ],
       ),
@@ -932,6 +1014,27 @@ class ImageDetail extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+}
+
+class ImageDetailOne extends StatelessWidget {
+  //Phóng to ảnh
+  final String anh;
+
+  ImageDetailOne({required this.anh});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+          child: Hero(
+        tag: '',
+        child: Image.network(
+          anh.toString(), // Thay thế URL hình ảnh của bạn
+          fit: BoxFit.contain,
+        ),
+      )),
     );
   }
 }
