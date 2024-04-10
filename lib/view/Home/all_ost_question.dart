@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../model/PostModel.dart';
 import '../component/post_screen.dart';
@@ -14,7 +15,7 @@ class AllPostQuestionScreen extends StatefulWidget {
 class _AllPostQuestionScreenState extends State<AllPostQuestionScreen> {
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Obx(() => Center(
       child: widget.listPost == []
           ? Image.asset("assets/images/khongbaiviet.png")
           : ListView.builder(
@@ -29,6 +30,6 @@ class _AllPostQuestionScreenState extends State<AllPostQuestionScreen> {
           );
         },
       ),
-    );
+    ));
   }
 }

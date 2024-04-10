@@ -14,14 +14,13 @@ class categoryItem extends StatefulWidget {
 
 class _categoryItemState extends State<categoryItem> {
   late bool state = false;
-  late bool stateDelete = true;
+  late bool stateDelete = false;
   final HomeGroupController homeGroupController =
       Get.put(HomeGroupController());
-
   @override
   Widget build(BuildContext context) {
-    return state
-        ? Container(
+    return stateDelete==false?(state
+        ?Container(
             // Đặt chiều rộng cho mỗi mục
             margin: EdgeInsets.symmetric(horizontal: 5),
             child: Card(
@@ -52,8 +51,13 @@ class _categoryItemState extends State<categoryItem> {
                         style: TextStyle(color: Colors.white),
                       ),
                       GestureDetector(onTap: () {
-                        _showDeleteConfirmationDialog(context,widget.post.id!,homeGroupController);
 
+                        homeGroupController.group_id.value = widget.post.id!;
+                        homeGroupController.deleteMemberOutGroup(context);
+                        setState(() {
+                          stateDelete=true;
+                        });
+                        print("Quyến");
                       }, child: Icon(Icons.close))
                     ],
                   ),
@@ -75,16 +79,16 @@ class _categoryItemState extends State<categoryItem> {
                       state = !state;
                     });
                   },
-                  onTap: () {
-                    homeGroupController.group_id.value = widget.post.id!;
-                    if (state == false) {
-                      homeGroupController.addMembers(context);
-                      print("Quyến");
-                      setState(() {
-                        state = !state;
-                      });
-                    }
-                  },
+                  // onTap: () {
+                  //   homeGroupController.group_id.value = widget.post.id!;
+                  //   if (state == false) {
+                  //     homeGroupController.addMembers(context);
+                  //     print("Quyến");
+                  //     setState(() {
+                  //       state = !state;
+                  //     });
+                  //   }
+                  //},
                   child: Row(
                     children: [
                       Container(
@@ -104,10 +108,11 @@ class _categoryItemState extends State<categoryItem> {
                 ),
               ),
             ),
-          );
+          )):Container();
   }
 }
-void _showDeleteConfirmationDialog(BuildContext context, int id,HomeGroupController home_postcontroller) {
+
+void _showDeleteConfirmationDialog(BuildContext context, int id, HomeGroupController home_postcontroller) {
   showDialog(
     context: context,
     builder: (BuildContext dialogContext) {
@@ -126,9 +131,10 @@ void _showDeleteConfirmationDialog(BuildContext context, int id,HomeGroupControl
           ),
           TextButton(
             onPressed: () {
-              home_postcontroller.group_id.value =id;
+              home_postcontroller.group_id.value = id;
               home_postcontroller.deleteMemberOutGroup(context);
               print("Quyến");
+
               Navigator.of(dialogContext).pop(); // Đóng hộp thoại
             },
             child: Text(

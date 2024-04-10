@@ -14,7 +14,7 @@ import '../model/InteractionsEntity.dart';
 class API_Post {
   static Future<List<PostModel>?> LoadSavedPost(int userid, String token) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/savedpost/$userid'),
+      Uri.parse('$baseUrl/save/$userid'),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -128,8 +128,8 @@ class API_Post {
     );
   }
   static Future<InteractionsEntity?> Saved(
-      String token, int postid) async {
-    final url = Uri.parse('$baseUrl/saved/$postid');
+      String token,int userid, int postid) async {
+    final url = Uri.parse('$baseUrl/save/add?userId=$userid&postId=$postid');
     final headers = {
       "Content-Type": "application/json",
       'Authorization': 'Bearer $token',

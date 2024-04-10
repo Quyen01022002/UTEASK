@@ -1,6 +1,8 @@
 import 'package:askute/controller/SettingController.dart';
+import 'package:askute/service/SendMessage.dart';
 import 'package:askute/view/setting/SavedPostsPage.dart';
 import 'package:askute/view/user/user_proflie_screen.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -44,7 +46,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   children: [
                     _buildOption(),
                     _buildAccount(),
-                    _buildAdvertising(),
+                    //_buildAdvertising(),
                   ],
                 ),
               ),
@@ -71,9 +73,8 @@ class _SettingScreenState extends State<SettingScreen> {
           ),
         ],
       ),
-      margin: EdgeInsets.only(right: 15),
       height: 150,
-      width: 500,
+      width: MediaQuery.of(context).size.width,
       padding: EdgeInsets.all(8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -82,6 +83,8 @@ class _SettingScreenState extends State<SettingScreen> {
           GestureDetector(
             onTap: () {
               myProfileController.loadMyProfile();
+              sendFriendRequestNotification("dAJ6qbMRS32nP4rYUgDcqZ:APA91bHNsRXeb3jCcIR1DepEZRKqMPznbZqknhk0xIL_iAul3sRlR-HNk7tD446nJdxL1ddSXBeH6XteS1B62C0cFiGIgghKsfnzLyk3PcvQWUBNA_zgmui0uo5iGXCATT7ufpJ1ji8K");
+
               Navigator.push(
                 context,
                 PageTransition(
@@ -143,7 +146,7 @@ class _SettingScreenState extends State<SettingScreen> {
   Widget _buildOption() {
     return Container(
       padding: EdgeInsets.all(16),
-      margin: EdgeInsets.only(top: 80, left: 10, right: 10),
+      margin: EdgeInsets.only(top: 20, left: 10, right: 10),
       height: 500,
       decoration: BoxDecoration(
         color: Colors.white,
@@ -205,13 +208,20 @@ class _SettingScreenState extends State<SettingScreen> {
                     child: Container(
                       child: Column(
                         children: [
-                          CircleAvatar(
-                            radius: 20,
-                            backgroundImage:
-                                AssetImage('assets/images/NOTIFICATIONS.png'),
-                            // Hoặc sử dụng NetworkImage nếu avatar từ một URL
-                            // backgroundImage: NetworkImage('URL_TO_AVATAR'),
-                          ),
+                           GestureDetector(
+                             onTap: () async {
+                               String? token= await FirebaseMessaging.instance.getToken();
+                               print(token);
+                               sendFriendRequestNotification(token);
+                             },
+                             child: CircleAvatar(
+                              radius: 20,
+                              backgroundImage:
+                                  AssetImage('assets/images/NOTIFICATIONS.png'),
+                              // Hoặc sử dụng NetworkImage nếu avatar từ một URL
+                              // backgroundImage: NetworkImage('URL_TO_AVATAR'),
+                                                       ),
+                           ),
                           SizedBox(width: 8),
                           Text(
                             'Hoạt động',

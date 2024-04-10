@@ -6,6 +6,7 @@ import 'package:askute/model/GroupModel.dart';
 import 'package:askute/view/Home/search_screen.dart';
 import 'package:askute/view/Notification/notification_screen.dart';
 import 'package:askute/view/component/categoryItem.dart';
+import 'package:askute/view/component/categoryItem2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -45,13 +46,16 @@ final SearchPostController _searchController = Get.put(SearchPostController());
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-
-      _homeController.load10HotPost();
-      _homeGroupController.GetListPost(context);
-      _homeGroupController.loadGroupsJoin();
-      _homeGroupController.loadGroupsOfAdmin();
-
+    _loadData();
   }
+
+  Future<void> _loadData() async {
+     _homeController.load10HotPost();
+     _homeGroupController.GetListPost(context);
+    _homeGroupController.loadGroupsJoin();
+    _homeGroupController.loadGroupsOfAdmin();
+  }
+
   void _showSearchSuggestions() {
     showModalBottomSheet(
       context: context,
@@ -281,7 +285,7 @@ Widget _buildPopup(BuildContext context,List<GroupModel> post) {
               Column(
                 children:
                 post.map((item) {
-                  return categoryItem(post: item);
+                  return categoryItem2(post: item);
                 }).toList(),
               ),
             ],

@@ -3,7 +3,7 @@ import 'package:askute/controller/HomeGroupController.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:get/get.dart';
-
+import 'package:fl_chart/fl_chart.dart';
 
 class HomePageTeacher extends StatefulWidget {
   const HomePageTeacher({super.key});
@@ -98,55 +98,57 @@ class _HomePageTeacherState extends State<HomePageTeacher> {
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
-        // Padding(
-        //   padding: EdgeInsets.all(16.0),
-        //   child: LineChart(
-        //     LineChartData(
-        //       lineBarsData: [
-        //         LineChartBarData(
-        //           spots: [
-        //             FlSpot(0, 1),
-        //             FlSpot(1, 3),
-        //             FlSpot(2, 2),
-        //             FlSpot(3, 4),
-        //             FlSpot(4, 3),
-        //           ],
-        //           isCurved: true,
-        //           colors: [Colors.blue],
-        //           barWidth: 4,
-        //           isStrokeCapRound: true,
-        //           belowBarData: BarAreaData(show: false),
-        //         ),
-        //       ],
-        //       titlesData: FlTitlesData(
-        //         bottomTitles: SideTitles(
-        //           showTitles: true,
-        //           getTitles: (value) {
-        //             switch (value.toInt()) {
-        //               case 0:
-        //                 return 'A';
-        //               case 1:
-        //                 return 'B';
-        //               case 2:
-        //                 return 'C';
-        //               case 3:
-        //                 return 'D';
-        //               case 4:
-        //                 return 'E';
-        //             }
-        //             return '';
-        //           },
-        //         ),
-        //         leftTitles: SideTitles(showTitles: true),
-        //       ),
-        //       borderData: FlBorderData(show: true),
-        //       minX: 0,
-        //       maxX: 4,
-        //       minY: 0,
-        //       maxY: 5,
-        //     ),
-        //   ),
-        // ),
+        Padding(
+          padding: EdgeInsets.all(16.0),
+          child: LineChart(
+            LineChartData(
+              lineBarsData: [
+                LineChartBarData(
+                  spots: [
+                    FlSpot(0, 1),
+                    FlSpot(1, 3),
+                    FlSpot(2, 2),
+                    FlSpot(3, 4),
+                    FlSpot(4, 3),
+                  ],
+                  isCurved: true,
+                  colors: [Colors.blue],
+                  barWidth: 4,
+                  isStrokeCapRound: true,
+                  belowBarData: BarAreaData(show: false),
+                ),
+              ],
+              titlesData: FlTitlesData(
+                bottomTitles: SideTitles(
+                  showTitles: true,
+                  getTitles: (value) {
+                    if (value.toInt().toDouble() == value) {
+                      switch (value.toInt()) {
+                        case 0:
+                          return 'A';
+                        case 1:
+                          return 'B';
+                        case 2:
+                          return 'C';
+                        case 3:
+                          return 'D';
+                        case 4:
+                          return 'E';
+                      }
+                    }
+                    return '';
+                  },
+                ),
+                leftTitles: SideTitles(showTitles: true),
+              ),
+              borderData: FlBorderData(show: true),
+              minX: 0,
+              maxX: 4,
+              minY: 0,
+              maxY: 5,
+            ),
+          ),
+        ),
       ],
     );
   }

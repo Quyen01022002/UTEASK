@@ -52,7 +52,8 @@ class HomeController extends GetxController {
       final prefs = await SharedPreferences.getInstance();
 
       final token = prefs.getString('token') ?? "";
-      await API_Post.Saved(token, postid.value);
+      final userId = prefs.getInt('id') ?? 0;
+      await API_Post.Saved(token,userId, postid.value);
     }
     finally {
       isloaded(false);

@@ -57,6 +57,7 @@ class MyProfileController extends GetxController {
         emailController.text = userProfile.email!;
         phoneController.text = userProfile.phone!;
         print(userProfile.isFriends);
+        update();
       }
     } catch (e) {
       print("Lỗi: $e");

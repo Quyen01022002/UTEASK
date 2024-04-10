@@ -211,7 +211,7 @@ class API_Group{
     }
   }
   static Future<List<GroupModel>?> getAllGroups(String token) async {
-    final url = Uri.parse('$baseUrl/group/all/1');
+    final url = Uri.parse('$baseUrl/group/all');
     final headers = {
       "Content-Type": "application/json",
       'Authorization': 'Bearer $token',
