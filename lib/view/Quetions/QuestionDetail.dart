@@ -47,17 +47,17 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
   Stream<List<CommentEntity>>? listCommentStream;
   List<CommentEntity>? listCmt = [];
   PostModel? post;
-
+  bool _isKeyboardVisible = false;
   @override
   void initState() {
     super.initState();
     _startTimer();
     _listController.add(_textFirst);
     _imageWidgets.add(_buildFirstTextFieldWidget());
+    _initKeyboardListener();
   }
 
   List<ContentComment> parseContent(String contentString) {
-    contentString = contentString.trim();
     List<String> parts = contentString.split(', ');
     List<ContentComment> contentList = [];
     for (String part in parts) {
@@ -103,140 +103,166 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
   @override
   void dispose() {
     _timer.cancel();
+    _disposeKeyboardListener();
     super.dispose();
+  }
+
+  void _initKeyboardListener() {
+    WidgetsBinding.instance!.addPostFrameCallback(_keyboardVisibilityObserver);
+  }
+
+  void _disposeKeyboardListener() {
+    // No need to dispose the observer
+  }
+
+  void _keyboardVisibilityObserver(Duration timeStamp) {
+    final bool isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
+    setState(() {
+      _isKeyboardVisible = isKeyboardVisible;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-      bottomNavigationBar: _buildInputAllField(),
-      body: CustomScrollView(
-        slivers: <Widget>[
-          SliverAppBar(
-            title: Text('Bài thảo luận của Duy Hào'),
-          ),
-          SliverToBoxAdapter(
-            child: StreamBuilder<PostModel>(
-                stream: postCurrent,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildOwnerUser(),
-                        _buildContent(),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Container(
-                          alignment: Alignment.center,
-                          child: Container(
-                            margin: EdgeInsets.only(top: 5),
-                            height: 0.5, // Chiều cao của thanh ngang
-                            width: 330, // Độ dày của thanh ngang
-                            color: Color(0xC0C0C0C0),
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 10, bottom: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Column(
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              Expanded(
+                child: CustomScrollView(
+                  slivers: <Widget>[
+                    SliverAppBar(
+                      title: Text('Bài thảo luận của Duy Hào'),
+                    ),
+                    SliverToBoxAdapter(
+                      child: StreamBuilder<PostModel>(
+                          stream: postCurrent,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      // setState(() {
-                                      //   statelike?contlike=contlike-1:contlike=contlike+1;
-                                      //   statelike = !statelike;
-                                      // });
-                                      // postController.postid.value = widget.post.id;
-                                      // postController.Like();
-                                      // print("Like");
-                                      postController.Like(
-                                          postController.postid.value);
-                                      print("đã bấm nút like");
-                                    },
+                                  _buildOwnerUser(),
+                                  _buildContent(),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  Container(
+                                    alignment: Alignment.center,
                                     child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 8, horizontal: 12),
-                                      child: Row(children: [
-                                        Icon(
-                                          snapshot.data!.user_liked
-                                              ? Icons.thumb_up
-                                              : Icons.thumb_up_outlined,
-                                          size: 20,
-                                          color: snapshot.data!.user_liked
-                                              ? Colors.blue
-                                              : Colors.black,
-                                        ),
-                                        SizedBox(
-                                          width: 2,
-                                        ),
-                                        Text(
-                                          snapshot.data!.like_count.toString(),
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ]),
+                                      margin: EdgeInsets.only(top: 5),
+                                      height: 0.5, // Chiều cao của thanh ngang
+                                      width: 330, // Độ dày của thanh ngang
+                                      color: Color(0xC0C0C0C0),
                                     ),
                                   ),
-                                ],
-                              ),
-                              Column(
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {},
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 8, horizontal: 12),
-                                      child: GestureDetector(
-                                        onTap: () {},
-                                        child: Row(children: [
-                                          Icon(
-                                              false
-                                                  ? Icons.bookmark_outline
-                                                  : Icons
-                                                      .bookmark_border_outlined,
-                                              size: 20,
-                                              color: false
-                                                  ? Colors.blue
-                                                  : Colors.black),
-                                          SizedBox(
-                                            width: 2,
-                                          ),
-                                          Text(
-                                            0.toString(),
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ]),
-                                      ),
+                                  Container(
+                                    margin: EdgeInsets.only(top: 10, bottom: 10),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Column(
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () {
+                                                // setState(() {
+                                                //   statelike?contlike=contlike-1:contlike=contlike+1;
+                                                //   statelike = !statelike;
+                                                // });
+                                                // postController.postid.value = widget.post.id;
+                                                // postController.Like();
+                                                // print("Like");
+                                                postController.Like(
+                                                    postController.postid.value);
+                                                print("đã bấm nút like");
+                                              },
+                                              child: Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 8, horizontal: 12),
+                                                child: Row(children: [
+                
+                                                  Icon(snapshot.data!.user_liked ? Icons.thumb_up : Icons.thumb_up_outlined, size: 20,
+                                                    color: snapshot.data!.user_liked ? Colors.blue : Colors.black,),
+                                                  SizedBox(
+                                                    width: 2,
+                                                  ),
+                                                  Text(
+                                                    snapshot.data!.like_count.toString(),
+                                                    style: TextStyle(
+                                                        fontWeight: FontWeight.bold),
+                                                  ),
+                                                ]),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Column(
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () {},
+                                              child: Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 8, horizontal: 12),
+                                                child: GestureDetector(
+                                                  onTap: () {},
+                                                  child: Row(children: [
+                                                    Icon(
+                                                        false
+                                                            ? Icons.bookmark_outline
+                                                            : Icons
+                                                                .bookmark_border_outlined,
+                                                        size: 20,
+                                                        color: false
+                                                            ? Colors.blue
+                                                            : Colors.black),
+                                                    SizedBox(
+                                                      width: 2,
+                                                    ),
+                                                    Text(
+                                                      0.toString(),
+                                                      style: TextStyle(
+                                                          fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ]),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
+                                  Container(
+                                    margin: EdgeInsets.only(top: 20),
+                                    height: 5, // Chiều cao của thanh ngang
+                                    width: 400, // Độ dày của thanh ngang
+                                    color: Color(0xC0C0C0C0),
+                                  ),
                                 ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 20),
-                          height: 5, // Chiều cao của thanh ngang
-                          width: 400, // Độ dày của thanh ngang
-                          color: Color(0xC0C0C0C0),
-                        ),
-                      ],
-                    );
-                  } else {
-                    return Container();
-                  }
-                }),
+                              );
+                            } else {
+                              return Container();
+                            }
+                          }),
+                    ),
+                    SliverFillRemaining(
+                      hasScrollBody: true,
+                      child: _buildComment(),
+                    )
+                  ],
+                ),
+              ),
+              SizedBox(height: 100,)
+            ],
           ),
-          SliverFillRemaining(
-            hasScrollBody: true,
-            child: _buildComment(),
-          )
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: _isKeyboardVisible ? MediaQuery.of(context).viewInsets.bottom : 0,
+            child: _buildInputAllField(),
+          ),
         ],
       ),
     ));
@@ -344,14 +370,15 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
               // Xử lý nút gửi bình luận
               await _goToListTypeContentComment();
               postController.CommentToQuestion(context, listContent);
-              // _imageWidgets.clear();
-              // listContent.clear();
-              // _listController.clear();
-              // _listController.add(_textFirst);
-              // _imageWidgets.add(_buildFirstTextFieldWidget());
-              // setState(() {
-              //     _imageWidgets;
-              // });
+              _imageWidgets.clear();
+              listContent.clear();
+              _listController.clear();
+              TextEditingController _textFirsts = TextEditingController();
+              _listController.add(_textFirsts);
+              _imageWidgets.add(_buildFirstTextFieldWidget());
+              setState(() {
+                  _imageWidgets;
+              });
             },
             child: Text('Đăng'),
           ),
@@ -629,8 +656,6 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
 
   Widget _buiImage(String link) {
     return Container(
-        height: MediaQuery.of(context).size.width * 0.99,
-        width: MediaQuery.of(context).size.width * 0.65,
         child: GestureDetector(
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(

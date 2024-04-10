@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -71,7 +72,8 @@ class HomeController extends GetxController {
   //   }
   // }
 
-  void load10HotPost() async
+  Stream<List<PostModel>>? allPostHotStream;
+  void load10HotPost(BuildContext context) async
   {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -85,6 +87,7 @@ class HomeController extends GetxController {
         top10Post.addAll(result);
         update();
       }
+      allPostHotStream = Stream.fromIterable([result!]);
     }
     finally {
       isloaded(false);
