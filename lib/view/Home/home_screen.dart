@@ -127,28 +127,22 @@ final SearchPostController _searchController = Get.put(SearchPostController());
                       ),
                       child: Row(
                         children: [
-                          GestureDetector(
-                            onTap: () {
-                              // handle search icon tapped
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Icon(Icons.search),
-                            ),
-                          ),
                           Expanded(
                             child: TextField(
                               controller: _searchController.textControllerKeyword,
                               onTap: () {
-                                _showSearchSuggestions();
+                                //_showSearchSuggestions();
                               },
                               decoration: InputDecoration(
                                 hintText: 'Search for.....',
+                                hintStyle:  TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xFFB4BDC4),
+                                ),
                                 border: InputBorder.none,
                               ),
                               style: TextStyle(
-                                fontSize: 18,
-                                color: Color(0xFFB4BDC4),
+                                fontSize: 14,
                               ),
                             ),
                           ),
@@ -165,11 +159,8 @@ _searchController.loadListResultController(context);
                                   ),
                                 );
                               },
-                              child: Image.asset(
-                                'assets/images/FILTER.png',
-                                width: 30,
-                                height: 30,
-                              ),
+                              child: Icon(Icons.search,
+                              size: 30),
                             ),
                           ),
                         ],

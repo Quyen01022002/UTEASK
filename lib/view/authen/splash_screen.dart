@@ -1,6 +1,13 @@
 import 'package:askute/view/authen/Login_screen.dart';
+import 'package:askute/view/dashboard/DashBoard.dart';
+import 'package:askute/view/mess/one_mess_screen.dart';
+import 'package:askute/view/report/report_post_screen.dart';
+import 'package:askute/view/report/report_user_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+
+import '../Home/home_screen.dart';
+import '../mess/home_mess_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   final bool animated;

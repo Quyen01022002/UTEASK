@@ -24,6 +24,7 @@ class _PostScreenState extends State<PostScreen> {
   late String formattedTime = '';
   final PostController postController = Get.put(PostController());
   final HomeController homeController = Get.put(HomeController());
+
   late bool statelike=false;
   late int contlike=0;
   late RxInt curnetUser=0.obs;
@@ -44,64 +45,46 @@ class _PostScreenState extends State<PostScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.all(16),
-        margin: EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundImage:
-                  NetworkImage(widget.post.createBy.profilePicture),
-                  // Hoặc sử dụng NetworkImage nếu avatar từ một URL
-                  // backgroundImage: NetworkImage('URL_TO_AVATAR'),
-                ),
-                SizedBox(width: 8),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.post.createBy.firstName+" " + widget.post.createBy.lastName,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
-                    Text(
-                      widget.post.createBy.email,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black45,
-                      ),
-                    ),                              ],
-                ),
-                Text(
-                  formattedTime,
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Color(0xFFCECECE),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
             Container(
+              padding: EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundImage:
+                    NetworkImage(widget.post.createBy.profilePicture),
+                    // Hoặc sử dụng NetworkImage nếu avatar từ một URL
+                    // backgroundImage: NetworkImage('URL_TO_AVATAR'),
+                  ),
+                  SizedBox(width: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.post.createBy.firstName+" " + widget.post.createBy.lastName,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      Text(
+                        formattedTime,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black45,
+                        ),
+                      ),                              ],
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.only(left: 15, right: 15),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -115,21 +98,37 @@ class _PostScreenState extends State<PostScreen> {
                         MaterialPageRoute(builder: (context) => QuestionDetailScreen(post: widget.post)),
                       );
                     },
-                    child: Text(
-                      widget.post.contentPost,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.black87,
+                    child: Container(
+                      padding: EdgeInsets.only(left: 5),
+                      child: Text(
+                        widget.post.contentPost,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                        ),
                       ),
                     ),
                   ),
-                  SizedBox(height: 5),
+
+                  SizedBox(height: 10),
                   _buildImages(widget.post.listAnh),
+
+                  SizedBox(height: 10),
+
                 ],
               ),
             ),
             Container(
-              padding: EdgeInsets.only(top: 10),
+              alignment: Alignment.center,
+              child: Container(
+                margin: EdgeInsets.only(top: 5),
+                height: 0.5, // Chiều cao của thanh ngang
+                width: 330, // Độ dày của thanh ngang
+                color: Color(0xC0C0C0C0),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.only(top: 5, left: 30, right: 30),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -137,40 +136,56 @@ class _PostScreenState extends State<PostScreen> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          setState(() {
-                            statelike?contlike=contlike-1:contlike=contlike+1;
-                            statelike = !statelike;
-                          });
-                          postController.postid.value = widget.post.id;
-                          postController.Like();
-                          print("Like");
+                          // setState(() {
+                          //   statelike?contlike=contlike-1:contlike=contlike+1;
+                          //   statelike = !statelike;
+                          // });
+                          // postController.postid.value = widget.post.id;
+                          // postController.Like();
+                          // print("Like");
+                          postController.Like(widget.post.id);
+print("đã bấm nút like");
+
                         },
                         child: Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFFF4F4F4),
-                            border: Border.all(
-                              color: Colors.grey.withOpacity(0.5), // Màu của border
-                              width: 1.0, // Độ rộng của border
-                            ),
-                            borderRadius: BorderRadius.circular(10), // Độ bo góc của border
-                          ),
                           padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                           child: Row(
-
                               children: [
-                                Image.asset(
-                                  'assets/images/like1.png',
-                                  width: 15,
-                                  height: 15,
-                                ),
-
-                                Text( widget.post.user_liked ? 'Đã thích' : 'Thích',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold
-                                  ),),]),
+                                Icon(widget.post.user_liked ? Icons.thumb_up : Icons.thumb_up_outlined, size: 20,
+                                color: widget.post.user_liked ? Colors.blue : Colors.black,),
+SizedBox(width: 2,),Text(widget.post.like_count.toString(),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold
+                                ),),
+                                ]),
                         ),
                       ),
-                      Text(widget.post.like_count.toString()+' lượt thích')
+
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          postController.loadOnePost(context, widget.post.id);
+                          // Thực hiện hành động khi người dùng nhấn vào văn bản
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => QuestionDetailScreen(post: widget.post)),
+                          );
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                          child: Row(
+                              children: [
+                                Icon(Icons.mode_comment_outlined, size: 20,),
+                                SizedBox(width: 2,),Text(widget.post.comment_count.toString(),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold
+                                  ),),
+                              ]),
+                        ),
+                      ),
                     ],
                   ),
                   Column(
@@ -180,47 +195,6 @@ class _PostScreenState extends State<PostScreen> {
 
                         },
                         child: Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFFF4F4F4),
-                            border: Border.all(
-                              color: Colors.grey.withOpacity(0.5), // Màu của border
-                              width: 1.0, // Độ rộng của border
-                            ),
-                            borderRadius: BorderRadius.circular(10), // Độ bo góc của border
-                          ),
-                          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                          child: Row(
-
-                              children: [
-                                Image.asset(
-                                  'assets/images/NOTIFICATIONS.png',
-                                  width: 15,
-                                  height: 15,
-                                ),
-                                Text('Bình luận',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold
-                                  ),),]),
-                        ),
-                      ),
-                      Text(widget.post.comment_count.toString()+  ' bình luận')
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFFF4F4F4),
-                            border: Border.all(
-                              color: Colors.grey.withOpacity(0.5), // Màu của border
-                              width: 1.0, // Độ rộng của border
-                            ),
-                            borderRadius: BorderRadius.circular(10), // Độ bo góc của border
-                          ),
                           padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                           child: GestureDetector(
                             onTap: ()
@@ -229,21 +203,16 @@ class _PostScreenState extends State<PostScreen> {
                               homeController.Saved();
                             },
                             child: Row(
-
                                 children: [
-                                  Image.asset(
-                                    'assets/images/luu.png',
-                                    width: 20,
-                                    height: 20,
-                                  ),
-                                  Text('Lưu',
+                                  Icon(Icons.bookmark_outline, size: 20,),
+                                  SizedBox(width: 2,),Text(widget.post.like_count.toString(),
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold
-                                    ),),]),
+                                    ),),
+                                ]),
                           ),
                         ),
                       ),
-                      Text('Không khả dụng')
                     ],
                   ),
                 ],
@@ -262,178 +231,219 @@ class _PostScreenState extends State<PostScreen> {
       return _buildTwoImages(images);
     } else if (imageCount == 3) {
       return _buildThreeImages(images);
-    }
-    else if (imageCount == 0) {
+    } else if (imageCount == 0) {
       return Container();
     } else {
       // Xử lý cho trường hợp có nhiều hơn 3 ảnh
-      return _buildFourImages(images); // Thay bằng xử lý tùy thuộc vào số lượng ảnh cần hiển thị
+      return _buildFourImages(
+          images); // Thay bằng xử lý tùy thuộc vào số lượng ảnh cần hiển thị
     }
   }
+
   Widget _buildSingleImage(List<String> list) {
     //Nếu list ảnh chỉ có một hình ảnh
     return Container(
-      height: 302,
-      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.width * 0.99,
+      width: MediaQuery.of(context).size.width * 0.65,
       child: GestureDetector(
           onTap: () {
             Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => ImageDetail(index: 0, listAnh: list,),
+              builder: (context) => ImageDetail(
+                index: 0,
+                listAnh: list,
+              ),
             ));
           },
-          child:  _buildFirstImage(list[0])),
+          child: _buildFirstImage(list[0])),
     );
   }
+
   Widget _buildTwoImages(List<String> imageUrls) {
     //nếu list ảnh có 2 hình ảnh
     return Container(
-      height: 302,
-      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.width * 0.99,
+      width: MediaQuery.of(context).size.width * 0.99,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           GestureDetector(
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ImageDetail(index: 0, listAnh: imageUrls,),
+                  builder: (context) => ImageDetail(
+                    index: 0,
+                    listAnh: imageUrls,
+                  ),
                 ));
               },
-              child:  _buildFirstImage(imageUrls[0])),
-
+              child: _buildFirstImage(imageUrls[0])),
           GestureDetector(
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ImageDetail(index: 0, listAnh: imageUrls,),
+                  builder: (context) => ImageDetail(
+                    index: 0,
+                    listAnh: imageUrls,
+                  ),
                 ));
               },
-              child:  _buildFirstImage(imageUrls[0])),
+              child: _buildFirstImage(imageUrls[0])),
         ],
       ),
     );
   }
+
   Widget _buildThreeImages(List<String> imageUrls) {
-    // nếu list ảnh có 3 hình ảnh
+    //nếu list ảnh có 4 hình ảnh trở lên
     return Container(
-      height: 302,
-      width: MediaQuery.of(context).size.width,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ImageDetail(index: 0, listAnh: imageUrls,),
-                ));
-              },
-              child:  _buildFirstImage(imageUrls[0])),
-          Container(
-            height: 302,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => ImageDetail(index: 1, listAnh: imageUrls,),
-                      ));
-                    },
-                    child:  _buildSecondImage(imageUrls[1])),
-                GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => ImageDetail(index: 2, listAnh: imageUrls,),
-                      ));
-                    },
-                    child:  _buildSecondImage(imageUrls[2])),
-              ],
+
+      child: Container(
+        height: (MediaQuery.of(context).size.width -30)*1.028,
+        width: (MediaQuery.of(context).size.width - 30),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => ImageDetail(
+                      index: 0,
+                      listAnh: imageUrls,
+                    ),
+                  ));
+                },
+                child: Container(
+                    width: (MediaQuery.of(context).size.width-30) * 0.5 * 0.99,
+                    height: (MediaQuery.of(context).size.height-30) * 0.99,
+                    child: _buildFirstImage(imageUrls[0]))),
+            Container(
+              height: (MediaQuery.of(context).size.height-30),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => ImageDetail(
+                            index: 1,
+                            listAnh: imageUrls,
+                          ),
+                        ));
+                      },
+                      child: _buildSecondImage(imageUrls[1])),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => ImageDetail(
+                              index: 2,
+                              listAnh: imageUrls,
+                            ),
+                          ));
+                        },
+                        child: _buildSecondImage(imageUrls[2])),
+
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
   Widget _buildFourImages(List<String> imageUrls) {
     //nếu list ảnh có 4 hình ảnh trở lên
     return Container(
-      height: 302,
-      width: MediaQuery.of(context).size.width,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ImageDetail(index: 0, listAnh: imageUrls,),
-                ));
-              },
-              child:  _buildFirstImage(imageUrls[0])),
-          Container(
-            height: 302,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => ImageDetail(index: 1, listAnh: imageUrls,),
-                      ));
-                    },
-                    child:  _buildSecondImage(imageUrls[1])),
 
-                Stack(
-                  children: [
-                    _buildSecondImage(imageUrls[2]),
-                    GestureDetector(
+      child: Container(
+        height: (MediaQuery.of(context).size.width -30)*1.028,
+        width: (MediaQuery.of(context).size.width - 30),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => ImageDetail(
+                      index: 0,
+                      listAnh: imageUrls,
+                    ),
+                  ));
+                },
+                child: Container(
+                    width: (MediaQuery.of(context).size.width-30) * 0.5 * 0.99,
+                    height: (MediaQuery.of(context).size.height-30) * 0.99,
+                    child: _buildFirstImage(imageUrls[0]))),
+            Container(
+              height: (MediaQuery.of(context).size.height-30),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => ImageDetail(index: 2, listAnh: imageUrls,),
+                          builder: (context) => ImageDetail(
+                            index: 1,
+                            listAnh: imageUrls,
+                          ),
                         ));
                       },
-                      child: Container(
-                        height: 150,
-                        width: 150,
-                        color: Colors.black.withOpacity(0.5), // Độ mờ ở đây, giả sử 0.5
+                      child: _buildSecondImage(imageUrls[1])),
+                  Stack(
+                    children: [
+                      _buildSecondImage(imageUrls[2]),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => ImageDetail(
+                              index: 2,
+                              listAnh: imageUrls,
+                            ),
+                          ));
+                        },
+                        child: Container(
+                          height:
+                          (MediaQuery.of(context).size.height -30) * 0.25 * 0.99,
+                          width: (MediaQuery.of(context).size.width -30) * 0.5 * 0.99,
+                          color: Colors.black
+                              .withOpacity(0.5), // Độ mờ ở đây, giả sử 0.5
+                        ),
                       ),
-                    ),
-
-                    Positioned.fill(
-                      child: Center(
-                        child: Text(
-                          '+1',
-                          style: TextStyle(
-                            fontSize: 30,
-                            color: Colors.white,
+                      Positioned.fill(
+                        child: Center(
+                          child: Text(
+                            '+' + (imageUrls.length - 2).toString(),
+                            style: TextStyle(
+                              fontSize: 30,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-
-
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
+
   Widget _buildFirstImage(String imageUrl) {
     //xây dựng khung ảnh đầu tiên của bộ đôi, bộ ba ảnh
     return Image.network(
       imageUrl,
-      width: MediaQuery.of(context).size.width*0.4,
-      height: 302,
+      width: (MediaQuery.of(context).size.width-30) * 0.985 * 0.5,
+      height: (MediaQuery.of(context).size.height-30) * 0.99,
       fit: BoxFit.cover,
     );
-
   }
+
   Widget _buildSecondImage(String imageUrl) {
     //xây dựng khung ảnh thứ 2,3 của bộ ba ảnh trở lên
     return Image.network(
       imageUrl,
-      width: 150,
-      height: 150,
+      width: (MediaQuery.of(context).size.width -30) * 0.5 * 0.99,
+      height: (MediaQuery.of(context).size.height -30) * 0.25 * 0.99,
       fit: BoxFit.cover,
     );
   }
