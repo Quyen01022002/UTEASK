@@ -46,6 +46,9 @@ List<PostModel>? allPost;
     super.initState();
     _tabController = TabController(length: 4, vsync: this, initialIndex: 0);
     _homeGroupController.loadGroupsOfAdmin();
+    setState(() {
+      _searchPostController.loadHistoryKeywords(context);
+    });
 _startTimer();
   }
   late Timer _timer;
@@ -129,13 +132,17 @@ _startTimer();
                       GestureDetector(
                         onTap: () {
                           // handle search icon tapped
-                          _searchPostController.loadListResultController(context);
+                          final check = _searchPostController.textControllerKeyword.text;
+                          if (check.trim()!= '')
+                         { _searchPostController.loadListResultController(context);
+                         _searchPostController.addSearchKeywords(_searchPostController.textControllerKeyword.text);
+                         _searchPostController.loadHistoryKeywords(context);
                           _scrollController.animateTo(
                             0.0,
                             duration: Duration(milliseconds: 300),
                             curve: Curves.easeInOut,
                           );
-                          FocusScope.of(context).unfocus();
+                          FocusScope.of(context).unfocus();}
 
                         },
                         child: Padding(
