@@ -18,7 +18,7 @@ class _HomePageTeacherState extends State<HomePageTeacher> {
   @override
   void initState() {
     super.initState();
-    _homeController.load10HotPost();
+    _homeController.load10HotPost(context);
   }
 
   @override

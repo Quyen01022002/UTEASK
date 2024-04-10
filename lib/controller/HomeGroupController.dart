@@ -85,6 +85,7 @@ class HomeGroupController extends GetxController {
     groupCurrent = Stream.fromIterable([groupModel!]);
   }
 
+  Stream<List<PostModel>>? allPostFollowingStream;
   void GetListPost(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     final adminId = prefs.getInt('id') ?? 0;
@@ -95,6 +96,7 @@ class HomeGroupController extends GetxController {
       listPost.addAll(groupModel);
       update();
     }
+    allPostFollowingStream = Stream.fromIterable([groupModel!]);
   }
 
   void addlistMembers(List<int> listuserid) {}

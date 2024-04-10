@@ -19,7 +19,7 @@ class _HomeScreen2State extends State<HomeScreen2> {
 
   void initState() {
     super.initState();
-    _homeController.load10HotPost();
+    _homeController.load10HotPost(context);
     print('bắt đầu tới channel');
     streamListener();
 

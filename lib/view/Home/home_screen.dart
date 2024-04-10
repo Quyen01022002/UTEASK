@@ -16,6 +16,7 @@ import '../../controller/HomeGroupController.dart';
 
 import '../../controller/SearchController.dart';
 import '../../model/PostModel.dart';
+import '../../model/PostModel.dart';
 import 'hot_post_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -38,6 +39,15 @@ final SearchPostController _searchController = Get.put(SearchPostController());
     'Từ khóa gợi ý 3',
     // Thêm các từ khóa gợi ý khác nếu cần
   ];
+
+  Stream<List<PostModel>>? listPostFollowing;
+  List<PostModel>? listPostFollow;
+
+  Stream<List<PostModel>>? listHotQuestion;
+  List<PostModel>? listHotPost;
+
+
+
   double _searchBarHeight = 50.0; // Chiều cao của thanh tìm kiếm
   bool _isSearchBarExpanded = false; // Trạng thái mở rộng của thanh tìm kiếm
 
@@ -45,8 +55,8 @@ final SearchPostController _searchController = Get.put(SearchPostController());
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-
-      _homeController.load10HotPost();
+_startTimer();
+      _homeController.load10HotPost(context);
       _homeGroupController.GetListPost(context);
       _homeGroupController.loadGroupsJoin();
       _homeGroupController.loadGroupsOfAdmin();
@@ -66,6 +76,42 @@ final SearchPostController _searchController = Get.put(SearchPostController());
       _isSearchBarExpanded = !_isSearchBarExpanded;
       _searchBarHeight = _isSearchBarExpanded ? 200.0 : 50.0; // Chiều cao mới của thanh tìm kiếm
     });
+  }
+
+  late Timer _timer;
+  void _startTimer() {
+    _timer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+      _homeGroupController.GetListPost(context);
+      // Gọi hàm cần thiết ở đây
+      listPostFollowing =_homeGroupController.allPostFollowingStream;
+      // Đây là Stream mà bạn cần theo dõi
+      listPostFollowing?.listen((List<PostModel>? updatedGroups) {
+        if (updatedGroups != null) {
+          setState(() {
+            listPostFollow = updatedGroups;
+          });
+        }
+      });
+
+      _homeController.load10HotPost(context);
+      // Gọi hàm cần thiết ở đây
+      listHotQuestion =_homeController.allPostHotStream;
+      // Đây là Stream mà bạn cần theo dõi
+      listHotQuestion?.listen((List<PostModel>? updatedGroups) {
+        if (updatedGroups != null) {
+          setState(() {
+            listHotPost = updatedGroups;
+          });
+        }
+      });
+
+    });
+  }
+  @override
+  void dispose() {
+    _timer.cancel();
+    _tabController.dispose();
+    super.dispose();
   }
   @override
   Widget build(BuildContext context) {
@@ -212,9 +258,8 @@ _searchController.loadListResultController(context);
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  HotPostQuestionScreen(
-                      listPost: _homeGroupController.listPost),
-                  HotPostQuestionScreen(listPost: _homeController.top10Post),
+                  _buildFollowwing(),
+                  _buildHotQuestion(),
                 ],
               ),
             ),
@@ -223,6 +268,32 @@ _searchController.loadListResultController(context);
       ),
     );
   }
+  Widget _buildFollowwing(){
+    return Expanded(child: StreamBuilder<List<PostModel>>(
+      stream: listPostFollowing,
+      builder: (context, snapshot){
+        if (snapshot.hasData && snapshot.data != null){
+          return HotPostQuestionScreen(listPost: snapshot.data!);
+        }
+        else
+          return Container(child: Text('Vui lòng theo dõi thêm khoa để xem các bài viết'),);
+      },
+    ));
+  }
+  Widget _buildHotQuestion(){
+    return Expanded(child: StreamBuilder<List<PostModel>>(
+      stream: listHotQuestion,
+      builder: (context, snapshot){
+        if (snapshot.hasData && snapshot.data != null){
+          return HotPostQuestionScreen(listPost: snapshot.data!);
+        }
+        else
+          return Container(child: Text('Không có bài viết nội bật'),);
+      },
+    ));
+  }
+
+
   Widget _buildSearchSuggestions() {
     return Container(
       padding: EdgeInsets.all(16),
