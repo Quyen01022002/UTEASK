@@ -30,7 +30,17 @@ class _HotPostQuestionScreenState extends State<HotPostQuestionScreen> {
           return AnimatedOpacity(
             duration: Duration(milliseconds: 100),
             opacity: 1,
-            child: PostScreen(post: post),
+            child: Column(
+              children: [
+                PostScreen(post: post),
+                Container(
+                  margin: EdgeInsets.only(top: 5),
+                  height: 10, // Chiều cao của thanh ngang
+                  width: 500, // Độ dày của thanh ngang
+                  color: Colors.black12,
+                ),
+              ],
+            ),
           );
         },
       ),

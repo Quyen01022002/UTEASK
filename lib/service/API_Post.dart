@@ -239,11 +239,11 @@ class API_Post {
     }
   }
 
-  static Future<PostModel?> getOnePost(int id, String token) async {
-    final url = Uri.parse('$baseUrl/post/$id');
+  static Future<PostModel?> getOnePost(int id, int iduser, String token) async {
+    final url = Uri.parse('$baseUrl/post/get/$iduser/$id');
 
     final response = await http.get(
-      Uri.parse('$baseUrl/post/$id'),
+      url,
       headers: {
         "Content-Type": "application/json",
         'Authorization': 'Bearer $token',
@@ -255,13 +255,13 @@ class API_Post {
 
       if (responseData.isNotEmpty) {
         String utf8Data = utf8.decode(responseData.runes.toList());
-        ApiReponse<List<PostModel>> listPost =
-        ApiReponse<List<PostModel>>.fromJson(
+        ApiReponse<PostModel> listPost =
+        ApiReponse<PostModel>.fromJson(
           utf8Data,
               (dynamic json) =>
-          List<PostModel>.from(json.map((x) => PostModel.fromJson(x))),
+          PostModel.fromJson(json),
         );
-        return listPost.payload[0];
+        return listPost.payload;
       } else {
         return null;
       }
