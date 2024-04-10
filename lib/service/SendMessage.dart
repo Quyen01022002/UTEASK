@@ -12,8 +12,8 @@ Future<void> sendFriendRequestNotification(String? friendFCMToken) async {
   };
 
   final Map<String, dynamic> notification = {
-    'body': 'You have a new friend request!',
-    'title': 'Friend Request',
+    'body': 'Có người đã bình luận nội dung của bạn',
+    'title': 'Bình Luận',
     'sound': 'default',
     'priority': 'high',
   };

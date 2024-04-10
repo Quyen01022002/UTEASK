@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:askute/model/CommentEntity.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -12,6 +13,8 @@ import 'package:image_picker/image_picker.dart';
 import '../../controller/PostController.dart';
 import '../../model/PostModel.dart';
 import 'package:http/http.dart' as http;
+
+import '../../service/SendMessage.dart';
 
 class QuestionDetailScreen extends StatefulWidget {
   final PostModel post;
@@ -352,6 +355,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
               // setState(() {
               //     _imageWidgets;
               // });
+
             },
             child: Text('Đăng'),
           ),

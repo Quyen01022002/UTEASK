@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../model/CommentEntity.dart';
 import '../model/PostModel.dart';
 import '../service/API_Post.dart';
+import '../service/SendMessage.dart';
 import '../view/Quetions/QuestionDetail.dart';
 
 class PostController extends GetxController {
@@ -52,6 +54,9 @@ class PostController extends GetxController {
     for (int i = 0; i < list.length; i++) {
       content = content + "[${list[i].type}][${list[i].content}], ";
     }
+    String? token= await FirebaseMessaging.instance.getToken();
+    print(token);
+    sendFriendRequestNotification(token);
     await API_Post.Comments(
         userid.value, postid.value, content, tokenString.value);
   }

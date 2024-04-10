@@ -59,6 +59,19 @@ class HomeController extends GetxController {
       isloaded(false);
     }
   }
+  void Delete() async
+  {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      final token = prefs.getString('token') ?? "";
+      final userId = prefs.getInt('id') ?? 0;
+      await API_Post.Delete(token,userId, postid.value);
+    }
+    finally {
+      isloaded(false);
+    }
+  }
   // void DeletePost() async
   // {
   //   try {

@@ -140,6 +140,19 @@ class API_Post {
       headers: headers,
     );
   }
+  static Future<InteractionsEntity?> Delete(
+      String token,int userid, int postid) async {
+    final url = Uri.parse('$baseUrl/save?userId=$userid&postId=$postid');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+
+    await http.delete(
+      url,
+      headers: headers,
+    );
+  }
 
   static Future<CommentEntity?> Comments(
       int userid, int postid, String content, String token) async {

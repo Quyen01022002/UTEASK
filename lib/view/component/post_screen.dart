@@ -100,6 +100,7 @@ class _PostScreenState extends State<PostScreen> {
                     },
                     child: Container(
                       padding: EdgeInsets.only(left: 5),
+
                       child: Text(
                         widget.post.contentPost,
                         style: TextStyle(

@@ -1,6 +1,7 @@
 import 'package:askute/model/AuthenticationResponse.dart';
 import 'package:askute/service/API_login.dart';
 import 'package:askute/view/teacher/teacher_home.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,8 +29,8 @@ class LoginController extends GetxController
         print(AuthenticationResponse.roleEnum);
         await saveLoggedInState(AuthenticationResponse);
         stateLogin.value = "Đăng nhập thành công";
-        // String? fcmToken = await _firebaseMessaging.getToken();
-        //  API_login.fcm(AuthenticationResponse.id,AuthenticationResponse.token!,fcmToken!);
+        String? fcmtoken= await FirebaseMessaging.instance.getToken();
+          API_login.fcm(AuthenticationResponse.id,AuthenticationResponse.token!,fcmtoken!);
         settingController.loadthongtin();
         Future.delayed(Duration(milliseconds: 500), () {
           Navigator.pushReplacement(
@@ -76,6 +77,13 @@ class LoginController extends GetxController
       {
         stateLogin.value = 'Đăng nhập thất bại';
       }
+  }
+  void updateUserfcm(BuildContext context,String? fcm) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+    API_login.fcm(userId,token,fcm!);
+
   }
   Future<void> saveLoggedInState(AuthenticationResponse user) async {
     final prefs = await SharedPreferences.getInstance();
