@@ -15,7 +15,7 @@ class HomeScreen2 extends StatefulWidget {
 class _HomeScreen2State extends State<HomeScreen2> {
   final HomeController _homeController = Get.put(HomeController());
 
-  final channel = IOWebSocketChannel.connect('ws://192.168.186.92:8090/data');
+  final channel = IOWebSocketChannel.connect('ws://192.168.204.92:8090/data');
 
   void initState() {
     super.initState();
