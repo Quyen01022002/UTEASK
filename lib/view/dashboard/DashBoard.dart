@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../Home/home_screen.dart';
+import '../Home/home_screen_new.dart';
 
 class DashBoard extends StatefulWidget {
   const DashBoard({Key? key}) : super(key: key);

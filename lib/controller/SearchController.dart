@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:askute/model/UsersEnity.dart';
 import 'package:askute/service/API_Profile.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +26,7 @@ void loadListResultController(BuildContext context) async{
     final userId = prefs.getInt('id') ?? 0;
     final token = prefs.getString('token') ?? "";
     final keyword = textControllerKeyword.text;
+    //addSearchKeywords(textControllerKeyword.text);
     List<PostModel>? result = await API_Post.searchPost(userId, token, keyword);
     List<GroupModel>? resultKhoa = await API_Group.searchGroup(token, keyword);
     List<UserEnity>? resultUser = await API_Profile.Search(userId, keyword, token);
@@ -88,5 +87,28 @@ void loadListResultController(BuildContext context) async{
     return filteredList;
   }
 
+
+
+  Future<void> addSearchKeywords(String newKeywords) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> currentKeywords = prefs.getStringList('search_keywords') ?? [];
+    if (currentKeywords.contains(newKeywords)) {
+      // Nếu từ khóa đã tồn tại, loại bỏ nó khỏi danh sách
+      currentKeywords.remove(newKeywords);
+    }
+    currentKeywords.add(newKeywords);
+    prefs.setStringList('search_keywords', currentKeywords);
+  }
+  List<String> lastFiveKeywords = [];
+  Future<void> loadHistoryKeywords(context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
+    List<String> historyKeywords =
+        prefs.getStringList('search_keywords') ?? [];
+    // Lấy 5 từ khóa cuối cùng từ danh sách lịch sử
+    lastFiveKeywords = historyKeywords.length > 5
+        ? historyKeywords.sublist(historyKeywords.length - 5).reversed.toList()
+        : historyKeywords.reversed.toList();
+  }
 
 }
