@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:askute/model/ApiReponse.dart';
+import 'package:askute/model/CommentResponse.dart';
+import 'package:askute/model/InteractionsResponse.dart';
 import 'package:askute/model/PostEnity.dart';
 import 'package:askute/model/PostModel.dart';
 import 'package:askute/service/const.dart';
@@ -238,6 +240,33 @@ class API_Post {
       return null;
     }
   }
+  static Future<List<PostModel>?> getAllLikePost(int userid, String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/post/$userid/allMyLike'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<PostModel>> listPost =
+        ApiReponse<List<PostModel>>.fromJson(
+          utf8Data,
+              (dynamic json) =>
+          List<PostModel>.from(json.map((x) => PostModel.fromJson(x))),
+        );
+        return listPost.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
 
   static Future<PostModel?> getOnePost(int id, int iduser, String token) async {
     final url = Uri.parse('$baseUrl/post/get/$iduser/$id');
@@ -288,6 +317,63 @@ class API_Post {
           utf8Data,
               (dynamic json) =>
           List<CommentEntity>.from(json.map((x) =>CommentEntity.fromJson(x))),
+        );
+        return listPost.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+  static Future<List<CommentResponse>?> getAllMyComment(int userid, String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/comments/$userid/getAllComment'),
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<CommentResponse>> listPost =
+        ApiReponse<List<CommentResponse>>.fromJson(
+          utf8Data,
+              (dynamic json) =>
+          List<CommentResponse>.from(json.map((x) =>CommentResponse.fromJson(x))),
+        );
+        return listPost.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  static Future<List<InteractionResponse>?> getAllMyLike(int userid, String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/interations/$userid/activity'),
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<InteractionResponse>> listPost =
+        ApiReponse<List<InteractionResponse>>.fromJson(
+          utf8Data,
+              (dynamic json) =>
+          List<InteractionResponse>.from(json.map((x) =>InteractionResponse.fromJson(x))),
         );
         return listPost.payload;
       } else {

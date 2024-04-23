@@ -1,5 +1,6 @@
 import 'package:askute/model/AuthenticationResponse.dart';
 import 'package:askute/service/API_login.dart';
+import 'package:askute/view/dashboard/DashBoard_new.dart';
 import 'package:askute/view/teacher/teacher_home.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +36,7 @@ class LoginController extends GetxController
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (context) => DashBoard()),
+                builder: (context) => DashBoardVer2()),
           );
         });
       } else {
