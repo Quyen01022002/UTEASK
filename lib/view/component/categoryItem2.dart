@@ -1,4 +1,5 @@
 import 'package:askute/controller/HomeGroupController.dart';
+import 'package:askute/model/Class.dart';
 import 'package:askute/model/GroupModel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:ui';
 
+import 'package:askute/model/Class.dart';
 import 'package:askute/model/GroupModel.dart';
 import 'package:askute/view/Home/search_screen.dart';
 import 'package:askute/view/Notification/notification_screen.dart';

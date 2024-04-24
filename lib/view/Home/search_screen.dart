@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:askute/controller/HomeGroupController.dart';
 import 'package:askute/controller/SearchController.dart';
+import 'package:askute/model/GroupModel.dart';
 import 'package:askute/model/PostModel.dart';
 import 'package:askute/view/Home/hot_post_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,7 +11,7 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../../model/GroupModel.dart';
+import '../../model/Class.dart';
 import '../../model/UsersEnity.dart';
 
 class SearchResultScreen extends StatefulWidget {

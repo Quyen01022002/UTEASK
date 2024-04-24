@@ -17,12 +17,13 @@
 import 'dart:async';
 
 import 'package:askute/controller/HomeGroupController.dart';
+import 'package:askute/model/GroupModel.dart';
 import 'package:askute/view/authen/Login_screen.dart';
 import 'package:askute/view/component/khoaItem.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../model/GroupModel.dart';
+import '../../model/Class.dart';
 
 class GroupScreen extends StatefulWidget {
   const GroupScreen({super.key});

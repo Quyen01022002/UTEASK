@@ -1,10 +1,11 @@
+import 'package:askute/model/GroupModel.dart';
 import 'package:askute/model/UsersEnity.dart';
 import 'package:askute/service/API_Profile.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../model/GroupModel.dart';
+import '../model/Class.dart';
 import '../model/PostModel.dart';
 import '../model/UserProfile.dart';
 import '../service/API_Group.dart';

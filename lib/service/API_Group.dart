@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'package:askute/model/ApiReponse.dart';
 import 'package:askute/model/GroupMemberRequest.dart';
+import 'package:askute/model/Class.dart';
 import 'package:askute/model/GroupModel.dart';
 import 'package:askute/model/PostModel.dart';
 import 'package:askute/model/UsersEnity.dart';

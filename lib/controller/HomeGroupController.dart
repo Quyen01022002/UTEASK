@@ -1,10 +1,12 @@
 import 'package:askute/model/GroupMemberRequest.dart';
+import 'package:askute/model/Class.dart';
 import 'package:askute/model/GroupModel.dart';
 import 'package:askute/model/PostModel.dart';
-import 'package:askute/model/UsersEnity.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

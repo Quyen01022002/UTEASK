@@ -286,7 +286,7 @@ SizedBox(width: 2,),Text(widget.post.like_count.toString(),
                   ),
                 ));
               },
-              child: _buildFirstImage(imageUrls[0])),
+              child: _buildFirstImage(imageUrls[1])),
         ],
       ),
     );

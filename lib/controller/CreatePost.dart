@@ -1,5 +1,6 @@
 import 'package:askute/model/PostEnity.dart';
 import 'package:askute/service/API_Post.dart';
+import 'package:askute/view/dashboard/DashBoard_new.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -46,7 +47,7 @@ class CreatePostController extends GetxController {
     Future.delayed(Duration(milliseconds: 100), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => DashBoard()),
+        MaterialPageRoute(builder: (context) => DashBoardVer2()),
       );
     });
   }

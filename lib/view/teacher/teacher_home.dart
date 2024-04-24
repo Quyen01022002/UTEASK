@@ -1,10 +1,12 @@
 
+import 'package:askute/view/Class/createClass.dart';
 import 'package:askute/view/teacher/Home/Home_Messeger.dart';
 import 'package:askute/view/teacher/Home/homePageTeacher.dart';
 import 'package:askute/view/teacher/Home/thongKe.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 
-import 'Home/ClassHomePage.dart';
+import 'Home/Class/ClassHomePage.dart';
 
 class HomeTeacher extends StatefulWidget {
   const HomeTeacher({super.key});
@@ -39,11 +41,23 @@ class _HomeTeacherState extends State<HomeTeacher> {
             Text("Teacher"),
             Row(
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 0),
-                  child: Icon(
-                    Icons.add_circle_outline,
-                    size: 30,
+                GestureDetector(
+                  onTap: (){
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.bottomToTop,
+                        child: CreateClass( statepost: false,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 0),
+                    child: Icon(
+                      Icons.add_circle_outline,
+                      size: 30,
+                    ),
                   ),
                 ),
                 Padding(
