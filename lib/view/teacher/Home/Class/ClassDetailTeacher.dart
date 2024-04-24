@@ -1,7 +1,11 @@
+import 'dart:ffi';
+
 import 'package:askute/model/Class.dart';
 import 'package:askute/view/teacher/Home/Class/AddMemberScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../Class/createClass.dart';
 
@@ -14,6 +18,22 @@ class ClassDetailTeacher extends StatefulWidget {
 }
 
 class _ClassDetailTeacherState extends State<ClassDetailTeacher> {
+  late RxString curnetUser = "".obs;
+  @override
+  void initState() {
+    super.initState();
+
+    initCurrentUser();
+  }
+
+  void initCurrentUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    curnetUser = (prefs.getString('Avatar') ??
+        "https://inkythuatso.com/uploads/thumbnails/800/2023/03/10-anh-dai-dien-trang-inkythuatso-03-15-27-10.jpg")
+        .obs;
+    print(curnetUser);
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -78,7 +98,7 @@ class _ClassDetailTeacherState extends State<ClassDetailTeacher> {
         ),
         body: TabBarView(
           children: [
-            Tab1(),
+            Tab1(curentUser: curnetUser,),
             Tab2(),
             Tab3(classes: widget.classes,),
           ],
@@ -89,6 +109,9 @@ class _ClassDetailTeacherState extends State<ClassDetailTeacher> {
 }
 
 class Tab1 extends StatelessWidget {
+  final RxString curentUser;
+
+  const Tab1({required this.curentUser});
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -139,12 +162,67 @@ class Tab1 extends StatelessWidget {
                               fontWeight: FontWeight.w400,
                               fontSize: 15),
                         ),
+
                       ],
                     ),
                   ),
                 ),
               )
             ],
+          ),
+          Card(
+            elevation: 3,
+            margin: EdgeInsets.all(8),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: NetworkImage(this.curentUser.value),
+                      ),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: TextFormField(
+                          onTap: () {
+                            // Navigator.push(
+                            //   context,
+                            //   PageTransition(
+                            //     type: PageTransitionType.bottomToTop,
+                            //     child: CreatePostGroup(
+                            //       statepost: false,
+                            //       idGroup:
+                            //       homeGroupController.group_id.value,
+                            //     ),
+                            //   ),
+                            // );
+                          },
+                          decoration: InputDecoration(
+                            hintText: "Bạn nghĩ gì?",
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          // Handle post button click
+
+                          // Add logic to post the content to your backend or perform other actions
+                        },
+                        child: Text("Đăng"),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
@@ -221,7 +299,7 @@ class Tab3 extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
                     child: Text(
-                      "Trần Bửu Quyến",
+                      classes.teacher!.firstName.toString()+classes.teacher!.lastName,
                       style: TextStyle(
                         fontSize: 18,
                         color: Color(0xFF646368),
@@ -277,25 +355,34 @@ class Tab3 extends StatelessWidget {
                     ],
                   ),
                 ),
-                Row(
+                Column(
                   children: classes.listMembers.map((post) {
                     print(classes.listMembers);
-                    return Container(
-                        margin:EdgeInsets.fromLTRB(10, 0, 10, 0),
-                        decoration:
-                        BoxDecoration(color: Color(0xFF6E6ECF),
-                            borderRadius: BorderRadius.circular(10)
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Text(post.firstName.toString() +
-                                  post.lastName.toString()),
-                              Icon(Icons.close),
-                            ],
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          ClipOval(
+                            child: Image.network(
+                              post.profilePicture,
+                              width: 32,
+                              height: 32,
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        ));
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Text(
+                              post.firstName+ post.lastName,
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Color(0xFF646368),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
                   }).toList(),
                 ),
               ],

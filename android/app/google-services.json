@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "538648618303",
+    "project_id": "askute-a93f5",
+    "storage_bucket": "askute-a93f5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:538648618303:android:7b297b6eb1351c417bdf8a",
+        "android_client_info": {
+          "package_name": "com.example.askute"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiKA4ovU6d1003gr7jHIMBs8ejUgl6aPQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
