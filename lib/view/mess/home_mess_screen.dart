@@ -1,4 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../controller/MessageBoxController.dart';
+import '../../model/MessageBoxResponse.dart';
+import 'one_mess_screen.dart';
+
 
 class HomeMess extends StatefulWidget {
   const HomeMess({super.key});
@@ -6,7 +14,6 @@ class HomeMess extends StatefulWidget {
   @override
   State<HomeMess> createState() => _HomeMessState();
 }
-
 class UserMess{
   final int id;
   final String name;
@@ -16,8 +23,10 @@ class UserMess{
   UserMess(this.id, this.name, this.avatar, this.newest_mess, this.status_mess);
 }
 
+
 class _HomeMessState extends State<HomeMess> {
-  List<UserMess> users = [
+  final MessageBoxController messageBoxController = Get.put(MessageBoxController());
+  List<UserMess> usersTest = [
     UserMess(
       1,
       'John Doe',
@@ -53,15 +62,70 @@ class _HomeMessState extends State<HomeMess> {
     setState(() {});
   }
 
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+
+  }
+  List<UserMess> users  = [];
+  Future<void> _mapMessageBoxResponseToUserMess(List<MessageBoxResponse> list) async{
+    if (list!= null){
+      list!.forEach((element) {
+        if (element.userId == messageBoxController.user_id.value){
+          UserMess userMess = UserMess(element.friendId!, element.friendName!, element.friendAvatar!, element.content!, true);
+          users.add(userMess);}
+        else{
+          UserMess userMess = UserMess(element.userId!, element.friendName!, element.friendAvatar!, element.content!, true);
+          users.add(userMess);}
+
+      });
+    }
 
 
+  }
+  late String key;
+
+  late Timer _timer;
+  Stream<List<MessageBoxResponse>>? messageBoxStream;
+  void _startTimer() {
+    _timer = Timer.periodic(Duration(seconds: 2), (timer) {
+      // Gọi hàm cần thiết ở đây
+      messageBoxController.loadMessageScreen(context);
+      messageBoxStream = messageBoxController.listMessageBoxStream;
+      // Cập nhật danh sách nhóm khi Stream thay đổi
+      messageBoxStream?.listen((List<MessageBoxResponse>? updatedGroups) {
+        if (updatedGroups != null) {
+          setState(() {
+            users.clear();
+            _mapMessageBoxResponseToUserMess(updatedGroups);
+          });
+        }
+      });
+      onSearch(key);
+    });
+  }
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         SafeArea(
           child: Scaffold(
-              body: CustomScrollView(
+              body: StreamBuilder<List<MessageBoxResponse>>(
+                  stream: messageBoxStream,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      // Lấy dữ liệu từ Stream và cập nhật UI
+                      List<MessageBoxResponse>? updatedGroups = snapshot.data;
+                      users.clear();
+                      _mapMessageBoxResponseToUserMess(updatedGroups!);
+                    }
+                    return CustomScrollView(
                       slivers: [
                         SliverAppBar(
                           backgroundColor: Color(0xFF8587F1),
@@ -82,12 +146,13 @@ class _HomeMessState extends State<HomeMess> {
                               Padding(
                                 padding: EdgeInsets.all(16.0),
                                 child: TextField(
+
                                   decoration: InputDecoration(
                                     hintText: 'Tìm kiếm người dùng',
                                   ),
                                   onChanged: (text) {
-
-
+                                    key = text;
+                                    onSearch(text);
                                   },
                                 ),
                               ),
@@ -104,7 +169,11 @@ class _HomeMessState extends State<HomeMess> {
                                     ListTile(
                                       onTap: () {
                                         // Gọi hàm xử lý sự kiện khi nhấn vào hàng UserMess ở đây
-
+                                        messageBoxController.loadMessage(users[index].id, context);
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) => MessScreen()),
+                                        );
                                       },
                                       leading: CircleAvatar(
                                         backgroundImage: NetworkImage(
@@ -171,10 +240,44 @@ class _HomeMessState extends State<HomeMess> {
                           ),
                         ),
                       ],
-                    )
+                    );}
+              )
           ),
         ),
       ],
     );
   }
+  void _showConfirmationDialog(BuildContext context, int idMember) {
+    showDialog(
+      context: context,
+
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Xác nhận'),
+          content: Text('Giao quyền admin cho người này'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                // Đóng hộp thoại và thực hiện tác vụ khi người dùng chọn Yes
+                Navigator.of(context).pop();
+                // Thực hiện tác vụ khi người dùng chọn Yes ở đây
+              },
+              child: Text('Không'),
+            ),
+            TextButton(
+              onPressed: () {
+                Future.delayed(Duration(milliseconds: 100), () {
+                  int count =0;
+                  Navigator.of(context).popUntil((_) => count++ >= 2);
+                });
+              },
+              child: Text('Chắc chăn'),
+            ),
+          ],
+        );
+      },
+
+    );
+  }
+
 }

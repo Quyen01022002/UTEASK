@@ -1,7 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:photo_view/photo_view.dart';
+import 'package:get/get.dart';
+
+import '../../controller/MessageBoxController.dart';
+import '../../model/MessageModel.dart';
 
 class MessScreen extends StatefulWidget {
   const MessScreen({super.key});
@@ -27,8 +32,8 @@ class Message {
 
 class _MessScreenState extends State<MessScreen> {
   final ScrollController _scrollController = ScrollController();
-  //final List<Message> messages = [];
-  final List<Message> messages = [
+  final List<Message> messages = [];
+  final List<Message> messagess = [
     Message(
       id: 1,
       text: 'Hello there!',
@@ -67,15 +72,92 @@ class _MessScreenState extends State<MessScreen> {
     // Thêm tin nhắn khác nếu cần
   ];
 
+  final List<Message> _messages = [];
+  final MessageBoxController messageBoxController =
+  Get.put(MessageBoxController());
+  Stream<List<MessageModel>>? messageModelStream;
+
+  Future<void> _mapMessageModelToMessage(List<MessageModel> up) async {
+    if (up != null) {
+      up!.forEach((element) {
+        if (element.userId == messageBoxController.user_id.value) {
+          Message message = Message(
+              id: element.userId ?? 0,
+              text: element.content ?? '',
+              isMe: true,
+              type: 'text',
+              avatarUrl: messageBoxController.user!.avatarUrl!);
+          messages.add(message);
+        } else {
+          Message message = Message(
+              id: element.friendId ?? 0,
+              text: element.content ?? '',
+              isMe: false,
+              type: 'text',
+              avatarUrl: messageBoxController.friend!.avatarUrl!);
+          messages.add(message);
+        }
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
 
-    // _startTimer();
+    _startTimer();
   }
+
+  late Timer _timer;
+  late bool check = true;
+  late int leng = 0;
+
+  void _startTimer() {
+    _timer = Timer.periodic(Duration(seconds: 2), (timer) {
+      // Gọi hàm cần thiết ở đây
+      messageBoxController.loadMessage(
+          messageBoxController.friend_id.value, context);
+      messageModelStream = messageBoxController.listMessageStream;
+      // Cập nhật danh sách nhóm khi Stream thay đổi
+      messageModelStream?.listen((List<MessageModel>? updatedGroups) {
+        if (updatedGroups != null) {
+          setState(() {
+            messages.clear();
+            _mapMessageModelToMessage(updatedGroups);
+          });
+        }
+      });
+      if (leng != messages.length) {
+        check = true;
+        leng = messages.length;
+      }
+      _loadMessages();
+    });
+  }
+
+  void _loadMessages() {
+    // Simulate loading messages from a data source
+    // You can replace this with your actual data loading logic
+    Future.delayed(Duration(seconds: 1), () {
+      setState(() {
+        _messages.addAll(messages);
+      });
+
+      if (check == true) {
+        scrollToBottom(_scrollController);
+        check = false;
+      }
+    });
+  }
+  void scrollToBottom(ScrollController controller) {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      controller.jumpTo(controller.position.maxScrollExtent);
+    });
+  }
+
   @override
   void dispose() {
-   // _timer.cancel();
+    _timer.cancel();
     super.dispose();
   }
 
@@ -118,6 +200,7 @@ class _MessScreenState extends State<MessScreen> {
         ),
       ),
             _buildInputField(),
+            SizedBox(height: 10.0),
           ],
         ),
       ),
@@ -184,7 +267,7 @@ class _MessScreenState extends State<MessScreen> {
         children: [
           Expanded(
             child: TextField(
-              //controller: messageBoxController.textControllerMess,
+              controller: messageBoxController.textControllerMess,
               decoration: InputDecoration(
                 prefixIcon: Icon(Icons.add_to_photos_rounded,
                 color: Color(0xFF6A9EF5),), // Thêm biểu tượng ở đây
@@ -196,7 +279,7 @@ class _MessScreenState extends State<MessScreen> {
             icon: Icon(Icons.send,
             color: Color(0xFF6A9EF5),),
             onPressed: () {
-              //_sendMessage();
+              _sendMessage();
             },
           ),
         ],
@@ -204,6 +287,23 @@ class _MessScreenState extends State<MessScreen> {
     );
   }
 
+  void _sendMessage() {
+    setState(() {
+      _messages.add(Message(
+          id: messageBoxController.user_id.value,
+          text: messageBoxController.textControllerMess.text,
+          isMe: true,
+          type: 'text',
+          avatarUrl: messageBoxController.user!.avatarUrl.toString()));
+    });
+    _loadMessages();
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    });
+    messageBoxController.CreateMessage(
+        context, messageBoxController.friend_id.value);
+    check = true;
+  }
 
   Widget _buildMessageContainer(Message message) {
     if (message.type == 'text') {

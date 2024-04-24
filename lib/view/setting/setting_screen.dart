@@ -1,6 +1,7 @@
 import 'package:askute/controller/SettingController.dart';
 import 'package:askute/service/SendMessage.dart';
 import 'package:askute/view/setting/SavedPostsPage.dart';
+import 'package:askute/view/user/activity/ActivityScreen.dart';
 import 'package:askute/view/user/user_proflie_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -204,6 +205,13 @@ class _SettingScreenState extends State<SettingScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                          type: PageTransitionType.rightToLeft,
+                          child: ActivityScreen(),
+                        ),
+                      );
                     },
                     child: Container(
                       child: Column(
