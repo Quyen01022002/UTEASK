@@ -87,12 +87,14 @@ class HomeGroupController extends GetxController {
     groupCurrent = Stream.fromIterable([groupModel!]);
   }
 
+  RxInt pagenumber = 0.obs;
   Stream<List<PostModel>>? allPostFollowingStream;
   void GetListPost(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     final adminId = prefs.getInt('id') ?? 0;
     final token = prefs.getString('token') ?? "";
-    final groupModel = await API_Group.LoadMainHome(adminId, token);
+    pagenumber.value=0;
+    final groupModel = await API_Group.LoadMainHome(adminId, token, 0);
     if (groupModel != null) {
       listPost.clear();
       listPost.addAll(groupModel);
@@ -101,6 +103,20 @@ class HomeGroupController extends GetxController {
     allPostFollowingStream = Stream.fromIterable([groupModel!]);
   }
 
+  void loadMorePosts(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+
+    final groupModel = await API_Group.LoadMainHome(adminId, token, pagenumber.value+1);
+    if (groupModel != null && groupModel.length!= 0) {
+      //listPost.clear();
+      pagenumber.value = pagenumber.value+1;
+      listPost.addAll(groupModel);
+      update();
+    }
+    allPostFollowingStream = Stream.fromIterable([listPost!]);
+  }
   void addlistMembers(List<int> listuserid) {}
   List<UserMember>? users = [];
 
