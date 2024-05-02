@@ -205,22 +205,16 @@ class _SettingScreenState extends State<SettingScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        PageTransition(
-                          type: PageTransitionType.rightToLeft,
-                          child: ActivityScreen(),
-                        ),
-                      );
+
                     },
                     child: Container(
                       child: Column(
                         children: [
                            GestureDetector(
-                             onTap: () async {
-                               String? token= await FirebaseMessaging.instance.getToken();
-                               print(token);
-                               sendFriendRequestNotification(token);
+                             onTap: (){
+                               // String? token= await FirebaseMessaging.instance.getToken();
+                               // print(token);
+                               // sendFriendRequestNotification(token);
                              },
                              child: CircleAvatar(
                               radius: 20,
@@ -232,7 +226,7 @@ class _SettingScreenState extends State<SettingScreen> {
                            ),
                           SizedBox(width: 8),
                           Text(
-                            'Hoạt động',
+                            'Thông báo',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -276,6 +270,13 @@ class _SettingScreenState extends State<SettingScreen> {
                 children: [
                   GestureDetector(
                     onTap: () {
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                          type: PageTransitionType.rightToLeft,
+                          child: ActivityScreen(),
+                        ),
+                      );
                     },
                     child: Container(
                       child: Column(
@@ -289,7 +290,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           ),
                           SizedBox(width: 8),
                           Text(
-                            'Tin nhắn',
+                            'Hoạt động',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,

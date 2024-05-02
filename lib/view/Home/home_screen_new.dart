@@ -25,9 +25,10 @@ class HomeScreen2 extends StatefulWidget {
 
 class _HomeScreen2State extends State<HomeScreen2> {
   final HomeController _homeController = Get.put(HomeController());
+
   final HomeGroupController _homeGroupController =
   Get.put(HomeGroupController());
-
+  final ScrollController _scrollController = ScrollController();
   // final channel = IOWebSocketChannel.connect('ws://192.168.1.10:8090/data');
   String? selectedValue = 'Đang theo dõi';
 
@@ -37,6 +38,7 @@ class _HomeScreen2State extends State<HomeScreen2> {
   void initState() {
     super.initState();
     _startTimer();
+    _scrollController.addListener(_scrollListener);
     _homeController.load10HotPost(context);
     _homeGroupController.GetListPost(context);
     _homeGroupController.loadGroupsJoin();
@@ -47,7 +49,7 @@ class _HomeScreen2State extends State<HomeScreen2> {
 
   void _startTimer() {
     _timer = Timer.periodic(Duration(milliseconds: 500), (timer) {
-      if (selectedValue == 'Đang theo dõi') {
+      if (selectedValue == 'Đang theo dõi' && _homeGroupController.pagenumber.value==0 ) {
         _homeGroupController.GetListPost(context);
         // Gọi hàm cần thiết ở đây
         listPostStream = _homeGroupController.allPostFollowingStream;
@@ -59,7 +61,21 @@ class _HomeScreen2State extends State<HomeScreen2> {
             });
           }
         });
-      } else if (selectedValue == 'Nổi bật') {
+      }
+      if (selectedValue == 'Đang theo dõi' && _homeGroupController.pagenumber.value!=0 ) {
+        // Gọi hàm cần thiết ở đây
+
+        listPostStream = _homeGroupController.allPostFollowingStream;
+        // Đây là Stream mà bạn cần theo dõi
+        listPostStream?.listen((List<PostModel>? updatedGroups) {
+          if (updatedGroups != null) {
+            setState(() {
+              listPost = updatedGroups;
+            });
+          }
+        });
+      }
+      if (selectedValue == 'Nổi bật') {
         _homeController.load10HotPost(context);
         // Gọi hàm cần thiết ở đây
         listPostStream = _homeController.allPostHotStream;
@@ -73,6 +89,24 @@ class _HomeScreen2State extends State<HomeScreen2> {
         });
       }
     });
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      // Nếu đã đến cuối trang
+      _loadMoreData(); // Gọi hàm để load thêm dữ liệu
+    }
+  }
+  void _loadMoreData() {
+    // Load thêm dữ liệu ở đây, ví dụ:
+    if (selectedValue == 'Đang theo dõi') {
+       _homeGroupController.loadMorePosts(context);// Gọi hàm để load thêm bài viết
+        listPostStream = _homeGroupController.allPostFollowingStream;
+      int a=0;
+    } else if (selectedValue == 'Nổi bật') {
+     // _homeController.loadMoreHotPosts(); // Gọi hàm để load thêm bài viết nổi bật
+    }
   }
 
   // streamListener() {
@@ -99,6 +133,7 @@ class _HomeScreen2State extends State<HomeScreen2> {
           body: Stack(
             children: [
               NestedScrollView(
+                //controller: _scrollController,
                 headerSliverBuilder: (context, innerBoxIsScrolled) {
                   return [
                     SliverAppBar(
@@ -225,31 +260,6 @@ class _HomeScreen2State extends State<HomeScreen2> {
                 body: selectedValue == 'Đang theo dõi'
                     ? Column(
                   children: [
-                    // Container(
-                    //   margin: EdgeInsets.only(left: 80, right: 15),
-                    //   height: 50,
-                    //   child: Expanded(
-                    //     child: ListView.builder(
-                    //       scrollDirection: Axis.horizontal,
-                    //       itemCount: 10, // Số lượng hình ảnh avatar
-                    //       itemBuilder: (BuildContext context, int index) {
-                    //         // Trả về một widget avatar
-                    //         return GestureDetector(
-                    //           onTap: (){
-                    //
-                    //           },
-                    //           child: Padding(
-                    //             padding: const EdgeInsets.all(8.0), // Khoảng cách giữa các avatar
-                    //             child: CircleAvatar(
-                    //               backgroundImage: NetworkImage('https://i.pinimg.com/736x/46/93/87/469387400be3d2adc12f68167032985a.jpg'),  // Thay đổi đường dẫn tùy thuộc vào index
-                    //               radius: 30, // Bán kính của avatar
-                    //             ),
-                    //           ),
-                    //         );
-                    //       },
-                    //     ),
-                    //   ),
-                    // ),
                     Container(
                       margin: EdgeInsets.only(left: 60, right: 15),
                       child: Row(
@@ -348,7 +358,27 @@ class _HomeScreen2State extends State<HomeScreen2> {
   }
 
   Widget _buildPost() {
-    return Expanded(
+    return NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+      if (notification is ScrollEndNotification &&
+          notification.metrics.extentAfter == 0) {
+        _loadMoreData(); // Nếu scroll đã cuộn đến cuối trang và không cuộn thêm nữa, load thêm dữ liệu
+      }
+      return true;
+    },
+    child:  selectedValue == 'Đang theo dõi' ? Expanded(
+            child: StreamBuilder<List<PostModel>>(
+              stream: listPostStream,
+              builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data != null) {
+                  return HotPostQuestionScreen(listPost: snapshot.data!);
+                } else
+                  return Container(
+                    child: Text('Theo dõi thêm khoa để xem thêm bài viết mới'),
+                  );
+              },
+            ))
+        : Expanded(
         child: StreamBuilder<List<PostModel>>(
           stream: listPostStream,
           builder: (context, snapshot) {
@@ -356,10 +386,14 @@ class _HomeScreen2State extends State<HomeScreen2> {
               return HotPostQuestionScreen(listPost: snapshot.data!);
             } else
               return Container(
-                child: Text('Vui lòng theo dõi thêm khoa để xem các bài viết'),
+                child: Text('Đang tải ba viết nổi bật'),
               );
           },
-        ));
+        )));
+  }
+  Widget _buildPostold() {
+    return Expanded(
+        child: HotPostQuestionScreen(listPost: _homeGroupController.listPost));
   }
 }
 
