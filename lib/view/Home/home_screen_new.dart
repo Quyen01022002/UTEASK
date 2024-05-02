@@ -25,7 +25,7 @@ class HomeScreen2 extends StatefulWidget {
 
 class _HomeScreen2State extends State<HomeScreen2> {
   final HomeController _homeController = Get.put(HomeController());
-
+  bool isLoadingMore = false;
   final HomeGroupController _homeGroupController =
   Get.put(HomeGroupController());
   final ScrollController _scrollController = ScrollController();
@@ -107,6 +107,11 @@ class _HomeScreen2State extends State<HomeScreen2> {
     } else if (selectedValue == 'Nổi bật') {
      // _homeController.loadMoreHotPosts(); // Gọi hàm để load thêm bài viết nổi bật
     }
+    Future.delayed(Duration(seconds: 1), () {
+      setState(() {
+        isLoadingMore = false;
+      });
+    });
   }
 
   // streamListener() {
@@ -362,6 +367,9 @@ class _HomeScreen2State extends State<HomeScreen2> {
         onNotification: (notification) {
       if (notification is ScrollEndNotification &&
           notification.metrics.extentAfter == 0) {
+        setState(() {
+          isLoadingMore = true; // Đặt isLoadingMore thành true để hiển thị cử chỉ loading
+        });
         _loadMoreData(); // Nếu scroll đã cuộn đến cuối trang và không cuộn thêm nữa, load thêm dữ liệu
       }
       return true;
@@ -371,7 +379,15 @@ class _HomeScreen2State extends State<HomeScreen2> {
               stream: listPostStream,
               builder: (context, snapshot) {
                 if (snapshot.hasData && snapshot.data != null) {
-                  return HotPostQuestionScreen(listPost: snapshot.data!);
+                  return Stack(
+                    children: [
+                      HotPostQuestionScreen(listPost: snapshot.data!),
+                      if (isLoadingMore) // Hiển thị cử chỉ loading nếu đang load thêm dữ liệu
+                        Center(
+                          child: CircularProgressIndicator(), // Hiển thị widget CircularProgressIndicator
+                        ),
+                    ],
+                  );
                 } else
                   return Container(
                     child: Text('Theo dõi thêm khoa để xem thêm bài viết mới'),
