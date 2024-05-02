@@ -828,7 +828,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                   ),
                 ));
               },
-              child: _buildFirstImage(imageUrls[0])),
+              child: _buildFirstImage(imageUrls[1])),
         ],
       ),
     );
