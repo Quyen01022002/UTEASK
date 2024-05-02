@@ -2,8 +2,10 @@ import 'package:askute/model/ClassMemberRequest.dart';
 import 'package:askute/model/UsersEnity.dart';
 import 'package:askute/service/API_Class.dart';
 import 'package:askute/service/API_Search.dart';
+import 'package:askute/view/teacher/Home/Class/ClassDetailTeacher.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -41,7 +43,7 @@ class Search_Controller extends GetxController {
     });
 
 
-    await API_Class.addMembersToGroup(token, members);
+    await API_Class.addMembersToGroup(token, members,classId,context);
   }
 
 }

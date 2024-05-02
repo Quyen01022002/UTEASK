@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:askute/controller/CreatePost.dart';
 import 'package:askute/controller/HomeGroupController.dart';
+import 'package:askute/model/Class.dart';
 import 'package:askute/model/PostModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -13,16 +14,17 @@ import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
-class CreatePost extends StatefulWidget {
+class CreateClassPost extends StatefulWidget {
   final bool statepost;
+  final ClassModel classes;
 
-  const CreatePost({Key? key, required this.statepost}) : super(key: key);
+  const CreateClassPost({Key? key, required this.statepost, required this.classes}) : super(key: key);
 
   @override
-  State<CreatePost> createState() => _CreatePostState();
+  State<CreateClassPost> createState() => _CreatePostState();
 }
 
-class _CreatePostState extends State<CreatePost> {
+class _CreatePostState extends State<CreateClassPost> {
   List<XFile> _images = [];
   late bool statepost;
   late bool statecontent = false;
@@ -137,12 +139,13 @@ class _CreatePostState extends State<CreatePost> {
                                       setState(() {
                                         statepost = true;
                                       });
+                                      groupid=widget.classes.id!;
 
                                       postController.contentpost.value =
                                           postController
                                               .textControllerContent.text;
                                       await _uploadImages();
-                                      postController.createpostGroup(context,groupid);
+                                      postController.createpostClass(context,groupid,widget.classes);
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.blue,
@@ -158,45 +161,45 @@ class _CreatePostState extends State<CreatePost> {
                             ],
                           ),
                         ),
-                        CarouselSlider(
-                          options: CarouselOptions(
-                            height: 100.0,
-                            viewportFraction: 0.8,
-                            enlargeCenterPage: true,
-                            onPageChanged: (index, reason) {
-                              setState(() {
-                                groupid=  _homeController.groups![index].id!;
-                              });
-                            },
-                          ),
-                          items: _homeController.groupsJoin!.map((item) {
-                            return Builder(
-                              builder: (BuildContext context) {
-                                return Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  margin: EdgeInsets.symmetric(horizontal: 5.0),
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      image: NetworkImage(item.avatar.toString()), // Thay đổi đường dẫn tới ảnh của bạn
-                                      fit: BoxFit.cover, // Đảm bảo ảnh sẽ che đầy Container
-                                    ),
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      item.name.toString(),
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 24.0,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          }).toList(),
-                        ),
+                        // CarouselSlider(
+                        //   options: CarouselOptions(
+                        //     height: 100.0,
+                        //     viewportFraction: 0.8,
+                        //     enlargeCenterPage: true,
+                        //     onPageChanged: (index, reason) {
+                        //       setState(() {
+                        //         groupid=  _homeController.groups![index].id!;
+                        //       });
+                        //     },
+                        //   ),
+                        //   items: _homeController.groupsJoin!.map((item) {
+                        //     return Builder(
+                        //       builder: (BuildContext context) {
+                        //         return Container(
+                        //           width: MediaQuery.of(context).size.width,
+                        //           margin: EdgeInsets.symmetric(horizontal: 5.0),
+                        //           decoration: BoxDecoration(
+                        //             image: DecorationImage(
+                        //               image: NetworkImage(item.avatar.toString()), // Thay đổi đường dẫn tới ảnh của bạn
+                        //               fit: BoxFit.cover, // Đảm bảo ảnh sẽ che đầy Container
+                        //             ),
+                        //             borderRadius: BorderRadius.circular(10.0),
+                        //           ),
+                        //           child: Center(
+                        //             child: Text(
+                        //               item.name.toString(),
+                        //               style: TextStyle(
+                        //                 color: Colors.white,
+                        //                 fontSize: 24.0,
+                        //                 fontWeight: FontWeight.bold,
+                        //               ),
+                        //             ),
+                        //           ),
+                        //         );
+                        //       },
+                        //     );
+                        //   }).toList(),
+                        // ),
                         Padding(
                           padding: const EdgeInsets.all(22.0),
                           child: Column(
@@ -258,42 +261,48 @@ class _CreatePostState extends State<CreatePost> {
                                   borderRadius: BorderRadius.circular(20.0), // Bo góc
                                   color: Colors.white,
                                 ),
-                                child: TextField(
-                                  focusNode: _focusNode,
-                                  autofocus: false,
-                                  controller: postController.textControllerContent,
-                                  maxLines: 4,
-                                  onChanged: (text) {
-                                    if (text == null || text.isEmpty) {
-                                      setState(() {
-                                        statecontent = false;
-                                      });
-                                    } else {
-                                      setState(() {
-                                        statecontent = true;
-                                      });
-                                    }
-                                  },
-                                  decoration: InputDecoration(
-                                    hintText: "Bạn đang nghĩ gì?",
-                                    border: InputBorder.none,
-                                  ),
+                                child: Column(
+                                  children: [
+                                    TextField(
+                                      focusNode: _focusNode,
+                                      autofocus: false,
+                                      controller: postController.textControllerContent,
+                                      maxLines: 4,
+                                      onChanged: (text) {
+                                        if (text == null || text.isEmpty) {
+                                          setState(() {
+                                            statecontent = false;
+                                          });
+                                        } else {
+                                          setState(() {
+                                            statecontent = true;
+                                          });
+                                        }
+                                      },
+                                      decoration: InputDecoration(
+                                        hintText: "Bạn đang nghĩ gì?",
+                                        border: InputBorder.none,
+                                      ),
+
+                                    ),
+                                    if (_images.isNotEmpty)
+                                      Column(
+                                        children: _images.map((image) {
+                                          return Image.file(
+                                            File(image.path),
+                                            height: 400,
+                                            width: 380,
+                                            fit: BoxFit.cover,
+                                          );
+                                        }).toList(),
+                                      ),
+                                  ],
                                 ),
                               ),
                               const SizedBox(
                                 height: 20,
                               ),
-                              if (_images.isNotEmpty)
-                                Column(
-                                  children: _images.map((image) {
-                                    return Image.file(
-                                      File(image.path),
-                                      height: 400,
-                                      width: 380,
-                                      fit: BoxFit.cover,
-                                    );
-                                  }).toList(),
-                                ),
+
                             ],
                           ),
                         ),

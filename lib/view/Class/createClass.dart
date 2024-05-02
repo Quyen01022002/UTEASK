@@ -68,7 +68,7 @@ class _CreatePostState extends State<CreateClass> {
                                 child: Icon(Icons.arrow_back_ios),
                               ),
                               Text(
-                                "Đặt câu hỏi",
+                                "Thêm Lớp Học",
                                 style: TextStyle(
                                     color: Colors.black,
                                     decoration: TextDecoration.none,
@@ -91,13 +91,13 @@ class _CreatePostState extends State<CreateClass> {
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.blue,
                                     ),
-                                    child: Text("Đăng"))
+                                    child: Text("Đăng",style: TextStyle(color: Colors.white),))
                                     : ElevatedButton(
                                     onPressed: () async {},
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.grey,
                                     ),
-                                    child: Text("Đăng")),
+                                    child: Text("Đăng",style: TextStyle(color: Colors.white),)),
                               )
                             ],
                           ),
@@ -155,9 +155,9 @@ class _CreatePostState extends State<CreateClass> {
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.grey.withOpacity(0.5),
-                                      spreadRadius: 5,
-                                      blurRadius: 7,
-                                      offset: Offset(0, 3), // Độ dịch chuyển của bóng
+                                      spreadRadius: 2,
+                                      blurRadius: 3,
+                                      offset: Offset(3, 3),
                                     ),
                                   ],
                                   borderRadius: BorderRadius.circular(20.0), // Bo góc
@@ -197,9 +197,9 @@ class _CreatePostState extends State<CreateClass> {
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.grey.withOpacity(0.5),
-                                      spreadRadius: 5,
-                                      blurRadius: 7,
-                                      offset: Offset(0, 3), // Độ dịch chuyển của bóng
+                                      spreadRadius: 2,
+                                      blurRadius: 3,
+                                      offset: Offset(3, 3),// Độ dịch chuyển của bóng
                                     ),
                                   ],
                                   borderRadius: BorderRadius.circular(20.0), // Bo góc

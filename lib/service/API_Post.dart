@@ -3,11 +3,16 @@ import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:askute/model/ApiReponse.dart';
+import 'package:askute/model/Class.dart';
 import 'package:askute/model/CommentResponse.dart';
 import 'package:askute/model/InteractionsResponse.dart';
 import 'package:askute/model/PostEnity.dart';
 import 'package:askute/model/PostModel.dart';
+import 'package:askute/service/API_Class.dart';
 import 'package:askute/service/const.dart';
+import 'package:askute/view/teacher/Home/Class/ClassDetailTeacher.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../model/CommentEntity.dart';
@@ -92,6 +97,45 @@ class API_Post {
       body: jsonEncode(data),
     );
   }
+ static Future<PostEntity?> postClass(
+      PostEntity post, List<String> img, String token, int groupId,BuildContext context) async {
+    final url = Uri.parse('$baseUrl/post/post');
+
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+    List<Map<String, String>> listAnh =
+        img.map((imageUrl) => {'linkPicture': imageUrl}).toList();
+
+    final Map<String, dynamic> data = {
+      "classes": groupId,
+      "contentPost": post.content_post,
+      "listAnh": listAnh,
+    };
+
+    await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(data),
+    );
+    final ClassModel? classModel = await API_Class.getClassById(groupId, token);
+    if (classModel != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DefaultTabController(
+            initialIndex: 2,
+            length: 3,
+            child: ClassDetailTeacher(classes: classModel),
+          ),
+        ),
+      );
+
+    } else {
+      // Handle the case where classModel is null
+    }
+  }
 
   static Future<PostEntity?> upatePost(
       PostEntity post, List<String> img, String token) async {
@@ -129,6 +173,7 @@ class API_Post {
       headers: headers,
     );
   }
+
   static Future<InteractionsEntity?> Saved(
       String token,int userid, int postid) async {
     final url = Uri.parse('$baseUrl/save/add?userId=$userid&postId=$postid');

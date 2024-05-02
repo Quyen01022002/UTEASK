@@ -62,6 +62,14 @@ class ClassController extends GetxController{
     if (result != null) classes = result;
   }
 
+  Future<void> deleteMemberOutGroup(BuildContext context,int idMembers,int? classID) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final token = prefs.getString('token') ?? "";
+
+
+    await API_Class.deleteMemberOutClassById(idMembers, classID,token,context);
+  }
 
 
 

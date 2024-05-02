@@ -1,6 +1,9 @@
+import 'package:askute/model/Class.dart';
 import 'package:askute/model/PostEnity.dart';
+import 'package:askute/service/API_Class.dart';
 import 'package:askute/service/API_Post.dart';
 import 'package:askute/view/dashboard/DashBoard_new.dart';
+import 'package:askute/view/teacher/Home/Class/ClassDetailTeacher.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -50,6 +53,18 @@ class CreatePostController extends GetxController {
         MaterialPageRoute(builder: (context) => DashBoardVer2()),
       );
     });
+  } void createpostClass(BuildContext context,int id,ClassModel classes) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('id') ?? 0;
+
+    PostEntity userEnity = PostEntity(
+        user_id: userId,
+        content_post: textControllerContent.text,
+        timestamp: DateTime.now(),
+        status: "");
+    final token = prefs.getString('token') ?? "";
+    await API_Post.postClass(userEnity,imagePaths.value,token,id,context);
+
   }
   void updatePost(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();

@@ -245,7 +245,7 @@ SizedBox(width: 2,),Text(widget.post.like_count.toString(),
     //Nếu list ảnh chỉ có một hình ảnh
     return Container(
       height: MediaQuery.of(context).size.width * 0.99,
-      width: MediaQuery.of(context).size.width * 0.65,
+      width: MediaQuery.of(context).size.width * 1,
       child: GestureDetector(
           onTap: () {
             Navigator.of(context).push(MaterialPageRoute(
@@ -297,7 +297,7 @@ SizedBox(width: 2,),Text(widget.post.like_count.toString(),
     return Container(
 
       child: Container(
-        height: (MediaQuery.of(context).size.width -30)*1.028,
+        height: (MediaQuery.of(context).size.width -30)*1.058,
         width: (MediaQuery.of(context).size.width - 30),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -312,7 +312,7 @@ SizedBox(width: 2,),Text(widget.post.like_count.toString(),
                   ));
                 },
                 child: Container(
-                    width: (MediaQuery.of(context).size.width-30) * 0.5 * 0.99,
+                    width: (MediaQuery.of(context).size.width-30) * 0.5 * 0.89,
                     height: (MediaQuery.of(context).size.height-30) * 0.99,
                     child: _buildFirstImage(imageUrls[0]))),
             Container(

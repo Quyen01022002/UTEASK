@@ -1,11 +1,13 @@
 
 import 'package:askute/view/Class/createClass.dart';
+import 'package:askute/view/component/Drawer.dart';
 import 'package:askute/view/teacher/Home/Home_Messeger.dart';
 import 'package:askute/view/teacher/Home/homePageTeacher.dart';
 import 'package:askute/view/teacher/Home/thongKe.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
+import '../component/headerTeacher.dart';
 import 'Home/Class/ClassHomePage.dart';
 
 class HomeTeacher extends StatefulWidget {
@@ -35,53 +37,11 @@ class _HomeTeacherState extends State<HomeTeacher> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text("Teacher"),
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: (){
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                        type: PageTransitionType.bottomToTop,
-                        child: CreateClass( statepost: false,
-                        ),
-                      ),
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 0),
-                    child: Icon(
-                      Icons.add_circle_outline,
-                      size: 30,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 0),
-                  child: Icon(
-                    Icons.notifications_none_outlined,
-                    size: 30,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 0),
-                  child: ClipOval(
-                    child: Image.asset(
-                      "assets/images/login.png",
-                      width: 25,
-                      height: 25,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                )
-              ],
-            )
-          ],
-        ),
+        title: HeaderTeacher(),
+        automaticallyImplyLeading: false,
+      ),
+      endDrawer: Drawer(
+        child: DrawerScreen(),
       ),
       body: Center(
         child: _pages.elementAt(_selectedIndex),

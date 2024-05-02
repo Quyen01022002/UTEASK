@@ -84,14 +84,14 @@ class _SavedPostItemState extends State<ClassItem> {
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text("Lớp Lập Trình Di Động",style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500),),
+            child: Text(widget.classModel.name!,style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500),),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(8.0,65,8,8),
-            child: Text(widget.classModel.name.toString(),style: TextStyle(color: Colors.white,fontWeight: FontWeight.w400),),
+            child: Text(widget.classModel.teacher!.firstName.toString()+widget.classModel.teacher!.lastName.toString(),style: TextStyle(color: Colors.white,fontWeight: FontWeight.w400),),
           ),
           Container(
-              margin:EdgeInsets.fromLTRB(MediaQuery.of(context).size.width*70/100, 70, 0, 20),child: ClipOval(child: Image.asset("assets/images/login.png",width: 80,height: 80,fit: BoxFit.cover,),)),
+              margin:EdgeInsets.fromLTRB(MediaQuery.of(context).size.width*70/100, 70, 0, 20),child: ClipOval(child: Image.network(widget.classModel.teacher!.profilePicture.toString(),width: 80,height: 80,fit: BoxFit.cover,),)),
         ],
       ),
     );

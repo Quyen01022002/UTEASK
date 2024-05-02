@@ -15,7 +15,7 @@ class UserEnity {
   final String? hash;
   final String? avatarUrl;
   final bool? is_actived;
-  final bool? isFriends;
+  late final bool? isFriends;
   final DateTime? created_at;
   final DateTime? updated_at;
   final int? countFriend;

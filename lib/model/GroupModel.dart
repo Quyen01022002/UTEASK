@@ -59,6 +59,7 @@ class GroupModel {
 }
 class UserMember {
   final int id;
+  final int idMembers;
   final String firstName;
   final String lastName;
   final String phone;
@@ -67,6 +68,7 @@ class UserMember {
 
   UserMember({
     required this.id,
+    required this.idMembers,
     required this.firstName,
     required this.lastName,
     required this.phone,
@@ -77,6 +79,7 @@ class UserMember {
   factory UserMember.fromJson(Map<String, dynamic> json) {
     return UserMember(
       id: json['user']['id'] ?? 0,
+      idMembers: json['id'] ?? 0,
       firstName: json['user']['firstName'] ?? "",
       lastName: json['user']['lastName'] ?? "",
       phone: json['user']['phone'] ?? "" ,

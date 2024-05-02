@@ -10,7 +10,6 @@ import 'package:askute/model/UsersEnity.dart';
 class ClassModel {
   final int? id;
   final TeacherMember? teacher;
-
   final String? name;
   final int? groups;
   final String? description;
