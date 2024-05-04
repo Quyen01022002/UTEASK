@@ -158,6 +158,34 @@ class API_Group{
       return null;
     }
   }
+
+  static Future<List<PostModel>?> LoadPostClass(int userid, String token, int pagenumber) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/post/classes/$userid/$pagenumber'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<PostModel>> listPost =
+        ApiReponse<List<PostModel>>.fromJson(
+          utf8Data,
+              (dynamic json) =>
+          List<PostModel>.from(json.map((x) => PostModel.fromJson(x))),
+        );
+        return listPost.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
   static Future<List<GroupModel>?> getAllGroupsOfAdmin(String token, int adminId) async {
     final url = Uri.parse('$baseUrl/group/admin/$adminId');
     final headers = {
