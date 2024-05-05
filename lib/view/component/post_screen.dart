@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:askute/controller/HomeController.dart';
 import 'package:askute/controller/PostController.dart';
+import 'package:askute/view/user/user_proflie_other.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -50,37 +51,46 @@ class _PostScreenState extends State<PostScreen> {
           children: [
             Container(
               padding: EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 20,
-                    backgroundImage:
-                    NetworkImage(widget.post.createBy.profilePicture),
-                    // Hoặc sử dụng NetworkImage nếu avatar từ một URL
-                    // backgroundImage: NetworkImage('URL_TO_AVATAR'),
-                  ),
-                  SizedBox(width: 8),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.post.createBy.firstName+" " + widget.post.createBy.lastName,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+              child: GestureDetector(
+                onTap: ()
+                {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ProfileUserOther(id: widget.post.createBy.id)),
+                  );
+                },
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 20,
+                      backgroundImage:
+                      NetworkImage(widget.post.createBy.profilePicture),
+                      // Hoặc sử dụng NetworkImage nếu avatar từ một URL
+                      // backgroundImage: NetworkImage('URL_TO_AVATAR'),
+                    ),
+                    SizedBox(width: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.post.createBy.firstName+" " + widget.post.createBy.lastName,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
 
-                      Text(
-                        formattedTime,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black45,
-                        ),
-                      ),                              ],
-                  ),
-                ],
+                        Text(
+                          formattedTime,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black45,
+                          ),
+                        ),                              ],
+                    ),
+                  ],
+                ),
               ),
             ),
             Container(

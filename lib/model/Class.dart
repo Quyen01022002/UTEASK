@@ -69,6 +69,7 @@ class TeacherMember {
   final String firstName;
   final String lastName;
   final String phone;
+  final String fcm;
   final String email;
   final String profilePicture;
 
@@ -77,6 +78,7 @@ class TeacherMember {
     required this.firstName,
     required this.lastName,
     required this.phone,
+    required this.fcm,
     required this.email,
     required this.profilePicture,
   });
@@ -87,6 +89,7 @@ class TeacherMember {
       firstName: json['firstName'] ?? "",
       lastName: json['lastName'] ?? "",
       phone: json['phone'] ?? "" ,
+      fcm: json['fcm'] ?? "" ,
       email: json['email'] ?? "",
       profilePicture: json['profilePicture'] ?? "",
     );

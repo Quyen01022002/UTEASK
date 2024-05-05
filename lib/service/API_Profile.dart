@@ -9,7 +9,7 @@ import 'const.dart';
 class API_Profile
 {
 
-  static Future<UserProfile?> profile(int userid, String token) async {
+  static Future<UserProfile?> profile(int? userid, String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/user/$userid'),
       headers: {

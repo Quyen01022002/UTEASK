@@ -1,7 +1,9 @@
+import 'package:askute/view/teacher/teacher_home.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../Class/createClass.dart';
+
 class HeaderTeacher extends StatefulWidget {
   const HeaderTeacher({super.key});
 
@@ -15,7 +17,14 @@ class _HeaderTeacherState extends State<HeaderTeacher> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text("Teacher"),
+        GestureDetector(
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => HomeTeacher()),
+              );
+            },
+            child: Text("Teacher")),
         Row(
           children: [
             GestureDetector(
@@ -48,7 +57,7 @@ class _HeaderTeacherState extends State<HeaderTeacher> {
             GestureDetector(
               onTap: () {
                 Scaffold.of(context).openEndDrawer();
-                },
+              },
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 0),
                 child: ClipOval(

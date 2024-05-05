@@ -2,6 +2,7 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:askute/view/authen/forgot_password_screen.dart';
 import 'package:askute/view/authen/signUpScreen.dart';
 import 'package:askute/view/authen/verify_screen.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -175,12 +176,14 @@ class _LoginscreenState extends State<Loginscreen> {
                         const SizedBox(height: 36),
                         Center(
                           child: ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async{
                               myController.email.value =
                                   myController.textControllerEmail.text;
                               myController.pass.value =
                                   myController.textControllerPass.text;
                               myController.login(context);
+                              String? token= await FirebaseMessaging.instance.getToken();
+                              myController.updateUserfcm(context, token);
 
                               Future.delayed(Duration(milliseconds: 500), () {
                                 if (myController.stateLogin != null &&

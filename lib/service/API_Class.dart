@@ -82,6 +82,53 @@ class API_Class{
       return null;
     }
   }
+  static Future<String> updateAvatar(int? userid,String token,String Avatar) async {
+    final url = Uri.parse('$baseUrl/class/$userid');
+
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',};
+
+// Tạo một Map chứa dữ liệu người dùng
+    final data = {
+      "avatar":Avatar,
+
+    };
+
+    await http.patch(
+      url,
+      headers: headers,
+      body: jsonEncode(data),
+    );
+    return "Success";
+  }
+  static Future<List<ClassModel>?> getMembersClass(String token,int id) async {
+    final url = Uri.parse('$baseUrl/class/members/$id');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+    final response = await http.get(
+      url,
+      headers: headers,
+    );
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+      if (responseData.isNotEmpty){
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<ClassModel>> listgroup = ApiReponse<List<ClassModel>>.fromJson(utf8Data, (dynamic json) => List<ClassModel>.from(json.map((x) => ClassModel.fromJson(x))),
+        );
+        return listgroup.payload;
+      }
+      else
+      {
+        return null;
+      }
+    } else {
+      // Handle error scenarios here
+      return null;
+    }
+  }
   static Future<ClassModel?> addMembersToGroup(String token, List<ClassMemberRequest> members,int? classID,BuildContext context) async{
     final url = Uri.parse('$baseUrl/class/addMembers');
     final headers = {

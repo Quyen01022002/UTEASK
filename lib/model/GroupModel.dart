@@ -63,6 +63,7 @@ class UserMember {
   final String firstName;
   final String lastName;
   final String phone;
+  final String fcm;
   final String email;
   final String profilePicture;
 
@@ -72,6 +73,7 @@ class UserMember {
     required this.firstName,
     required this.lastName,
     required this.phone,
+    required this.fcm,
     required this.email,
     required this.profilePicture,
   });
@@ -83,6 +85,7 @@ class UserMember {
       firstName: json['user']['firstName'] ?? "",
       lastName: json['user']['lastName'] ?? "",
       phone: json['user']['phone'] ?? "" ,
+      fcm: json['user']['fcm'] ?? "" ,
       email: json['user']['email'] ?? "",
       profilePicture: json['user']['profilePicture'] ?? "",
     );

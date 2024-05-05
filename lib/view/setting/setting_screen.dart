@@ -1,5 +1,6 @@
 import 'package:askute/controller/SettingController.dart';
 import 'package:askute/service/SendMessage.dart';
+import 'package:askute/view/setting/ClassHomeStudent.dart';
 import 'package:askute/view/setting/SavedPostsPage.dart';
 import 'package:askute/view/user/activity/ActivityScreen.dart';
 import 'package:askute/view/user/user_proflie_screen.dart';
@@ -302,6 +303,13 @@ class _SettingScreenState extends State<SettingScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
+                      Navigator.push(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.rightToLeft,
+                        child: ClassHomeStudent(),
+                      ),
+                    );
                     },
                     child: Container(
                       child: Column(
@@ -315,7 +323,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           ),
                           SizedBox(width: 8),
                           Text(
-                            'Option 4',
+                            'Lớp Học',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,

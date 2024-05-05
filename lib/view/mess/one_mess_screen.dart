@@ -78,27 +78,27 @@ class _MessScreenState extends State<MessScreen> {
   Stream<List<MessageModel>>? messageModelStream;
 
   Future<void> _mapMessageModelToMessage(List<MessageModel> up) async {
-    if (up != null) {
-      up!.forEach((element) {
-        if (element.userId == messageBoxController.user_id.value) {
-          Message message = Message(
-              id: element.userId ?? 0,
-              text: element.content ?? '',
-              isMe: true,
-              type: 'text',
-              avatarUrl: messageBoxController.user!.avatarUrl!);
-          messages.add(message);
-        } else {
-          Message message = Message(
-              id: element.friendId ?? 0,
-              text: element.content ?? '',
-              isMe: false,
-              type: 'text',
-              avatarUrl: messageBoxController.friend!.avatarUrl!);
-          messages.add(message);
-        }
-      });
-    }
+    // if (up != null) {
+    //   up!.forEach((element) {
+    //     if (element.userId == messageBoxController.user_id.value) {
+    //       Message message = Message(
+    //           id: element.userId ?? 0,
+    //           text: element.content ?? '',
+    //           isMe: true,
+    //           type: 'text',
+    //           avatarUrl: messageBoxController.user!.avatarUrl!);
+    //       messages.add(message);
+    //     } else {
+    //       Message message = Message(
+    //           id: element.friendId ?? 0,
+    //           text: element.content ?? '',
+    //           isMe: false,
+    //           type: 'text',
+    //           avatarUrl: messageBoxController.friend!.avatarUrl!);
+    //       messages.add(message);
+    //     }
+    //   });
+    // }
   }
 
   @override
@@ -115,9 +115,9 @@ class _MessScreenState extends State<MessScreen> {
   void _startTimer() {
     _timer = Timer.periodic(Duration(seconds: 2), (timer) {
       // Gọi hàm cần thiết ở đây
-      messageBoxController.loadMessage(
-          messageBoxController.friend_id.value, context);
-      messageModelStream = messageBoxController.listMessageStream;
+      // messageBoxController.loadMessage(
+      //     messageBoxController.friend_id.value, context);
+      // messageModelStream = messageBoxController.listMessageStream;
       // Cập nhật danh sách nhóm khi Stream thay đổi
       messageModelStream?.listen((List<MessageModel>? updatedGroups) {
         if (updatedGroups != null) {
@@ -294,14 +294,14 @@ class _MessScreenState extends State<MessScreen> {
           text: messageBoxController.textControllerMess.text,
           isMe: true,
           type: 'text',
-          avatarUrl: messageBoxController.user!.avatarUrl.toString()));
+          avatarUrl:" messageBoxController.user!.avatarUrl.toString()"));
     });
     _loadMessages();
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });
-    messageBoxController.CreateMessage(
-        context, messageBoxController.friend_id.value);
+    // messageBoxController.CreateMessage(
+    //     context, messageBoxController.friend_id.value);
     check = true;
   }
 

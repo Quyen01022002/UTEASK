@@ -84,6 +84,7 @@ class LoginController extends GetxController
     final userId = prefs.getInt('id') ?? 0;
     final token = prefs.getString('token') ?? "";
     API_login.fcm(userId,token,fcm!);
+    print("fcm");
 
   }
   Future<void> saveLoggedInState(AuthenticationResponse user) async {

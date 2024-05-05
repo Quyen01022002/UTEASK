@@ -63,6 +63,34 @@ class MyProfileController extends GetxController {
       print("Lỗi: $e");
     }
   }
+  void loadOtherProfile(int? id) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    myToken.value = prefs.getString('token')!;
+    try {
+      final userProfile = await API_Profile.profile(id, myToken.value);
+      if (userProfile != null) {
+        listPost.value = userProfile.listpost!;
+        follow.value = userProfile.friends!.length!;
+        post.value = userProfile.listpost!.length!;
+        fisrt_name.value = userProfile.first_name!;
+        last_name.value = userProfile.last_name!;
+        email.value = userProfile.email!;
+        phone.value = userProfile.phone!;
+        Avatar.value = userProfile.avatarUrl!;
+        BackGround.value = userProfile.backGround!;
+        isFriend.value = userProfile.isFriends!;
+        firstNameController.text = userProfile.first_name!;
+        lastNameController.text = userProfile.last_name!;
+        emailController.text = userProfile.email!;
+        phoneController.text = userProfile.phone!;
+        print(userProfile.isFriends);
+        update();
+      }
+    } catch (e) {
+      print("Lỗi: $e");
+    }
+  }
 
 
 

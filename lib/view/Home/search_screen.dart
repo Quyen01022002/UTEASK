@@ -5,6 +5,7 @@ import 'package:askute/controller/SearchController.dart';
 import 'package:askute/model/GroupModel.dart';
 import 'package:askute/model/PostModel.dart';
 import 'package:askute/view/Home/hot_post_screen.dart';
+import 'package:askute/view/user/user_proflie_other.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -582,6 +583,10 @@ _startTimer();
             itemBuilder: (context, index) {
               return ListTile(
                 onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ProfileUserOther(id: snapshot.data![index].user_id)),
+                  );
                 },
                 leading: CircleAvatar(
                   backgroundImage: NetworkImage(snapshot.data![index].avatarUrl.toString()),

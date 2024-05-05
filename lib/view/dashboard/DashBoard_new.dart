@@ -1,6 +1,7 @@
 import 'package:askute/view/Home/search_screen.dart';
 import 'package:askute/view/mess/home_mess_screen.dart';
 import 'package:askute/view/search/HomeSearchScreen.dart';
+import 'package:askute/view/teacher/Home/Home_Messeger.dart';
 import 'package:flutter/material.dart';
 import 'package:askute/view/Quetions/createQuetions.dart';
 import 'package:askute/view/setting/setting_screen.dart';
@@ -25,7 +26,7 @@ class _DashBoardVer2State extends State<DashBoardVer2> {
 
     // Add two more screens here
     HomeSearchScreen(), // Example screen
-    HomeMess(),
+    Home_Messeger(),
     SettingScreen(),// Example screen
   ];
   final PageStorageBucket bucket = PageStorageBucket();

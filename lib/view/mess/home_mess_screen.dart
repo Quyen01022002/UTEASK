@@ -72,12 +72,12 @@ class _HomeMessState extends State<HomeMess> {
   Future<void> _mapMessageBoxResponseToUserMess(List<MessageBoxResponse> list) async{
     if (list!= null){
       list!.forEach((element) {
-        if (element.userId == messageBoxController.user_id.value){
-          UserMess userMess = UserMess(element.friendId!, element.friendName!, element.friendAvatar!, element.content!, true);
-          users.add(userMess);}
-        else{
-          UserMess userMess = UserMess(element.userId!, element.friendName!, element.friendAvatar!, element.content!, true);
-          users.add(userMess);}
+        // if (element.userId == messageBoxController.user_id.value){
+        //   UserMess userMess = UserMess(element.friendId!, element.friendName!, element.friendAvatar!, element.content!, true);
+        //   users.add(userMess);}
+        // else{
+        //   UserMess userMess = UserMess(element.userId!, element.friendName!, element.friendAvatar!, element.content!, true);
+        //   users.add(userMess);}
 
       });
     }
@@ -91,8 +91,8 @@ class _HomeMessState extends State<HomeMess> {
   void _startTimer() {
     _timer = Timer.periodic(Duration(seconds: 2), (timer) {
       // Gọi hàm cần thiết ở đây
-      messageBoxController.loadMessageScreen(context);
-      messageBoxStream = messageBoxController.listMessageBoxStream;
+      // messageBoxController.loadMessageScreen(context);
+      // messageBoxStream = messageBoxController.listMessageBoxStream;
       // Cập nhật danh sách nhóm khi Stream thay đổi
       messageBoxStream?.listen((List<MessageBoxResponse>? updatedGroups) {
         if (updatedGroups != null) {
@@ -169,7 +169,7 @@ class _HomeMessState extends State<HomeMess> {
                                     ListTile(
                                       onTap: () {
                                         // Gọi hàm xử lý sự kiện khi nhấn vào hàng UserMess ở đây
-                                        messageBoxController.loadMessage(users[index].id, context);
+                                        // messageBoxController.loadMessage(users[index].id, context);
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(builder: (context) => MessScreen()),
