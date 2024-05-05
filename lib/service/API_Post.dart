@@ -271,6 +271,34 @@ class API_Post {
       return null;
     }
   }
+
+  static Future<List<PostModel>?> LoadTop10onClass(int userid, String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/post/teacher/$userid/top10'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<PostModel>> listPost =
+        ApiReponse<List<PostModel>>.fromJson(
+          utf8Data,
+              (dynamic json) =>
+          List<PostModel>.from(json.map((x) => PostModel.fromJson(x))),
+        );
+        return listPost.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
   static Future<List<PostModel>?> searchPost(int userid, String token, String keyword) async {
     final response = await http.get(
       Uri.parse('$baseUrl/post/$userid/search?q=$keyword'),
@@ -387,6 +415,34 @@ class API_Post {
   static Future<List<CommentResponse>?> getAllMyComment(int userid, String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/comments/$userid/getAllComment'),
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<CommentResponse>> listPost =
+        ApiReponse<List<CommentResponse>>.fromJson(
+          utf8Data,
+              (dynamic json) =>
+          List<CommentResponse>.from(json.map((x) =>CommentResponse.fromJson(x))),
+        );
+        return listPost.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+  static Future<List<CommentResponse>?> getAllCommentClasses(int userid, String token, int pagenumber) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/comments/classes/$userid/getAllComment/$pagenumber'),
       headers: {
         "Content-Type": "application/json",
         'Authorization': 'Bearer $token',

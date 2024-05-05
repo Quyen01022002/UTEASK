@@ -28,6 +28,7 @@ class HomeGroupController extends GetxController {
   RxBool isAdmin = false.obs;
   List<UserMember>? listUserMembers = [];
   List<PostModel> listPost = [];
+  List<PostModel> listPostClass = [];
   final textControllerMota = TextEditingController();
   final textControllerNameGroup = TextEditingController();
   final desc = RxString('');
@@ -102,6 +103,38 @@ class HomeGroupController extends GetxController {
     }
     allPostFollowingStream = Stream.fromIterable([groupModel!]);
   }
+
+  RxInt pagenumberClass = 0.obs;
+  Stream<List<PostModel>>? allPostClassesStream;
+  void GetListPostClass(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+    pagenumberClass.value=0;
+    final groupModel = await API_Group.LoadPostClass(adminId, token, 0);
+    if (groupModel != null) {
+      listPostClass.clear();
+      listPostClass.addAll(groupModel);
+      update();
+    }
+    allPostClassesStream = Stream.fromIterable([groupModel!]);
+  }
+  void loadMorePostsClass(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+
+    final groupModel = await API_Group.LoadPostClass(adminId, token, pagenumber.value+1);
+    if (groupModel != null && groupModel.length!= 0) {
+      //listPost.clear();
+      pagenumberClass.value = pagenumberClass.value+1;
+      listPostClass.addAll(groupModel);
+      update();
+    }
+    allPostFollowingStream = Stream.fromIterable([listPost!]);
+  }
+
+
 
   void loadMorePosts(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();

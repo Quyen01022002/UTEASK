@@ -1,3 +1,4 @@
+import 'package:askute/model/CommentResponse.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,6 +10,8 @@ class HomeController extends GetxController {
   static HomeController instance = Get.find();
   RxList<PostModel> listPost = List<PostModel>.empty(growable: true).obs;
   RxList<PostModel> top10Post = List<PostModel>.empty(growable: true).obs;
+  RxList<PostModel> top10PostClass = List<PostModel>.empty(growable: true).obs;
+  RxList<CommentResponse> listComment = List<CommentResponse>.empty(growable: true).obs;
   RxBool isloaded = false.obs;
   RxBool isliked = false.obs;
   RxInt postid = 0.obs;
@@ -102,6 +105,47 @@ class HomeController extends GetxController {
         update();
       }
       allPostHotStream = Stream.fromIterable([result!]);
+    }
+    finally {
+      isloaded(false);
+    }
+  }
+
+  Stream<List<PostModel>>? allPostHotClassStream;
+  void load10HotPostOnAllClassOfTeacher(BuildContext context) async
+  {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      isloaded(true);
+      print("load");
+      final userId = prefs.getInt('id') ?? 0;
+      final token = prefs.getString('token') ?? "";
+      List<PostModel>? result = await API_Post.LoadTop10onClass(userId, token);
+      if (result != null) {
+        top10PostClass.clear();
+        top10PostClass.addAll(result);
+        update();
+      }
+      allPostHotClassStream = Stream.fromIterable([result!]);
+    }
+    finally {
+      isloaded(false);
+    }
+  }
+  RxInt pagenumberCmt = 0.obs;
+  Future<void> loadCommentClasses(BuildContext context) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      isloaded(true);
+      final userId = prefs.getInt('id') ?? 0;
+      final token = prefs.getString('token') ?? "";
+      List<CommentResponse>? result = await API_Post.getAllCommentClasses(userId, token, pagenumberCmt.value);
+      if (result != null) {
+        listComment.clear();
+        listComment.addAll(result);
+        update();
+      }
+      //allPostHotClassStream = Stream.fromIterable([result!]);
     }
     finally {
       isloaded(false);
