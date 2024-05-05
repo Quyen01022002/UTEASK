@@ -15,6 +15,7 @@ class HomeController extends GetxController {
   RxBool isloaded = false.obs;
   RxBool isliked = false.obs;
   RxInt postid = 0.obs;
+  RxInt myId = 0.obs;
 
 
   void loadPost() async
@@ -23,6 +24,7 @@ class HomeController extends GetxController {
       final prefs = await SharedPreferences.getInstance();
       isloaded(true);
       final userId = prefs.getInt('id') ?? 0;
+      myId.value = userId;
       final token = prefs.getString('token') ?? "";
       List<PostModel>? result = await API_Post.LoadMainHome(userId, token);
       if (result != null) {
@@ -97,6 +99,7 @@ class HomeController extends GetxController {
       isloaded(true);
       print("load");
       final userId = prefs.getInt('id') ?? 0;
+      myId.value = userId;
       final token = prefs.getString('token') ?? "";
       List<PostModel>? result = await API_Post.LoadTop10(userId, token);
       if (result != null) {
@@ -119,6 +122,7 @@ class HomeController extends GetxController {
       isloaded(true);
       print("load");
       final userId = prefs.getInt('id') ?? 0;
+      myId.value = userId;
       final token = prefs.getString('token') ?? "";
       List<PostModel>? result = await API_Post.LoadTop10onClass(userId, token);
       if (result != null) {
@@ -138,6 +142,7 @@ class HomeController extends GetxController {
       final prefs = await SharedPreferences.getInstance();
       isloaded(true);
       final userId = prefs.getInt('id') ?? 0;
+      myId.value = userId;
       final token = prefs.getString('token') ?? "";
       List<CommentResponse>? result = await API_Post.getAllCommentClasses(userId, token, pagenumberCmt.value);
       if (result != null) {
