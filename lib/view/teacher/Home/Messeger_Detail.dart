@@ -42,16 +42,23 @@ class _MessegerDetailState extends State<MessegerDetail> {
     initCurrentUser();
     super.initState();
     _startTimer();
-    _scrollController.addListener(() {
-      if (_scrollController.offset >=
-          _scrollController.position.maxScrollExtent &&
-          !_scrollController.position.outOfRange) {
-        // Đã cuộn xuống dưới cùng
-      }
+    _scrollController = ScrollController();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });
+    _scrollToBottom();
     messageBoxController.loadMessage(context, widget.message.id);
   }
 
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
   void _startTimer() {
     _timer = Timer.periodic(Duration(milliseconds: 200), (timer) {
       messageBoxController.loadMessage(context, widget.message.id);
@@ -60,8 +67,11 @@ class _MessegerDetailState extends State<MessegerDetail> {
         if (updatedGroups != null) {
           setState(() {
             listMessage = updatedGroups;
+
           });
+          _scrollToBottom();
         }
+
       });
     });
   }
@@ -334,3 +344,4 @@ class _MessegerDetailState extends State<MessegerDetail> {
     );
   }
 }
+
