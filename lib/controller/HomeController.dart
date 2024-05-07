@@ -11,10 +11,14 @@ class HomeController extends GetxController {
   RxList<PostModel> listPost = List<PostModel>.empty(growable: true).obs;
   RxList<PostModel> top10Post = List<PostModel>.empty(growable: true).obs;
   RxList<PostModel> top10PostClass = List<PostModel>.empty(growable: true).obs;
+  RxList<PostModel> top5Month = List<PostModel>.empty(growable: true).obs;
+  RxList<int> countMont = List<int>.empty(growable: true).obs;
+  RxList<int> countTK = List<int>.empty(growable: true).obs;
   RxList<CommentResponse> listComment = List<CommentResponse>.empty(growable: true).obs;
   RxBool isloaded = false.obs;
   RxBool isliked = false.obs;
   RxInt postid = 0.obs;
+  RxInt myId = 0.obs;
 
 
   void loadPost() async
@@ -23,6 +27,7 @@ class HomeController extends GetxController {
       final prefs = await SharedPreferences.getInstance();
       isloaded(true);
       final userId = prefs.getInt('id') ?? 0;
+      myId.value = userId;
       final token = prefs.getString('token') ?? "";
       List<PostModel>? result = await API_Post.LoadMainHome(userId, token);
       if (result != null) {
@@ -97,6 +102,7 @@ class HomeController extends GetxController {
       isloaded(true);
       print("load");
       final userId = prefs.getInt('id') ?? 0;
+      myId.value = userId;
       final token = prefs.getString('token') ?? "";
       List<PostModel>? result = await API_Post.LoadTop10(userId, token);
       if (result != null) {
@@ -119,6 +125,7 @@ class HomeController extends GetxController {
       isloaded(true);
       print("load");
       final userId = prefs.getInt('id') ?? 0;
+      myId.value = userId;
       final token = prefs.getString('token') ?? "";
       List<PostModel>? result = await API_Post.LoadTop10onClass(userId, token);
       if (result != null) {
@@ -132,12 +139,54 @@ class HomeController extends GetxController {
       isloaded(false);
     }
   }
+
+  Future<List<PostModel>?> loadTop5OnMonth(BuildContext context) async
+  {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      isloaded(true);
+      print("load");
+      final userId = prefs.getInt('id') ?? 0;
+      myId.value = userId;
+      final token = prefs.getString('token') ?? "";
+      String? rs = await API_Post.LoadCountOfYear(userId, token);
+      if (rs != null){
+        List<String> listCountMont = rs.split(',');
+        List<int> integerList = listCountMont.map(int.parse).toList();
+        countMont.clear();
+        countMont.addAll(integerList);
+        update();
+      }
+      String? kt = await API_Post.LoadCountThongKe(userId, token);
+      if (kt != null){
+        List<String> listCountMont = kt.split(',');
+        List<int> integerList = listCountMont.map(int.parse).toList();
+        countTK.clear();
+        countTK.addAll(integerList);
+        update();
+      }
+
+      List<PostModel>? result = await API_Post.Load5OnMonth(userId, token);
+      if (result != null) {
+        top5Month.clear();
+        top5Month.addAll(result);
+        update();
+      }
+      return result;
+
+    }
+    finally {
+      isloaded(false);
+    }
+  }
+
   RxInt pagenumberCmt = 0.obs;
   Future<void> loadCommentClasses(BuildContext context) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       isloaded(true);
       final userId = prefs.getInt('id') ?? 0;
+      myId.value = userId;
       final token = prefs.getString('token') ?? "";
       List<CommentResponse>? result = await API_Post.getAllCommentClasses(userId, token, pagenumberCmt.value);
       if (result != null) {
