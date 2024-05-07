@@ -8,10 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../controller/MyProfileController.dart';
 import '../../model/PostModel.dart';
 import '../Quetions/QuestionDetail.dart';
+import '../user/user_proflie_screen.dart';
 
 class PostScreen extends StatefulWidget {
   //const PostScreen({super.key});
@@ -25,6 +28,7 @@ class _PostScreenState extends State<PostScreen> {
   late String formattedTime = '';
   final PostController postController = Get.put(PostController());
   final HomeController homeController = Get.put(HomeController());
+  MyProfileController myProfileController = Get.put(MyProfileController());
 
   late bool statelike=false;
   late int contlike=0;
@@ -61,22 +65,40 @@ class _PostScreenState extends State<PostScreen> {
                 },
                 child: Row(
                   children: [
-                    CircleAvatar(
-                      radius: 20,
-                      backgroundImage:
-                      NetworkImage(widget.post.createBy.profilePicture),
-                      // Hoặc sử dụng NetworkImage nếu avatar từ một URL
-                      // backgroundImage: NetworkImage('URL_TO_AVATAR'),
+                    GestureDetector(
+                      onTap: (){
+                        myProfileController.ortherId.value= widget.post.createBy.id;
+
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: ProfileUserScreen(),
+                          ),
+                        );
+                      },
+                      child: CircleAvatar(
+                        radius: 20,
+                        backgroundImage:
+                        NetworkImage(widget.post.createBy.profilePicture),
+                        // Hoặc sử dụng NetworkImage nếu avatar từ một URL
+                        // backgroundImage: NetworkImage('URL_TO_AVATAR'),
+                      ),
                     ),
                     SizedBox(width: 8),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          widget.post.createBy.firstName+" " + widget.post.createBy.lastName,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                        GestureDetector(
+                          onTap: (){
+
+                          },
+                          child: Text(
+                            widget.post.createBy.firstName+" " + widget.post.createBy.lastName,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
 

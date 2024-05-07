@@ -11,6 +11,7 @@ import '../model/PostModel.dart';
 
 class MyProfileController extends GetxController {
   RxInt myId = 0.obs;
+  RxInt ortherId = 0.obs;
   RxString myToken = "".obs;
   RxInt follow = 0.obs;
   RxInt following = 0.obs;
@@ -38,6 +39,7 @@ class MyProfileController extends GetxController {
   void loadMyProfile() async {
     final prefs = await SharedPreferences.getInstance();
     myId.value = prefs.getInt('id')!;
+    ortherId.value=0;
     myToken.value = prefs.getString('token')!;
     try {
       final userProfile = await API_Profile.profile(myId.value, myToken.value);
@@ -65,11 +67,11 @@ class MyProfileController extends GetxController {
   }
   void loadOtherProfile(int? id) async {
     final prefs = await SharedPreferences.getInstance();
-
     myToken.value = prefs.getString('token')!;
     try {
       final userProfile = await API_Profile.profile(id, myToken.value);
       if (userProfile != null) {
+        ortherId.value = userProfile.id!;
         listPost.value = userProfile.listpost!;
         follow.value = userProfile.friends!.length!;
         post.value = userProfile.listpost!.length!;
@@ -90,6 +92,12 @@ class MyProfileController extends GetxController {
     } catch (e) {
       print("Lỗi: $e");
     }
+  }
+
+  Future<UserProfile?> loadUserOther(int id) async {
+    final prefs = await SharedPreferences.getInstance();
+    myToken.value = prefs.getString('token')!;
+    return await API_Profile.profile(id, myToken.value);
   }
 
 
