@@ -364,7 +364,7 @@ SizedBox(width: 2,),Text(widget.post.like_count.toString(),
     return Container(
 
       child: Container(
-        height: (MediaQuery.of(context).size.width -30)*1.028,
+        height: (MediaQuery.of(context).size.width -30)*1.058,
         width: (MediaQuery.of(context).size.width - 30),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
