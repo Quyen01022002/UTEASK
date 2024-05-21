@@ -16,6 +16,7 @@ class LoginController extends GetxController
   final textControllerEmail = TextEditingController();
   final textControllerPass = TextEditingController();
 
+  RxBool checkHeadDepartment = false.obs;
   final pass = RxString('');
   final email = RxString('');
   RxString stateLogin=('').obs;
@@ -30,6 +31,7 @@ class LoginController extends GetxController
         print(AuthenticationResponse.roleEnum);
         await saveLoggedInState(AuthenticationResponse);
         stateLogin.value = "Đăng nhập thành công";
+        checkHeadDepartment.value = false;
         String? fcmtoken= await FirebaseMessaging.instance.getToken();
           API_login.fcm(AuthenticationResponse.id,AuthenticationResponse.token!,fcmtoken!);
         settingController.loadthongtin();
@@ -62,6 +64,7 @@ class LoginController extends GetxController
         // String? fcmToken = await _firebaseMessaging.getToken();
         //  API_login.fcm(AuthenticationResponse.id,AuthenticationResponse.token!,fcmToken!);
         settingController.loadthongtin();
+        checkHeadDepartment.value =false;
         Future.delayed(Duration(milliseconds: 500), () {
           Navigator.pushReplacement(
             context,
@@ -69,7 +72,25 @@ class LoginController extends GetxController
                 builder: (context) => HomeTeacher()),
           );
         });
-      } else {
+      }
+      if (AuthenticationResponse.roleEnum == RoleEnum.HEADDEPARTMENT) {
+        await saveLoggedInState(AuthenticationResponse);
+        stateLogin.value = "Đăng nhập thành công";
+        // String? fcmToken = await _firebaseMessaging.getToken();
+        //  API_login.fcm(AuthenticationResponse.id,AuthenticationResponse.token!,fcmToken!);
+        settingController.loadthongtin();
+        checkHeadDepartment.value = true;
+        Future.delayed(Duration(milliseconds: 500), () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => HomeTeacher()),
+          );
+        });
+      }
+
+
+      else {
 
         stateLogin.value='Tài khoản không có quyền truy cập';
       }

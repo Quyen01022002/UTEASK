@@ -6,9 +6,12 @@ import 'package:askute/model/GroupMemberRequest.dart';
 import 'package:askute/model/Class.dart';
 import 'package:askute/model/GroupModel.dart';
 import 'package:askute/model/PostModel.dart';
+import 'package:askute/model/SectorResponse.dart';
 import 'package:askute/model/UsersEnity.dart';
 import 'package:askute/service/const.dart';
 import 'package:http/http.dart' as http;
+
+import '../model/SectorMembers.dart';
 
 
 class API_Group{
@@ -340,6 +343,163 @@ class API_Group{
       final responseData = response.body;
       if (responseData.isNotEmpty){
         ApiReponse<List<GroupModel>> listgroup = ApiReponse<List<GroupModel>>.fromJson(responseData, (dynamic json) => List<GroupModel>.from(json.map((x) => GroupModel.fromJson(x))),
+        );
+        return listgroup.payload;
+      }
+      else
+      {
+        return null;
+      }
+    } else {
+      // Handle error scenarios here
+      return null;
+    }
+  }
+
+  static Future<SectorResponse?> addSector(String name, String description, String avatar, int groupid, String token) async{
+    final url = Uri.parse('$baseUrl/sector/');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+    final Map<String, dynamic> data = {
+      "name": name,
+      "description": description,
+      "groupId": groupid,
+      "avatar": avatar
+    };
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(data),
+    );
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty){
+        ApiReponse<SectorResponse> group = ApiReponse<SectorResponse>.fromJson(
+          responseData,
+              (dynamic json) => SectorResponse.fromJson(json),
+        );
+        return group.payload;
+      }
+      else
+        return null;
+    } else {
+      // Handle error scenarios here
+      return null;
+    }
+
+
+  }
+
+  static Future<List<SectorResponse>?> getListSector(int groupid, String token) async {
+    final url = Uri.parse('$baseUrl/sector/allInOneGroup/$groupid');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+    final response = await http.get(
+      url,
+      headers: headers,
+    );
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+      if (responseData.isNotEmpty){
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<SectorResponse>> listgroup = ApiReponse<List<SectorResponse>>.fromJson(utf8Data, (dynamic json) => List<SectorResponse>.from(json.map((x) => SectorResponse.fromJson(x))),
+        );
+        return listgroup.payload;
+      }
+      else
+      {
+        return null;
+      }
+    } else {
+      // Handle error scenarios here
+      return null;
+    }
+  }
+
+  static Future<GroupModel?> loadGroupMeDepartment(int adminId, String token) async {
+    final url = Uri.parse('$baseUrl/group/department/admin/$adminId');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+    final response = await http.get(
+      url,
+      headers: headers,
+    );
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+      if (responseData.isNotEmpty){
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<GroupModel>> listgroup = ApiReponse<List<GroupModel>>.fromJson(utf8Data, (dynamic json) => List<GroupModel>.from(json.map((x) => GroupModel.fromJson(x))),
+        );
+        return listgroup.payload[0];
+      }
+      else
+      {
+        return null;
+      }
+    } else {
+      // Handle error scenarios here
+      return null;
+    }
+  }
+
+
+  static Future<SectorMembers?> addSectorTeacher(int userid,int sectorid, String token) async{
+    final url = Uri.parse('$baseUrl/sector/add/teacher');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+    final Map<String, dynamic> data = {
+      "userid": userid,
+      "sectorid": sectorid,
+    };
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(data),
+    );
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty){
+        ApiReponse<SectorMembers> group = ApiReponse<SectorMembers>.fromJson(
+          responseData,
+              (dynamic json) => SectorMembers.fromJson(json),
+        );
+        return group.payload;
+      }
+      else
+        return null;
+    } else {
+      // Handle error scenarios here
+      return null;
+    }
+
+
+  }
+
+  static Future<List<SectorMembers>?> getTeacherInGroup(int groupid, String token) async {
+    final url = Uri.parse('$baseUrl/sector/group/$groupid');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+    final response = await http.get(
+      url,
+      headers: headers,
+    );
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+      if (responseData.isNotEmpty){
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<SectorMembers>> listgroup = ApiReponse<List<SectorMembers>>.fromJson(utf8Data, (dynamic json) => List<SectorMembers>.from(json.map((x) => SectorMembers.fromJson(x))),
         );
         return listgroup.payload;
       }
