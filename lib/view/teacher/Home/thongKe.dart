@@ -47,7 +47,7 @@ class _ThongKeState extends State<ThongKe> {
             } else if (snapshot.hasError) {
               // Hiển thị lỗi nếu có lỗi xảy ra trong quá trình tải dữ liệu
               return Text('Error: ${snapshot.error}');
-            } else {
+            } else if(snapshot.hasData) {
               return Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -397,7 +397,7 @@ class _ThongKeState extends State<ThongKe> {
                   ),
                 ),
               );
-            }
+            } else return Container();
           }
         ),
       ),

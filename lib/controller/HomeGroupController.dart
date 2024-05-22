@@ -2,6 +2,8 @@ import 'package:askute/model/GroupMemberRequest.dart';
 import 'package:askute/model/Class.dart';
 import 'package:askute/model/GroupModel.dart';
 import 'package:askute/model/PostModel.dart';
+import 'package:askute/model/UserProfile.dart';
+import 'package:askute/service/API_Profile.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +13,8 @@ import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../service/API_Group.dart';
+import '../model/SectorMembers.dart';
+import '../model/SectorResponse.dart';
 
 class User {
   final int id;
@@ -24,6 +28,7 @@ class User {
 class HomeGroupController extends GetxController {
   RxString nameGroup = "".obs;
   RxString descriptionGroup = "".obs;
+  RxString avatarGroup = "".obs;
   RxInt group_id = 0.obs;
   RxBool isAdmin = false.obs;
   List<UserMember>? listUserMembers = [];
@@ -33,6 +38,8 @@ class HomeGroupController extends GetxController {
   final textControllerNameGroup = TextEditingController();
   final desc = RxString('');
   final name_Group = RxString('');
+  RxList<SectorResponse> listSt = List<SectorResponse>.empty(growable: true).obs;
+  RxList<SectorMembers> listTC = List<SectorMembers>.empty(growable: true).obs;
 
   // void CreateGroup(BuildContext context) async{
   //   final description = textControllerMota.text;
@@ -314,4 +321,124 @@ class HomeGroupController extends GetxController {
 //     GroupModel? groupModel = await API_Group.updateGroupById(group_id.value, newGroup, token);
 //     GetOneGroup(context, group_id.value);
 // }
+
+  final nameText = new TextEditingController();
+  final descText = new TextEditingController();
+  RxString linkAvatarSector = ''.obs;
+  void CreateOnSector(BuildContext context) async {
+
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+
+    final rs = await API_Group.addSector(nameText.text, descText.text, '', 2, token);
+
+    nameText.text='';
+    descText.text='';
+    update();
+
+  }
+  Future<List<SectorResponse>?> loadSector(BuildContext context) async
+  {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final adminId = prefs.getInt('id') ?? 0;
+      final token = prefs.getString('token') ?? "";
+
+      final rs = await API_Group.getListSector(group_id.value, token);
+      return rs;
+
+    }
+    finally {
+
+    }
+  }
+  Future<List<SectorMembers>?> loadTeacherSector(BuildContext context) async
+  {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final adminId = prefs.getInt('id') ?? 0;
+      final token = prefs.getString('token') ?? "";
+
+      final rs = await API_Group.getTeacherInGroup(group_id.value, token);
+      return rs;
+
+    }
+    finally {
+
+    }
+  }
+RxInt countSec = 0.obs;
+  RxInt countTeac = 0.obs;
+  RxString avatarAdmin = ''.obs;
+  RxString nameAdmin = ''.obs;
+
+  Future<GroupModel?> loadGroup(BuildContext context) async
+  {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final adminId = prefs.getInt('id') ?? 0;
+      final token = prefs.getString('token') ?? "";
+      avatarAdmin.value = prefs.getString('Avatar')??"";
+      final firstN = prefs.getString('firstName')??"";
+      final lastN = prefs.getString('lastName')??"";
+      nameAdmin.value = firstN + " "+ lastN;
+
+      final rs = await API_Group.loadGroupMeDepartment(adminId, token);
+      if (rs!=null){
+        group_id.value = rs.id!;
+        final list = await API_Group.getListSector(rs.id!, token);
+        final listTea = await API_Group.getTeacherInGroup(rs.id!, token);
+        listSt.clear();
+        listSt.addAll(list!);
+        listTC.clear();
+        listTC.addAll(listTea!);
+        countSec.value = list!.length;
+        countTeac.value = listTea!.length;
+        nameGroup.value = rs.name!;
+        avatarGroup.value = rs.avatar!;
+
+      }
+      return rs;
+
+    }
+    finally {
+
+    }
+  }
+
+  final emailText = new TextEditingController();
+  RxString avatarUserAdded = ''.obs;
+  RxString nameUserAdded = ''.obs;
+  RxString emailUserAdded = ''.obs;
+  RxInt idUserAdded = 0.obs;
+  Future<UserProfile?> checkEmailRole(context) async{
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final adminId = prefs.getInt('id') ?? 0;
+      final token = prefs.getString('token') ?? "";
+      idUserAdded.value = 0;
+      final user = await API_Profile.searchEmailUser(
+          emailText.text.trim(), token);
+      if (user!.roleEnum.name == 'TEACHER')
+        idUserAdded.value = user.id!;
+      return user;
+    }
+  finally {
+
+  }
+  }
+
+
+  void addTeacherSector (int sectorid, int userid, BuildContext context) async{
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+    final rs = await API_Group.addSectorTeacher(userid, sectorid, token);
+    idUserAdded.value = 0;
+    emailText.text='';
+update();
+  }
+
+
 }
