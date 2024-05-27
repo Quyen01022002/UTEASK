@@ -3,6 +3,7 @@ import 'package:askute/model/Class.dart';
 import 'package:askute/model/GroupModel.dart';
 import 'package:askute/model/PostModel.dart';
 import 'package:askute/model/UserProfile.dart';
+import 'package:askute/service/API_Post.dart';
 import 'package:askute/service/API_Profile.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -326,18 +327,43 @@ class HomeGroupController extends GetxController {
   final descText = new TextEditingController();
   RxString linkAvatarSector = ''.obs;
   void CreateOnSector(BuildContext context) async {
-
     final prefs = await SharedPreferences.getInstance();
     final adminId = prefs.getInt('id') ?? 0;
     final token = prefs.getString('token') ?? "";
 
-    final rs = await API_Group.addSector(nameText.text, descText.text, '', 2, token);
+    final rs = await API_Group.addSector(nameText.text, descText.text, '', group_id.value, token);
 
     nameText.text='';
     descText.text='';
+    await loadGroup(context);
     update();
-
   }
+
+  void UpdateOneSector( SectorResponse sectorResponse, BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+
+    final rs = await API_Group.updateSector(sectorResponse.id!, nameText.text, descText.text, sectorResponse.avatar!, sectorResponse.groupId!, token);
+
+    nameText.text='';
+    descText.text='';
+    await loadGroup(context);
+    update();
+  }
+  void DeleteOneSector( SectorResponse sectorResponse, BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+
+    final rs = await API_Group.deleteSector(sectorResponse.id!, token);
+
+    nameText.text='';
+    descText.text='';
+    await loadGroup(context);
+    update();
+  }
+
   Future<List<SectorResponse>?> loadSector(BuildContext context) async
   {
     try {
@@ -437,7 +463,42 @@ RxInt countSec = 0.obs;
     final rs = await API_Group.addSectorTeacher(userid, sectorid, token);
     idUserAdded.value = 0;
     emailText.text='';
+    await loadGroup(context);
 update();
+  }
+
+  void updateTeacherSector (SectorMembers sectorMembers,int sectorid, int userid, BuildContext context) async{
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+    final rs = await API_Group.updateSectorTeacher(sectorMembers.id!,userid, sectorid, token);
+    idUserAdded.value = 0;
+    emailText.text='';
+    await loadGroup(context);
+    update();
+  }
+  void DeleteOneSectorTeacher( SectorMembers sectorMembers, BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+    final rs = await API_Group.deleteSectorTeacher(sectorMembers.id!, token);
+    await loadGroup(context);
+    update();
+  }
+
+  Future<List<PostModel>?> loadPostOfGroup(BuildContext context) async
+  {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final adminId = prefs.getInt('id') ?? 0;
+      final token = prefs.getString('token') ?? "";
+      final rs = await API_Post.LoadPostOfGroup(group_id.value, 0, adminId, token);
+      return rs;
+
+    }
+    finally {
+
+    }
   }
 
 

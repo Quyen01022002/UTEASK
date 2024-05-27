@@ -393,6 +393,72 @@ class API_Group{
 
   }
 
+  static Future<SectorResponse?> updateSector(int id,String name, String description, String avatar, int groupid, String token) async{
+    final url = Uri.parse('$baseUrl/sector/update');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+    final Map<String, dynamic> data = {
+      "id": id,
+      "name": name,
+      "description": description,
+      "groupid": groupid,
+      "avatar": avatar
+    };
+    final response = await http.put(
+      url,
+      headers: headers,
+      body: jsonEncode(data),
+    );
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty){
+        ApiReponse<SectorResponse> group = ApiReponse<SectorResponse>.fromJson(
+          responseData,
+              (dynamic json) => SectorResponse.fromJson(json),
+        );
+        return group.payload;
+      }
+      else
+        return null;
+    } else {
+      // Handle error scenarios here
+      return null;
+    }
+
+
+  }
+
+  static Future<void> deleteSector(int groupId, String token) async{
+    final url = Uri.parse('$baseUrl/sector/$groupId');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+
+    await http.delete(
+      url,
+      headers: headers,
+    );
+
+
+  }
+  static Future<void> deleteSectorTeacher(int groupId, String token) async{
+    final url = Uri.parse('$baseUrl/sector/del/teacher/$groupId');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+
+    await http.delete(
+      url,
+      headers: headers,
+    );
+
+
+  }
   static Future<List<SectorResponse>?> getListSector(int groupid, String token) async {
     final url = Uri.parse('$baseUrl/sector/allInOneGroup/$groupid');
     final headers = {
@@ -471,6 +537,41 @@ class API_Group{
       if (responseData.isNotEmpty){
         ApiReponse<SectorMembers> group = ApiReponse<SectorMembers>.fromJson(
           responseData,
+              (dynamic json) => SectorMembers.fromJson(json),
+        );
+        return group.payload;
+      }
+      else
+        return null;
+    } else {
+      // Handle error scenarios here
+      return null;
+    }
+
+
+  }
+  static Future<SectorMembers?> updateSectorTeacher(int id,int userid,int sectorid, String token) async{
+    final url = Uri.parse('$baseUrl/sector/update/teacher/$id');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+    final Map<String, dynamic> data = {
+      "userid": userid,
+      "sectorid": sectorid,
+    };
+    final response = await http.put(
+      url,
+      headers: headers,
+      body: jsonEncode(data),
+    );
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty){
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<SectorMembers> group = ApiReponse<SectorMembers>.fromJson(
+          utf8Data,
               (dynamic json) => SectorMembers.fromJson(json),
         );
         return group.payload;
