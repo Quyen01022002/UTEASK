@@ -297,18 +297,22 @@ class _GroupTeacherState extends State<GroupTeacher> {
                                     // Hiển thị lỗi nếu có lỗi xảy ra trong quá trình tải dữ liệu
                                     return Text('Error: ${snapshot.error}');
                                   } else if (snapshot.hasData) {
-                                    return Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      children: List.generate(
-                                        snapshot.data!.length,
-                                        (index) => Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 8.0),
-                                          child: _buildUserItem(
-                                              snapshot.data![index]),
-                                        ),
-                                      ),
+                                    return GetBuilder<HomeGroupController>(
+                                      builder: (context) {
+                                        return Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.stretch,
+                                          children: List.generate(
+                                            context.listTC.length,
+                                            (index) => Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 8.0),
+                                              child: _buildUserItem(
+                                                  context.listTC[index]),
+                                            ),
+                                          ),
+                                        );
+                                      }
                                     );
                                   } else {
                                     return Container();
@@ -366,10 +370,8 @@ class _GroupTeacherState extends State<GroupTeacher> {
         children: [
           IconButton(
             onPressed: () {
-              setState(() {
-                // Xử lý sự kiện khi nhấn vào nút "Chỉnh sửa"
-                // _openEditDialog('Nguyen Van A'); // Giả định rằng muốn chọn mục thứ hai
-              });
+              _selectedValue = sectorMembers.sectorid!.toString();
+              _showUpdateFieldDialog(sectorMembers, context);
             },
             icon: Icon(Icons.edit),
           ),
@@ -378,6 +380,7 @@ class _GroupTeacherState extends State<GroupTeacher> {
               setState(() {
                 // Xử lý sự kiện khi nhấn vào nút "Xóa"
                 // users.remove(user);
+                homeGroupController.DeleteOneSectorTeacher(sectorMembers, context);
               });
             },
             icon: Icon(Icons.delete),
@@ -405,6 +408,7 @@ class _GroupTeacherState extends State<GroupTeacher> {
               icon: Icon(Icons.edit),
               onPressed: () {
                 // Xử lý sự kiện chỉnh sửa ở đây
+
               },
             ),
             IconButton(
@@ -523,6 +527,91 @@ class _GroupTeacherState extends State<GroupTeacher> {
 
                       Navigator.of(context).pop();
                     }
+                  } else
+                    _validateInputs();
+                },
+                child: Text('Lưu'),
+              ),
+            ],
+          );
+        });
+      },
+    );
+  }
+  void _showUpdateFieldDialog(SectorMembers sectorMembers, BuildContext context) {
+    String avatarUrl = 'https://i.pravatar.cc/150?img=1';
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(builder: (context, setState) {
+          String? _selectedValueN = sectorMembers.name != null && sectorMembers.name!.isNotEmpty
+              ? sectorMembers.name!
+              : (homeGroupController.listSt.isNotEmpty ? homeGroupController.listSt.first.id.toString() : null);
+
+          return AlertDialog(
+            title: Text('Thêm giáo viên'),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+              Row(
+              children: [
+              CircleAvatar(
+              backgroundImage:
+                  NetworkImage(sectorMembers.avatarUser!),
+              radius: 30,
+            ),
+            SizedBox(width: 10),
+            Text(
+                '${sectorMembers.first_name!} ${sectorMembers.last_name!}'),
+            ],
+          ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  DropdownButton<String>(
+                    value: _selectedValue,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _selectedValue = newValue!;
+                      });
+                    },
+                    items: homeGroupController.listSt
+                        .map<DropdownMenuItem<String>>((SectorResponse value) {
+                      return DropdownMenuItem<String>(
+                        value: value.id.toString(),
+                        child: Text(value.name.toString()),
+                      );
+                    }).toList(),
+                  ),
+                  SizedBox(height: 10),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Hủy'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Xử lý sự kiện lưu lĩnh vực ở đây
+                  if (_selectedValue != null) {
+
+                      String? selectedSectorId = _selectedValue;
+                      print('id đã chọn: $selectedSectorId');
+                      homeGroupController.updateTeacherSector(
+                        sectorMembers,
+                        int.parse(selectedSectorId!),
+                        sectorMembers.userid!,
+                        context
+                      );
+
+                      Navigator.of(context).pop();
+
                   } else
                     _validateInputs();
                 },

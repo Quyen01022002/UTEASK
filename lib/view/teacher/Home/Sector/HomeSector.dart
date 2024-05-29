@@ -1,4 +1,7 @@
 import 'package:askute/controller/HomeGroupController.dart';
+import 'package:askute/model/PostModel.dart';
+import 'package:askute/view/Home/hot_post_screen.dart';
+import 'package:askute/view/Home/list_post_screen.dart';
 import 'package:askute/view/teacher/Home/Sector/ListSector.dart';
 import 'package:askute/view/teacher/Home/Sector/ListTeacherInGroup.dart';
 import 'package:flutter/cupertino.dart';
@@ -191,12 +194,17 @@ class _HomeSectorState extends State<HomeSector> {
     // Thay thế phần này bằng hàm thực sự để tải dữ liệu của bạn
     return homeGroupController.loadGroup(context);
   }
+  Future<List<PostModel>?> fetchDataPost() async {
+    // Đây là ví dụ về việc tải dữ liệu từ cơ sở dữ liệu hoặc một API
+    // Thay thế phần này bằng hàm thực sự để tải dữ liệu của bạn
+    return homeGroupController.loadPostOfGroup(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2, // Số lượng tab
       child: Scaffold(
-
         body: FutureBuilder<GroupModel?>(
             future: fetchData(),
             builder: (context, snapshot) {
@@ -214,11 +222,11 @@ class _HomeSectorState extends State<HomeSector> {
                         automaticallyImplyLeading: false,
                         pinned: true,
                         floating: true,
-                        title: Text(snapshot.data!.name!,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold
-                        ),),
+                        title: Text(
+                          snapshot.data!.name!,
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
                         expandedHeight: 120,
                         // Đặt pinned thành true
                         flexibleSpace: FlexibleSpaceBar(
@@ -248,7 +256,25 @@ class _HomeSectorState extends State<HomeSector> {
                       SliverFillRemaining(
                         child: TabBarView(
                           children: [
-                            Center(child: Text('Nội dung của Bảng Tin')),
+                            FutureBuilder<List<PostModel>?>(
+                                future: fetchDataPost(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    // Hiển thị màn hình chờ khi dữ liệu đang được tải
+                                    return CircularProgressIndicator();
+                                  } else if (snapshot.hasError) {
+                                    // Hiển thị lỗi nếu có lỗi xảy ra trong quá trình tải dữ liệu
+                                    return Text('Error: ${snapshot.error}');
+                                  } else if (snapshot.hasData) {
+                                    return Center(
+                                      child: HotPostQuestionScreen(
+                                        listPost: snapshot.data!,
+                                      ),
+                                    );
+                                  } else
+                                    return Container();
+                                }),
                             _buildUserList(),
                           ],
                         ),
@@ -267,108 +293,110 @@ class _HomeSectorState extends State<HomeSector> {
   }
 
   Widget _buildViewer() {
-    return Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                PageTransition(
-                  type: PageTransitionType.rightToLeft,
-                  child: GroupSector(),
+    return GetBuilder<HomeGroupController>(builder: (controller) {
+      return Container(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    type: PageTransitionType.rightToLeft,
+                    child: GroupSector(),
+                  ),
+                );
+              },
+              child: Container(
+                height: 50,
+                width: MediaQuery.of(context).size.width * 0.40,
+                margin: EdgeInsets.symmetric(horizontal: 5.0),
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image:
+                        AssetImage('assets/images/backgroud_profile_page.png'),
+                    // Thay đổi đường dẫn tới ảnh của bạn
+                    fit: BoxFit.cover, // Đảm bảo ảnh sẽ che đầy Container
+                  ),
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
-              );
-            },
-            child: Container(
-              height: 50,
-              width: MediaQuery.of(context).size.width * 0.40,
-              margin: EdgeInsets.symmetric(horizontal: 5.0),
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(
-                      'assets/images/backgroud_profile_page.png'),
-                  // Thay đổi đường dẫn tới ảnh của bạn
-                  fit: BoxFit.cover, // Đảm bảo ảnh sẽ che đầy Container
-                ),
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      homeGroupController.countSec.toString(),
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        controller.countSec.toString(),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    Text(
-                      ' Lĩnh vực',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
+                      Text(
+                        ' Lĩnh vực',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                PageTransition(
-                  type: PageTransitionType.rightToLeft,
-                  child: GroupTeacher(),
-                ),
-              );
-            },
-            child: Container(
-              height: 50,
-              width: MediaQuery.of(context).size.width * 0.40,
-              margin: EdgeInsets.symmetric(horizontal: 5.0),
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(
-                      'assets/images/backgroud_profile_page.png'),
-                  fit: BoxFit.cover, // Đảm bảo ảnh sẽ che đầy Container
-                ),
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      homeGroupController.countTeac.toString(),
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      ' Giảng viên',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    type: PageTransitionType.rightToLeft,
+                    child: GroupTeacher(),
+                  ),
+                );
+              },
+              child: Container(
+                height: 50,
+                width: MediaQuery.of(context).size.width * 0.40,
+                margin: EdgeInsets.symmetric(horizontal: 5.0),
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image:
+                        AssetImage('assets/images/backgroud_profile_page.png'),
+                    fit: BoxFit.cover, // Đảm bảo ảnh sẽ che đầy Container
+                  ),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        controller.countTeac.toString(),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        ' Giảng viên',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildKhoa() {

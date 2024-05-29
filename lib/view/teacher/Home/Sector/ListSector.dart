@@ -110,15 +110,19 @@ class _GroupTeacherState extends State<GroupSector> {
                                   // Hiển thị lỗi nếu có lỗi xảy ra trong quá trình tải dữ liệu
                                   return Text('Error: ${snapshot.error}');
                                 } else if(snapshot.hasData) {
-                                  return Column(
-                                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                                    children: List.generate(
-                                      snapshot.data!.length,
-                                          (index) => Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 8.0),
-                                        child: _buildUserItem(snapshot.data![index]),
-                                      ),
-                                    ),
+                                  return GetBuilder<HomeGroupController>(
+                                    builder: (context) {
+                                      return Column(
+                                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                                        children: List.generate(
+                                          context.listSt.length,
+                                              (index) => Padding(
+                                            padding: EdgeInsets.symmetric(vertical: 8.0),
+                                            child: _buildUserItem(context.listSt[index]),
+                                          ),
+                                        ),
+                                      );
+                                    }
                                   );
                                 }
                                 else
@@ -179,7 +183,9 @@ class _GroupTeacherState extends State<GroupSector> {
         children: [
           IconButton(
             onPressed: () {
-
+                homeGroupController.nameText.text= sectorResponse.name!;
+                homeGroupController.descText.text = sectorResponse.description!;
+                _showUpdateFieldDialog(sectorResponse, context);
             },
             icon: Icon(Icons.edit),
           ),
@@ -187,7 +193,7 @@ class _GroupTeacherState extends State<GroupSector> {
             onPressed: () {
               setState(() {
                 // Xử lý sự kiện khi nhấn vào nút "Xóa"
-
+            homeGroupController.DeleteOneSector(sectorResponse, context);
               });
             },
             icon: Icon(Icons.delete),
@@ -230,8 +236,6 @@ class _GroupTeacherState extends State<GroupSector> {
   }
 
   void _showCreateFieldDialog(BuildContext context) {
-   String avatarUrl = 'https://i.pravatar.cc/150?img=1';
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -298,7 +302,7 @@ class _GroupTeacherState extends State<GroupSector> {
     );
   }
 
-  void _showUpdateFieldDialog(BuildContext context) {
+  void _showUpdateFieldDialog(SectorResponse sectorResponse, BuildContext context) {
     String avatarUrl = 'https://i.pravatar.cc/150?img=1';
 
     showDialog(
@@ -310,21 +314,21 @@ class _GroupTeacherState extends State<GroupSector> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(avatarUrl),
-                      radius: 30,
-                    ),
-                    SizedBox(width: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Xử lý sự kiện chọn avatar ở đây
-                      },
-                      child: Text('Chọn avatar'),
-                    ),
-                  ],
-                ),
+                // Row(
+                //   children: [
+                //     CircleAvatar(
+                //       backgroundImage: NetworkImage(avatarUrl),
+                //       radius: 30,
+                //     ),
+                //     SizedBox(width: 10),
+                //     ElevatedButton(
+                //       onPressed: () {
+                //         // Xử lý sự kiện chọn avatar ở đây
+                //       },
+                //       child: Text('Chọn avatar'),
+                //     ),
+                //   ],
+                // ),
                 TextField(
                   controller: homeGroupController.nameText,
                   decoration: InputDecoration(
@@ -350,12 +354,15 @@ class _GroupTeacherState extends State<GroupSector> {
             ),
             ElevatedButton(
               onPressed: () {
-                // Xử lý sự kiện lưu lĩnh vực ở đây
+
                 if (homeGroupController.nameText.text.trim() != '' &&
                     homeGroupController.descText.text.trim() != '') {
-                  homeGroupController.CreateOnSector(context);
+                  homeGroupController.UpdateOneSector( sectorResponse, context);
 
                   Navigator.of(context).pop();
+                  setState(() {
+
+                  });
                 } else
                   _validateInputs();
               },
