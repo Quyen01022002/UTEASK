@@ -34,6 +34,31 @@ class API_Profile
       return null;
     }
   }
+  static Future<UserProfile?> searchEmailUser(String email, String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/user/checkemailrole/$email'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<UserProfile> userProfileResponse = ApiReponse<UserProfile>.fromJson(
+          utf8Data,
+              (dynamic json) => UserProfile.fromJson(json),
+        );
+        return userProfileResponse.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
 
   static Future<String> updateAvatar(int? userid,String token,String Avatar) async {
     final url = Uri.parse('$baseUrl/user/$userid');

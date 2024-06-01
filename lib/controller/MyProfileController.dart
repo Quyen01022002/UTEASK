@@ -94,7 +94,7 @@ class MyProfileController extends GetxController {
     }
   }
 
-  Future<UserProfile?> loadUserOther(int id) async {
+  Future<UserProfile?> loadUserOther(int id, BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     myToken.value = prefs.getString('token')!;
     return await API_Profile.profile(id, myToken.value);

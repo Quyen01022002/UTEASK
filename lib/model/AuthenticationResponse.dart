@@ -3,6 +3,7 @@ import 'dart:convert';
 enum RoleEnum {
   USER,
   TEACHER,
+  HEADDEPARTMENT
 }
 
 List<AuthenticationResponse> userListFromJson(String val) =>
@@ -38,6 +39,9 @@ class AuthenticationResponse {
         break;
       case "TEACHER":
         role = RoleEnum.TEACHER;
+        break;
+      case "HEADDEPARTMENT":
+        role = RoleEnum.HEADDEPARTMENT;
         break;
       default:
         role = RoleEnum.USER; // Hoặc một giá trị mặc định khác nếu không xác định được

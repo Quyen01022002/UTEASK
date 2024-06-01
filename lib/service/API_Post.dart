@@ -572,4 +572,32 @@ class API_Post {
       return null;
     }
   }
+
+  static Future<List<PostModel>?> LoadPostOfGroup(int groupid, int page, int userid, String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/group/$groupid/allpost?page=$page&userid=$userid'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<PostModel>> listPost =
+        ApiReponse<List<PostModel>>.fromJson(
+          utf8Data,
+              (dynamic json) =>
+          List<PostModel>.from(json.map((x) => PostModel.fromJson(x))),
+        );
+        return listPost.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
 }

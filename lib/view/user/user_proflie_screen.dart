@@ -26,20 +26,15 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
   void initState() {
     super.initState();
    // fetchData();
-    if (myProfileController.ortherId.value != 0)
-      myProfileController.loadOtherProfile(myProfileController.ortherId.value);
-    else
+
       myProfileController.loadMyProfile();
   }
 
   Future<UserProfile?> fetchData() async {
     // Đây là ví dụ về việc tải dữ liệu từ cơ sở dữ liệu hoặc một API
     // Thay thế phần này bằng hàm thực sự để tải dữ liệu của bạn
-    if (myProfileController.myId.value == myProfileController.ortherId.value)
-      return myProfileController.loadUserOther(myProfileController.myId.value);
-    else
-    return myProfileController
-        .loadUserOther(myProfileController.ortherId.value);
+
+      return myProfileController.loadUserOther(myProfileController.myId.value, context);
   }
 
   @override
@@ -53,20 +48,19 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
           body: FutureBuilder<UserProfile?>(
             future: fetchData(),
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
+              if (snapshot.data!= null && snapshot.connectionState == ConnectionState.waiting) {
                 // Hiển thị màn hình chờ khi dữ liệu đang được tải
                 return CircularProgressIndicator();
               } else if (snapshot.hasError) {
                 // Hiển thị lỗi nếu có lỗi xảy ra trong quá trình tải dữ liệu
                 return Text('Error: ${snapshot.error}');
-              } else if (snapshot.hasData){
+              } else if (snapshot.hasData) {
                 return Container(
                   decoration: BoxDecoration(color: Colors.white),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildAccount(snapshot.data!),
-                      myProfileController.myId.value == myProfileController.ortherId.value ?
                       Container(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -104,7 +98,7 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
                             ),
                           ],
                         ),
-                      ) : Container(),
+                      ),
 
                       Container(
                         margin: EdgeInsets.only(top: 5),
@@ -135,10 +129,7 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
                     ],
                   ),
                 );
-              }
-              else{
-                return Container();
-              }
+              } else return Container();
             },
           ),
         ),
