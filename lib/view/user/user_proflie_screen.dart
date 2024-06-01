@@ -59,7 +59,7 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
               } else if (snapshot.hasError) {
                 // Hiển thị lỗi nếu có lỗi xảy ra trong quá trình tải dữ liệu
                 return Text('Error: ${snapshot.error}');
-              } else {
+              } else if (snapshot.hasData){
                 return Container(
                   decoration: BoxDecoration(color: Colors.white),
                   child: Column(
@@ -135,6 +135,9 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
                     ],
                   ),
                 );
+              }
+              else{
+                return Container();
               }
             },
           ),
