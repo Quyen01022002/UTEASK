@@ -33,6 +33,7 @@ class MyProfileController extends GetxController {
   final lastNameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
+  final oldPasswordController = TextEditingController();
   final passwordController = TextEditingController();
   final newPasswordController = TextEditingController();
 
@@ -162,4 +163,28 @@ class MyProfileController extends GetxController {
     await API_Profile.UpdatePro(token,fisrt_name.value,last_name.value,email.value, phone.value,Avatar.value, BackGround.value ,userId);
     loadMyProfile();
   }
+
+
+  void updateNewPassword(BuildContext context) async{
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+
+
+
+  }
+
+  Future<bool> checkOldPassword(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+
+    final check = await API_Profile.checkOldPassword(userId, oldPasswordController.text,token);
+
+    if (check!= null)
+      return true;
+    return false;
+  }
+
+
 }

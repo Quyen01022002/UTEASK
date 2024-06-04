@@ -131,6 +131,44 @@ class API_Profile
       return null;
     }
   }
+  static Future<UserProfile?> checkOldPassword(int id, String password, String token) async {
+    final url = Uri.parse('$baseUrl/user/checkoldPassword');
+
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',};
+
+// Tạo một Map chứa dữ liệu người dùng
+    final data = {
+      "firstName":id,
+      "lastName":password
+
+    };
+
+    final response = await http.patch(
+      url,
+      headers: headers,
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<UserProfile> userProfileResponse = ApiReponse<UserProfile>.fromJson(
+          utf8Data,
+              (dynamic json) => UserProfile.fromJson(json),
+        );
+        return userProfileResponse.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
   static Future<List<UserEnity>?> Search( int userId,String key,String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/user/search/$userId?key=$key'),

@@ -16,6 +16,8 @@ class LoginController extends GetxController
   final textControllerEmail = TextEditingController();
   final textControllerPass = TextEditingController();
 
+  RxString role = 'USER'.obs ;
+  RxInt idMe = 0.obs;
   RxBool checkHeadDepartment = false.obs;
   final pass = RxString('');
   final email = RxString('');
@@ -117,6 +119,9 @@ class LoginController extends GetxController
     prefs.setString("lastName", user.lastName!);
     prefs.setString("Avatar", user.avatar!);
     prefs.setString("token", user.token!);
+    prefs.setString("role", user.roleEnum!.toString());
+    role.value = user.roleEnum.toString();
+    idMe.value = user.id!;
 
   }
   static Future<void> Logout() async {
@@ -128,6 +133,7 @@ class LoginController extends GetxController
     prefs.remove('lastName');
     prefs.remove('Avatar');
     prefs.remove('token');
+
 
   }
 
