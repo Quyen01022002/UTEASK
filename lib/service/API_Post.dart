@@ -600,4 +600,37 @@ class API_Post {
       return null;
     }
   }
+
+
+  static Future<CommentEntity?> setAnswer(int cmt, String token) async{
+    final url = Uri.parse('$baseUrl/comments/$cmt');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+    final response = await http.put(
+      url,
+      headers: headers
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty){
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<CommentEntity> group = ApiReponse<CommentEntity>.fromJson(
+          utf8Data,
+              (dynamic json) => CommentEntity.fromJson(json),
+        );
+        return group.payload;
+      }
+      else
+        return null;
+    } else {
+      // Handle error scenarios here
+      return null;
+    }
+
+
+  }
 }

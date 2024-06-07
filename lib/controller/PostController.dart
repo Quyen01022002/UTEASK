@@ -60,4 +60,13 @@ class PostController extends GetxController {
     await API_Post.Comments(
         userid.value, postid.value, content, tokenString.value);
   }
+
+
+  void setAnswer(BuildContext, int cmt) async{
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    userid.value = adminId;
+    final token = prefs.getString('token') ?? "";
+    final cmt2 = await API_Post.setAnswer(cmt, token);
+  }
 }
