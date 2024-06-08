@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:askute/controller/HomeController.dart';
+import 'package:askute/controller/LoginController.dart';
 import 'package:askute/controller/PostController.dart';
 import 'package:askute/view/user/user_proflie_other.dart';
 import 'package:flutter/cupertino.dart';
@@ -29,7 +30,7 @@ class _PostScreenState extends State<PostScreen> {
   final PostController postController = Get.put(PostController());
   final HomeController homeController = Get.put(HomeController());
   MyProfileController myProfileController = Get.put(MyProfileController());
-
+  LoginController loginController = Get.put(LoginController());
   late bool statelike=false;
   late int contlike=0;
   late RxInt curnetUser=0.obs;
@@ -60,20 +61,30 @@ class _PostScreenState extends State<PostScreen> {
                 {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ProfileUserOther(id: widget.post.createBy.id)),
+                    PageTransition(
+                      type: PageTransitionType.rightToLeft,
+                      child: ProfileUserOther(id: widget.post.createBy.id,),
+                    ),
                   );
                 },
                 child: Row(
                   children: [
                     GestureDetector(
                       onTap: (){
-                        myProfileController.ortherId.value= widget.post.createBy.id;
-
+                  if (loginController.idMe.value != widget.post.createBy.id)
                         Navigator.push(
                           context,
                           PageTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: ProfileUserScreen(),
+                            child: ProfileUserOther(id: widget.post.createBy.id,),
+                          ),
+                        );
+                  else
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: ProfileUserScreen(id: widget.post.createBy.id,),
                           ),
                         );
                       },
