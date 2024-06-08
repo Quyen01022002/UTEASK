@@ -168,23 +168,65 @@ class MyProfileController extends GetxController {
   void updateNewPassword(BuildContext context) async{
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('id') ?? 0;
+    final email= prefs.getString('email') ?? '';
     final token = prefs.getString('token') ?? "";
+    final rs = API_Profile.updatePw(userId,email, passwordController.text, token);
 
 
+  }
+
+  RxBool checkold = false.obs;
+  void loadChangePw(BuildContext context) async {
+    bool isOldPasswordValid = await checkOldPassword(context);
+
+    if (isOldPasswordValid && passwordController.text == newPasswordController.text) {
+      int a =0;
+      updateNewPassword(context);
+      oldPasswordController.text = '';
+      passwordController.text = '';
+      newPasswordController.text = '';
+      _showErrorDialog(context, 'Đổi mật khẩu thành công');
+
+    } else {
+      _showErrorDialog(context, 'Mật khẩu cũ không đúng hoặc mật khẩu mới không khớp');
+    }
 
   }
 
   Future<bool> checkOldPassword(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('id') ?? 0;
+    final email = prefs.getString('email') ?? '';
     final token = prefs.getString('token') ?? "";
 
-    final check = await API_Profile.checkOldPassword(userId, oldPasswordController.text,token);
+    final check = await API_Profile.checkOldPassword(userId,email, oldPasswordController.text,token);
 
     if (check!= null)
-      return true;
-    return false;
+      {
+        checkold.value = true;
+      return true;}
+    else {
+      checkold.value = false;
+    return false;}
   }
 
-
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Lỗi'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }

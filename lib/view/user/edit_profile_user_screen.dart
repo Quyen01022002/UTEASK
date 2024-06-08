@@ -652,7 +652,7 @@ class _EditProfileUserScreenState extends State<EditProfileUserScreen> with Sing
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                //  controller: resetController.textControllerPasswordConfirm,
+                  controller: myProfileController.oldPasswordController,
                 obscureText: _isPasswordVisible,
                 decoration: InputDecoration(
                   labelText: 'Nhập mật khẩu cũ',
@@ -677,7 +677,7 @@ class _EditProfileUserScreenState extends State<EditProfileUserScreen> with Sing
               ),
               SizedBox(height: 20.0),
               TextField(
-                //  controller: resetController.textControllerPasswordConfirm,
+                  controller: myProfileController.passwordController,
                 obscureText: _isPasswordVisible,
                 decoration: InputDecoration(
                   labelText: 'Nhập mật khẩu mới',
@@ -702,7 +702,7 @@ class _EditProfileUserScreenState extends State<EditProfileUserScreen> with Sing
               ),
               SizedBox(height: 20.0),
               TextField(
-              //  controller: resetController.textControllerPasswordConfirm,
+                controller: myProfileController.newPasswordController,
                 obscureText: _isPasswordVisible,
                 decoration: InputDecoration(
                   labelText: 'Nhập lại mật khẩu mới',
@@ -730,12 +730,17 @@ class _EditProfileUserScreenState extends State<EditProfileUserScreen> with Sing
           actions: [
             TextButton(
               onPressed: () {
+                myProfileController.oldPasswordController.text = '';
+                myProfileController.passwordController.text = '';
+                myProfileController.newPasswordController.text = '';
                 Navigator.of(context).pop(); // Close the dialog
               },
               child: Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () {
+
+                myProfileController.loadChangePw(context);
                 Navigator.of(context).pop(); // Close the dialog
               },
               child: Text('Save'),

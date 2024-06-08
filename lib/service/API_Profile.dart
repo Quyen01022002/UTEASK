@@ -80,6 +80,28 @@ class API_Profile
     );
     return "Success";
   }
+
+  static Future<String> updatePw(int? userid, String email,String password, String token) async {
+    final url = Uri.parse('$baseUrl/user/$userid/changePw');
+
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',};
+
+// Tạo một Map chứa dữ liệu người dùng
+    final data = {
+      "email": email,
+      "newPassword": password
+
+    };
+
+    await http.put(
+      url,
+      headers: headers,
+      body: jsonEncode(data),
+    );
+    return "Success";
+  }
   static Future<String> updateBackGround(int? userid,String token,String Avatar) async {
     final url = Uri.parse('$baseUrl/user/background/$userid');
 
@@ -131,8 +153,8 @@ class API_Profile
       return null;
     }
   }
-  static Future<UserProfile?> checkOldPassword(int id, String password, String token) async {
-    final url = Uri.parse('$baseUrl/user/checkoldPassword');
+  static Future<UserProfile?> checkOldPassword(int id, String email, String password, String token) async {
+    final url = Uri.parse('$baseUrl/user/$id/checkoldPassword');
 
     final headers = {
       "Content-Type": "application/json",
@@ -140,12 +162,12 @@ class API_Profile
 
 // Tạo một Map chứa dữ liệu người dùng
     final data = {
-      "firstName":id,
-      "lastName":password
+      "email": email,
+      "newPassword":password
 
     };
 
-    final response = await http.patch(
+    final response = await http.post(
       url,
       headers: headers,
       body: jsonEncode(data),
