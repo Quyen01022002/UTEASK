@@ -603,7 +603,7 @@ class API_Post {
 
 
   static Future<CommentEntity?> setAnswer(int cmt, String token) async{
-    final url = Uri.parse('$baseUrl/comments/$cmt');
+    final url = Uri.parse('$baseUrl/comments/setAnswer/$cmt');
     final headers = {
       "Content-Type": "application/json",
       'Authorization': 'Bearer $token',
@@ -631,6 +631,51 @@ class API_Post {
       return null;
     }
 
+
+  }
+
+
+  static Future<CommentEntity?> setAnswerToCmt(int cmt, String token) async{
+    final url = Uri.parse('$baseUrl/comments/setAnswerToCmt/$cmt');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+    final response = await http.put(
+        url,
+        headers: headers
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty){
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<CommentEntity> group = ApiReponse<CommentEntity>.fromJson(
+          utf8Data,
+              (dynamic json) => CommentEntity.fromJson(json),
+        );
+        return group.payload;
+      }
+      else
+        return null;
+    } else {
+      // Handle error scenarios here
+      return null;
+    }
+
+
+  }
+  static Future<void> deleteComment(int cmt, String token) async{
+    final url = Uri.parse('$baseUrl/comments/$cmt');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+    await http.delete(
+        url,
+        headers: headers
+    );
 
   }
 }

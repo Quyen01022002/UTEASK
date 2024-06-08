@@ -54,6 +54,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
   List<CommentEntity>? listCmt = [];
   PostModel? post;
   bool _isKeyboardVisible = false;
+  int cmtIsSelect = 0;
 
   @override
   void initState() {
@@ -720,6 +721,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
           GestureDetector(
             onTapDown: _getTapPosition,
             onLongPress: () {
+              cmtIsSelect = cmt.comment_id!;
               _showContextMenu(context, cmt);
             },
             child: Container(
@@ -781,9 +783,13 @@ else
       ),
       items: (loginController.role.value == "RoleEnum.TEACHER" || loginController.role.value == "RoleEnum.HEADDEPARTMENT") && loginController.idMe.value == cmt.user_id! ?
       [
+        cmt.is_reply==false ?
         PopupMenuItem<int>(
           value: 1,
           child: Text('Đánh dấu là câu trả lời đúng'),
+        ) : PopupMenuItem<int>(
+          value: 3,
+          child: Text('Không phải câu trả lời đúng'),
         ),
         PopupMenuItem<int>(
           value: 2,
@@ -792,18 +798,26 @@ else
       ]:
         (loginController.role.value == "RoleEnum.TEACHER" || loginController.role.value == "RoleEnum.HEADDEPARTMENT") && loginController.idMe.value != cmt.user_id! ?
     [
+      cmt.is_reply==false ?
       PopupMenuItem<int>(
         value: 1,
         child: Text('Đánh dấu là câu trả lời đúng'),
+      ) : PopupMenuItem<int>(
+        value: 3,
+        child: Text('Không phải câu trả lời đúng'),
       ),
     ]
 
             :
          loginController.idMe.value == widget.post.createBy.id ?
         [
+          cmt.is_reply==false ?
           PopupMenuItem<int>(
             value: 1,
             child: Text('Đánh dấu là câu trả lời đúng'),
+          ) : PopupMenuItem<int>(
+            value: 3,
+            child: Text('Không phải câu trả lời đúng'),
           ),
           PopupMenuItem<int>(
             value: 2,
@@ -825,20 +839,31 @@ else
             ],
       elevation: 8.0,
     ).then((value) {
-      if (value != null) {}
+      if (value != null) {
+        _onMenuItemSelected(int.parse(value.toString()), cmtIsSelect);
+      }
     });
   }
 
-  void _onMenuItemSelected(int value) {
+  void _onMenuItemSelected(int value, int cmtid) {
     // Handle the menu item selection here
     switch (value) {
       case 1:
         {
+          postController.setAnswer(context, cmtid);
+          print('1111111');
+          cmtIsSelect = 0;
         break;}
       case 2:
         {
-
+print('22222222');
+      postController.deleteCmt(context, cmtid);
         break;}
+      case 3:
+        {
+          postController.setAnswerToCmt(BuildContext, cmtid);
+          break;
+        }
     }
   }
 
@@ -852,10 +877,11 @@ else
   Widget _buildOneCommentReply(CommentEntity cmt, List<Widget> contentWidget) {
     return Container(
       decoration: BoxDecoration(
+        color: Colors.green[50],
         borderRadius: BorderRadius.circular(10), // Đặt bán kính của viền tròn
         border: Border.all(
           color: Colors.green, // Màu sắc của viền tròn
-          width: 0.2, // Độ dày của viền tròn
+          width: 1, // Độ dày của viền tròn
         ),
       ),
       padding: EdgeInsets.all(5),
@@ -870,6 +896,7 @@ else
           GestureDetector(
             onTapDown: _getTapPosition,
             onLongPress: () {
+              cmtIsSelect = cmt.comment_id!;
               _showContextMenu(context, cmt);
             },
             child: Container(

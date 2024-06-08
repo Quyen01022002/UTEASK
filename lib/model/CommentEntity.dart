@@ -36,7 +36,7 @@ this.is_reply,
     first_name: data["createBy"]["firstName"] ?? "",
     last_name: data["createBy"]["lastName"] ?? "",
     avatar: data["createBy"]["profilePicture"] ?? "",
-    is_reply: data["isReply"] ?? false,
+    is_reply: data["isAnwser"] ?? false,
   );
 
 }
