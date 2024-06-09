@@ -1,3 +1,4 @@
+import 'package:askute/controller/LoginController.dart';
 import 'package:askute/controller/MyProfileController.dart';
 import 'package:askute/model/UserProfile.dart';
 import 'package:askute/view/user/DisplayBackGroudImagePage.dart';
@@ -13,7 +14,8 @@ import '../Home/hot_post_screen.dart';
 import '../component/post_screen.dart';
 
 class ProfileUserScreen extends StatefulWidget {
-  const ProfileUserScreen({super.key});
+  final int? id;
+  const ProfileUserScreen({super.key, required this.id});
 
   @override
   State<ProfileUserScreen> createState() => _ProfileUserScreenState();
@@ -21,6 +23,7 @@ class ProfileUserScreen extends StatefulWidget {
 
 class _ProfileUserScreenState extends State<ProfileUserScreen> {
   MyProfileController myProfileController = Get.put(MyProfileController());
+  LoginController loginController = Get.put(LoginController());
 
   @override
   void initState() {
@@ -34,7 +37,7 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
     // Đây là ví dụ về việc tải dữ liệu từ cơ sở dữ liệu hoặc một API
     // Thay thế phần này bằng hàm thực sự để tải dữ liệu của bạn
 
-      return myProfileController.loadUserOther(myProfileController.myId.value, context);
+      return myProfileController.loadUserOther(loginController.idMe.value, context);
   }
 
   @override

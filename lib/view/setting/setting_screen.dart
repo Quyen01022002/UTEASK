@@ -25,6 +25,7 @@ class SettingScreen extends StatefulWidget {
 class _SettingScreenState extends State<SettingScreen> {
     final SettingController settingController =Get.put(SettingController());
     MyProfileController myProfileController = Get.put(MyProfileController());
+    LoginController loginController = Get.put(LoginController());
     @override
     void initState() {
       super.initState();
@@ -91,7 +92,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 context,
                 PageTransition(
                   type: PageTransitionType.rightToLeft,
-                  child: ProfileUserScreen(),
+                  child: ProfileUserScreen(id: loginController.idMe.value,),
                 ),
               );
             },
@@ -116,7 +117,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 context,
                 PageTransition(
                   type: PageTransitionType.rightToLeft,
-                  child: ProfileUserScreen(),
+                  child: ProfileUserScreen(id: loginController.idMe.value,),
                 ),
               );
             },
