@@ -80,6 +80,28 @@ class API_Profile
     );
     return "Success";
   }
+
+  static Future<String> updatePw(int? userid, String email,String password, String token) async {
+    final url = Uri.parse('$baseUrl/user/$userid/changePw');
+
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',};
+
+// Tạo một Map chứa dữ liệu người dùng
+    final data = {
+      "email": email,
+      "newPassword": password
+
+    };
+
+    await http.put(
+      url,
+      headers: headers,
+      body: jsonEncode(data),
+    );
+    return "Success";
+  }
   static Future<String> updateBackGround(int? userid,String token,String Avatar) async {
     final url = Uri.parse('$baseUrl/user/background/$userid');
 
@@ -131,6 +153,44 @@ class API_Profile
       return null;
     }
   }
+  static Future<UserProfile?> checkOldPassword(int id, String email, String password, String token) async {
+    final url = Uri.parse('$baseUrl/user/$id/checkoldPassword');
+
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',};
+
+// Tạo một Map chứa dữ liệu người dùng
+    final data = {
+      "email": email,
+      "newPassword":password
+
+    };
+
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<UserProfile> userProfileResponse = ApiReponse<UserProfile>.fromJson(
+          utf8Data,
+              (dynamic json) => UserProfile.fromJson(json),
+        );
+        return userProfileResponse.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
   static Future<List<UserEnity>?> Search( int userId,String key,String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/user/search/$userId?key=$key'),

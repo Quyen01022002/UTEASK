@@ -12,6 +12,7 @@ class CommentEntity {
   final String? first_name;
   final String? last_name;
   final String? avatar;
+  final bool? is_reply;
 
 
   CommentEntity({
@@ -23,7 +24,7 @@ class CommentEntity {
     this.first_name,
     this.last_name,
     this.avatar,
-
+this.is_reply,
   });
 
   factory CommentEntity.fromJson(Map<String, dynamic> data) => CommentEntity(
@@ -35,6 +36,7 @@ class CommentEntity {
     first_name: data["createBy"]["firstName"] ?? "",
     last_name: data["createBy"]["lastName"] ?? "",
     avatar: data["createBy"]["profilePicture"] ?? "",
+    is_reply: data["isAnwser"] ?? false,
   );
 
 }

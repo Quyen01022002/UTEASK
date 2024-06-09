@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:askute/controller/LoginController.dart';
 import 'package:askute/model/CommentEntity.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -46,11 +47,15 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
   ];
 
   final PostController postController = Get.put(PostController());
+  final LoginController loginController = Get.put(LoginController());
+  Offset _tapPosition = Offset.zero;
   Stream<PostModel>? postCurrent;
   Stream<List<CommentEntity>>? listCommentStream;
   List<CommentEntity>? listCmt = [];
   PostModel? post;
   bool _isKeyboardVisible = false;
+  int cmtIsSelect = 0;
+
   @override
   void initState() {
     super.initState();
@@ -156,15 +161,19 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                                     alignment: Alignment.center,
                                     child: Container(
                                       margin: EdgeInsets.only(top: 5),
-                                      height: 0.5, // Chiều cao của thanh ngang
-                                      width: 330, // Độ dày của thanh ngang
+                                      height: 0.5,
+                                      // Chiều cao của thanh ngang
+                                      width: 330,
+                                      // Độ dày của thanh ngang
                                       color: Color(0xC0C0C0C0),
                                     ),
                                   ),
                                   Container(
-                                    margin: EdgeInsets.only(top: 10, bottom: 10),
+                                    margin:
+                                        EdgeInsets.only(top: 10, bottom: 10),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
                                       children: [
                                         Column(
                                           children: [
@@ -178,23 +187,35 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                                                 // postController.Like();
                                                 // print("Like");
                                                 postController.Like(
-                                                    postController.postid.value);
+                                                    postController
+                                                        .postid.value);
                                                 print("đã bấm nút like");
                                               },
                                               child: Container(
                                                 padding: EdgeInsets.symmetric(
-                                                    vertical: 8, horizontal: 12),
+                                                    vertical: 8,
+                                                    horizontal: 12),
                                                 child: Row(children: [
-
-                                                  Icon(snapshot.data!.user_liked ? Icons.thumb_up : Icons.thumb_up_outlined, size: 20,
-                                                    color: snapshot.data!.user_liked ? Colors.blue : Colors.black,),
+                                                  Icon(
+                                                    snapshot.data!.user_liked
+                                                        ? Icons.thumb_up
+                                                        : Icons
+                                                            .thumb_up_outlined,
+                                                    size: 20,
+                                                    color: snapshot
+                                                            .data!.user_liked
+                                                        ? Colors.blue
+                                                        : Colors.black,
+                                                  ),
                                                   SizedBox(
                                                     width: 2,
                                                   ),
                                                   Text(
-                                                    snapshot.data!.like_count.toString(),
+                                                    snapshot.data!.like_count
+                                                        .toString(),
                                                     style: TextStyle(
-                                                        fontWeight: FontWeight.bold),
+                                                        fontWeight:
+                                                            FontWeight.bold),
                                                   ),
                                                 ]),
                                               ),
@@ -207,13 +228,15 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                                               onTap: () {},
                                               child: Container(
                                                 padding: EdgeInsets.symmetric(
-                                                    vertical: 8, horizontal: 12),
+                                                    vertical: 8,
+                                                    horizontal: 12),
                                                 child: GestureDetector(
                                                   onTap: () {},
                                                   child: Row(children: [
                                                     Icon(
                                                         false
-                                                            ? Icons.bookmark_outline
+                                                            ? Icons
+                                                                .bookmark_outline
                                                             : Icons
                                                                 .bookmark_border_outlined,
                                                         size: 20,
@@ -226,7 +249,8 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                                                     Text(
                                                       0.toString(),
                                                       style: TextStyle(
-                                                          fontWeight: FontWeight.bold),
+                                                          fontWeight:
+                                                              FontWeight.bold),
                                                     ),
                                                   ]),
                                                 ),
@@ -257,13 +281,17 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                   ],
                 ),
               ),
-              SizedBox(height: 100,)
+              SizedBox(
+                height: 100,
+              )
             ],
           ),
           Positioned(
             left: 0,
             right: 0,
-            bottom: _isKeyboardVisible ? MediaQuery.of(context).viewInsets.bottom : 0,
+            bottom: _isKeyboardVisible
+                ? MediaQuery.of(context).viewInsets.bottom
+                : 0,
             child: _buildInputAllField(),
           ),
         ],
@@ -380,7 +408,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
               _listController.add(_textFirsts);
               _imageWidgets.add(_buildFirstTextFieldWidget());
               setState(() {
-                  _imageWidgets;
+                _imageWidgets;
               });
             },
             child: Text('Đăng'),
@@ -645,7 +673,11 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                       contentWg.add(_buiImage(content[i].content));
                     }
                   }
-                  return _buildOneComment(snapshot.data![index], contentWg);
+                  if (snapshot.data![index].is_reply == false)
+                    return _buildOneComment(snapshot.data![index], contentWg);
+                  else
+                    return _buildOneCommentReply(
+                        snapshot.data![index], contentWg);
                 });
           } else {
             return Container();
@@ -686,14 +718,196 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
           SizedBox(
             height: 10,
           ),
-          Container(
-              padding: EdgeInsets.only(left: 38, right: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ...contentWidget,
-                ],
-              )),
+          GestureDetector(
+            onTapDown: _getTapPosition,
+            onLongPress: () {
+              cmtIsSelect = cmt.comment_id!;
+              _showContextMenu(context, cmt);
+            },
+            child: Container(
+                padding: EdgeInsets.only(left: 38, right: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ...contentWidget,
+                  ],
+                )),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Row(
+            children: [
+              Expanded(
+                flex: 8,
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 38,
+                    ),
+                    Icon(Icons.reply_outlined, size: 15),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Icon(Icons.thumb_up_outlined, size: 15),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Icon(Icons.thumb_down_outlined, size: 15),
+                  ],
+                ),
+              ),
+              Expanded(
+                flex: 2,
+                child: Icon(Icons.bookmarks_outlined, size: 15),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  void _showContextMenu(BuildContext context, CommentEntity cmt) async {
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+if (loginController.role.value == "RoleEnum.HEADDEPARTMENT"){
+    print(loginController.role.value);}
+else
+  print("oooooooo");
+    showMenu(
+      context: context,
+      position: RelativeRect.fromRect(
+        _tapPosition & Size(40, 40), // smaller rect, the touch area
+        Offset.zero & overlay.size, // larger rect, the entire screen
+      ),
+      items: (loginController.role.value == "RoleEnum.TEACHER" || loginController.role.value == "RoleEnum.HEADDEPARTMENT") && loginController.idMe.value == cmt.user_id! ?
+      [
+        cmt.is_reply==false ?
+        PopupMenuItem<int>(
+          value: 1,
+          child: Text('Đánh dấu là câu trả lời đúng'),
+        ) : PopupMenuItem<int>(
+          value: 3,
+          child: Text('Không phải câu trả lời đúng'),
+        ),
+        PopupMenuItem<int>(
+          value: 2,
+          child: Text('Xóa câu trả lời'),
+        ),
+      ]:
+        (loginController.role.value == "RoleEnum.TEACHER" || loginController.role.value == "RoleEnum.HEADDEPARTMENT") && loginController.idMe.value != cmt.user_id! ?
+    [
+      cmt.is_reply==false ?
+      PopupMenuItem<int>(
+        value: 1,
+        child: Text('Đánh dấu là câu trả lời đúng'),
+      ) : PopupMenuItem<int>(
+        value: 3,
+        child: Text('Không phải câu trả lời đúng'),
+      ),
+    ]
+
+            :
+         loginController.idMe.value == widget.post.createBy.id ?
+        [
+          cmt.is_reply==false ?
+          PopupMenuItem<int>(
+            value: 1,
+            child: Text('Đánh dấu là câu trả lời đúng'),
+          ) : PopupMenuItem<int>(
+            value: 3,
+            child: Text('Không phải câu trả lời đúng'),
+          ),
+          PopupMenuItem<int>(
+            value: 2,
+            child: Text('Xóa câu trả lời'),
+          ),
+        ]: loginController.idMe.value == cmt.user_id!
+          ? [
+
+              PopupMenuItem<int>(
+                value: 2,
+                child: Text('Xóa câu trả lời'),
+              ),
+            ]
+          : [
+              // PopupMenuItem<int>(
+              //   value: 1,
+              //   child: Text('Xóa câu trả lời'),
+              // ),
+            ],
+      elevation: 8.0,
+    ).then((value) {
+      if (value != null) {
+        _onMenuItemSelected(int.parse(value.toString()), cmtIsSelect);
+      }
+    });
+  }
+
+  void _onMenuItemSelected(int value, int cmtid) {
+    // Handle the menu item selection here
+    switch (value) {
+      case 1:
+        {
+          postController.setAnswer(context, cmtid);
+          print('1111111');
+          cmtIsSelect = 0;
+        break;}
+      case 2:
+        {
+print('22222222');
+      postController.deleteCmt(context, cmtid);
+        break;}
+      case 3:
+        {
+          postController.setAnswerToCmt(BuildContext, cmtid);
+          break;
+        }
+    }
+  }
+
+  void _getTapPosition(TapDownDetails details) {
+    final RenderBox referenceBox = context.findRenderObject() as RenderBox;
+    setState(() {
+      _tapPosition = referenceBox.globalToLocal(details.globalPosition);
+    });
+  }
+
+  Widget _buildOneCommentReply(CommentEntity cmt, List<Widget> contentWidget) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.green[50],
+        borderRadius: BorderRadius.circular(10), // Đặt bán kính của viền tròn
+        border: Border.all(
+          color: Colors.green, // Màu sắc của viền tròn
+          width: 1, // Độ dày của viền tròn
+        ),
+      ),
+      padding: EdgeInsets.all(5),
+      margin: EdgeInsets.all(5.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildUserComment(cmt),
+          SizedBox(
+            height: 10,
+          ),
+          GestureDetector(
+            onTapDown: _getTapPosition,
+            onLongPress: () {
+              cmtIsSelect = cmt.comment_id!;
+              _showContextMenu(context, cmt);
+            },
+            child: Container(
+                padding: EdgeInsets.only(left: 38, right: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ...contentWidget,
+                  ],
+                )),
+          ),
           SizedBox(
             height: 20,
           ),
