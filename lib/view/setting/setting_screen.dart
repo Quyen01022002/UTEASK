@@ -14,6 +14,7 @@ import 'package:page_transition/page_transition.dart';
 import '../../controller/LoginController.dart';
 import '../../controller/MyProfileController.dart';
 import '../authen/Login_screen.dart';
+import 'BotChat.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
@@ -239,6 +240,13 @@ class _SettingScreenState extends State<SettingScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                          type: PageTransitionType.rightToLeft,
+                          child: BotChat(),
+                        ),
+                      );
                     },
                     child: Container(
                       child: Column(
@@ -246,13 +254,12 @@ class _SettingScreenState extends State<SettingScreen> {
                           CircleAvatar(
                             radius: 20,
                             backgroundImage:
-                                AssetImage('assets/images/NOTIFICATIONS.png'),
-                            // Hoặc sử dụng NetworkImage nếu avatar từ một URL
-                            // backgroundImage: NetworkImage('URL_TO_AVATAR'),
+                                AssetImage('assets/images/bot.png'),
+
                           ),
                           SizedBox(width: 8),
                           Text(
-                            'Danh sách đen',
+                            'Trả Lời tự động',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,

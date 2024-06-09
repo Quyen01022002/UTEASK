@@ -46,6 +46,37 @@ class API_Post {
       return null;
     }
   }
+  static Future<String?> DeliverKhoa(String questions) async {
+    final response = await http.post(
+      Uri.parse('http://192.168.40.92:8081/classify'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({
+        "question": questions
+      }),
+    );
+
+    print("api");
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      print("success");
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        final responseData = jsonDecode(response.body);
+        //String utf8Data = utf8.decode(responseData.runes.toList());
+        String khoa=responseData['khoa'];
+        print(khoa);
+
+        return khoa;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
   static Future<List<PostModel>?> LoadMainHome(int userid, String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/post/$userid'),

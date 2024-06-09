@@ -161,7 +161,6 @@ class API_Group{
       return null;
     }
   }
-
   static Future<List<PostModel>?> LoadPostClass(int userid, String token, int pagenumber) async {
     final response = await http.get(
       Uri.parse('$baseUrl/post/classes/$userid/$pagenumber'),
@@ -342,7 +341,8 @@ class API_Group{
     if (response.statusCode == 200) {
       final responseData = response.body;
       if (responseData.isNotEmpty){
-        ApiReponse<List<GroupModel>> listgroup = ApiReponse<List<GroupModel>>.fromJson(responseData, (dynamic json) => List<GroupModel>.from(json.map((x) => GroupModel.fromJson(x))),
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<GroupModel>> listgroup = ApiReponse<List<GroupModel>>.fromJson(utf8Data, (dynamic json) => List<GroupModel>.from(json.map((x) => GroupModel.fromJson(x))),
         );
         return listgroup.payload;
       }
