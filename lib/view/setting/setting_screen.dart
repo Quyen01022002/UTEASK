@@ -1,5 +1,6 @@
 import 'package:askute/controller/SettingController.dart';
 import 'package:askute/service/SendMessage.dart';
+import 'package:askute/view/Home/new%20home/home_screen_3.dart';
 import 'package:askute/view/setting/ClassHomeStudent.dart';
 import 'package:askute/view/setting/SavedPostsPage.dart';
 import 'package:askute/view/user/activity/ActivityScreen.dart';
@@ -215,9 +216,13 @@ class _SettingScreenState extends State<SettingScreen> {
                         children: [
                            GestureDetector(
                              onTap: (){
-                               // String? token= await FirebaseMessaging.instance.getToken();
-                               // print(token);
-                               // sendFriendRequestNotification(token);
+                               Navigator.push(
+                                 context,
+                                 PageTransition(
+                                   type: PageTransitionType.rightToLeft,
+                                   child: HomePage(),
+                                 ),
+                               );
                              },
                              child: CircleAvatar(
                               radius: 20,

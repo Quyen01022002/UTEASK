@@ -136,7 +136,7 @@ class API_Group{
   }
   static Future<List<PostModel>?> LoadMainHome(int userid, String token, int pagenumber) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/group/follow/post/$userid/$pagenumber'),
+      Uri.parse('$baseUrl/group/follow/posts/$userid/$pagenumber'),
       headers: {
         'Authorization': 'Bearer $token',
       },
