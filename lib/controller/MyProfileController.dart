@@ -229,4 +229,21 @@ class MyProfileController extends GetxController {
       },
     );
   }
+  final reasonText = TextEditingController();
+  void reportUser(BuildContext, int iduser, String reason) async {
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+    print("nội dung lý do: " + reason);
+
+    String reason2 = "";
+    if (reason =="Khác")
+      reason2 = reasonText.text.trim();
+    else
+      reason2 = reason;
+    await API_Profile.reportUser(adminId, iduser, reason2, token);
+    reasonText.text = "";
+  }
+
+
 }

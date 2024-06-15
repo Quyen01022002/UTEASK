@@ -34,6 +34,16 @@ class PostController extends GetxController {
     }
   }
 
+  Future<PostModel?> loadAPost(BuildContext context, int id) async {
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    userid.value = adminId;
+    final token = prefs.getString('token') ?? "";
+    tokenString.value = token;
+    postid.value = id;
+     return await API_Post.getOnePost(id, adminId, token);
+  }
+
   void Like(int postid) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -84,4 +94,25 @@ class PostController extends GetxController {
     final token = prefs.getString('token') ?? "";
     await API_Post.deleteComment(cmt, token);
   }
+
+  final reasonText = TextEditingController();
+  void reportPost(BuildContext, int idpost, String reason) async {
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    userid.value = adminId;
+    final token = prefs.getString('token') ?? "";
+    print("nội dung lý do: " + reason);
+
+    String reason2 = "";
+    if (reason =="Khác")
+      reason2 = reasonText.text.trim();
+    else
+      reason2 = reason;
+    await API_Post.reportPost(adminId, idpost, reason2, token);
+  reasonText.text = "";
+  }
+
+
+
+
 }
