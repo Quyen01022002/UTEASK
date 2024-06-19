@@ -48,7 +48,7 @@ class API_Post {
   }
   static Future<String?> DeliverKhoa(String questions) async {
     final response = await http.post(
-      Uri.parse('http://192.168.40.92:8081/classify'),
+      Uri.parse('http://192.168.178.92:8081/classify'),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
       },
