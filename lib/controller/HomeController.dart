@@ -116,6 +116,16 @@ class HomeController extends GetxController {
       isloaded(false);
     }
   }
+  Future<List<PostModel>?> load10post(BuildContext context) async
+  {
+      final prefs = await SharedPreferences.getInstance();
+      isloaded(true);
+      print("load");
+      final userId = prefs.getInt('id') ?? 0;
+      myId.value = userId;
+      final token = prefs.getString('token') ?? "";
+      return await API_Post.LoadTop10(userId, token);
+  }
 
   Stream<List<PostModel>>? allPostHotClassStream;
   void load10HotPostOnAllClassOfTeacher(BuildContext context) async

@@ -56,7 +56,7 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
                 return CircularProgressIndicator();
               } else if (snapshot.hasError) {
                 // Hiển thị lỗi nếu có lỗi xảy ra trong quá trình tải dữ liệu
-                return Text('Error: ${snapshot.error}');
+                return Text('Error: Không tải được trang cá nhân');
               } else if (snapshot.hasData) {
                 return Container(
                   decoration: BoxDecoration(color: Colors.white),

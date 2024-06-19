@@ -1,3 +1,4 @@
+import 'package:askute/view/Home/home_page_new.dart';
 import 'package:askute/view/Home/search_screen.dart';
 import 'package:askute/view/mess/home_mess_screen.dart';
 import 'package:askute/view/search/HomeSearchScreen.dart';
@@ -22,7 +23,7 @@ class DashBoardVer2 extends StatefulWidget {
 class _DashBoardVer2State extends State<DashBoardVer2> {
   int currentTab = 0;
   final List<Widget> screens = [
-    HomeScreen2(),
+    HomeScreen3(),
 
     // Add two more screens here
     HomeSearchScreen(), // Example screen
