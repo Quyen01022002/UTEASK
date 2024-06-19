@@ -18,15 +18,15 @@ import '../../model/PostModel.dart';
 import '../Quetions/QuestionDetail.dart';
 import '../user/user_proflie_screen.dart';
 
-class PostScreen extends StatefulWidget {
+class PostScreenNew extends StatefulWidget {
   //const PostScreen({super.key});
   final PostModel post;
-  const PostScreen({Key? key, required this.post}) : super(key: key);
+  const PostScreenNew({Key? key, required this.post}) : super(key: key);
   @override
-  State<PostScreen> createState() => _PostScreenState();
+  State<PostScreenNew> createState() => _PostScreenState();
 }
 
-class _PostScreenState extends State<PostScreen> {
+class _PostScreenState extends State<PostScreenNew> {
   late String formattedTime = '';
   final PostController postController = Get.put(PostController());
   final HomeController homeController = Get.put(HomeController());
@@ -40,9 +40,29 @@ class _PostScreenState extends State<PostScreen> {
   @override
   void initState() {
     super.initState();
-    statelike = widget.post.user_liked;
-    contlike=widget.post.like_count;
-    formattedTime = formatTimeDifference(widget.post.timeStamp);
+    _startTimer();
+    postHT = widget.post;
+    statelike = postHT!.user_liked;
+    contlike=postHT!.like_count;
+    formattedTime = formatTimeDifference(postHT!.timeStamp);
+  }
+  void fetchDate() async{
+    final postUpdate = await postController.loadAPost(context, widget.post.id);
+    postCurren = Stream.fromIterable([postUpdate!]);
+  }
+
+  late Timer _timer;
+  void _startTimer(){
+    _timer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+      fetchDate();
+      postCurren?.listen((PostModel? postModel) {
+        setState(() {
+          postHT = postModel;
+        });
+      });
+
+    });
+
   }
 
   void initCurrentUser() async {
@@ -51,247 +71,248 @@ class _PostScreenState extends State<PostScreen> {
   }
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
-              child: GestureDetector(
-                onTap: ()
-                {
-                  Navigator.push(
-                    context,
-                    PageTransition(
-                      type: PageTransitionType.rightToLeft,
-                      child: ProfileUserOther(id: widget.post.createBy.id,),
-                    ),
-                  );
-                },
-                child: Row(
+
+        return Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
+                child: GestureDetector(
+                  onTap: ()
+                  {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.rightToLeft,
+                        child: ProfileUserOther(id: postHT!.createBy.id,),
+                      ),
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: (){
+                          if (loginController.idMe.value != postHT!.createBy.id)
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: ProfileUserOther(id: postHT!.createBy.id,),
+                              ),
+                            );
+                          else
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: ProfileUserScreen(id: postHT!.createBy.id,),
+                              ),
+                            );
+                        },
+                        child: CircleAvatar(
+                          radius: 20,
+                          backgroundImage:
+                          NetworkImage(postHT!.createBy.profilePicture),
+                          // Hoặc sử dụng NetworkImage nếu avatar từ một URL
+                          // backgroundImage: NetworkImage('URL_TO_AVATAR'),
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GestureDetector(
+                            onTap: (){
+
+                            },
+                            child: Text(
+                              postHT!.createBy.firstName+" " + postHT!.createBy.lastName,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+
+                          Text(
+                            formattedTime,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black45,
+                            ),
+                          ),                              ],
+                      ),
+                      Spacer(),
+                      PopupMenuButton<String>(
+                        icon: Icon(Icons.more_vert),
+                        onSelected: (String value) {
+                          if (value == 'Xem thêm') {
+                            // Hành động khi chọn "Xem thêm"
+                          } else if (value == 'Báo cáo') {
+                            // Hành động khi chọn "Báo cáo"
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: ReportPost(post: postHT!),
+                              ),
+                            );
+                          }
+                        },
+                        itemBuilder: (BuildContext context) {
+                          return {'Xem thêm', 'Báo cáo'}.map((String choice) {
+                            return PopupMenuItem<String>(
+                              value: choice,
+                              child: Text(choice),
+                            );
+                          }).toList();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.only(left: 15, right: 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    SizedBox(height: 8),
                     GestureDetector(
-                      onTap: (){
-                  if (loginController.idMe.value != widget.post.createBy.id)
+                      onTap: () {
+                        postController.loadOnePost(context, postHT!.id);
+                        // Thực hiện hành động khi người dùng nhấn vào văn bản
                         Navigator.push(
                           context,
-                          PageTransition(
-                            type: PageTransitionType.rightToLeft,
-                            child: ProfileUserOther(id: widget.post.createBy.id,),
-                          ),
-                        );
-                  else
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.rightToLeft,
-                            child: ProfileUserScreen(id: widget.post.createBy.id,),
-                          ),
+                          MaterialPageRoute(builder: (context) => QuestionDetailScreen(post: postHT!)),
                         );
                       },
-                      child: CircleAvatar(
-                        radius: 20,
-                        backgroundImage:
-                        NetworkImage(widget.post.createBy.profilePicture),
-                        // Hoặc sử dụng NetworkImage nếu avatar từ một URL
-                        // backgroundImage: NetworkImage('URL_TO_AVATAR'),
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        GestureDetector(
-                          onTap: (){
+                      child: Container(
+                        padding: EdgeInsets.only(left: 5),
 
-                          },
-                          child: Text(
-                            widget.post.createBy.firstName+" " + widget.post.createBy.lastName,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        child: Text(
+                          postHT!.contentPost,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.black87,
                           ),
                         ),
+                      ),
+                    ),
 
-                        Text(
-                          formattedTime,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black45,
-                          ),
-                        ),                              ],
-                    ),
-                    Spacer(),
-                    PopupMenuButton<String>(
-                      icon: Icon(Icons.more_vert),
-                      onSelected: (String value) {
-                        if (value == 'Xem thêm') {
-                          // Hành động khi chọn "Xem thêm"
-                        } else if (value == 'Báo cáo') {
-                          // Hành động khi chọn "Báo cáo"
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              type: PageTransitionType.rightToLeft,
-                              child: ReportPost(post: widget.post),
-                            ),
-                          );
-                        }
-                      },
-                      itemBuilder: (BuildContext context) {
-                        return {'Xem thêm', 'Báo cáo'}.map((String choice) {
-                          return PopupMenuItem<String>(
-                            value: choice,
-                            child: Text(choice),
-                          );
-                        }).toList();
-                      },
-                    ),
+                    SizedBox(height: 10),
+                    _buildImages(postHT!.listAnh),
+
+                    SizedBox(height: 10),
+
                   ],
                 ),
               ),
-            ),
-            Container(
-              padding: EdgeInsets.only(left: 15, right: 15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 8),
-                  GestureDetector(
-                    onTap: () {
-                      postController.loadOnePost(context, widget.post.id);
-                      // Thực hiện hành động khi người dùng nhấn vào văn bản
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => QuestionDetailScreen(post: widget.post)),
-                      );
-                    },
-                    child: Container(
-                      padding: EdgeInsets.only(left: 5),
-
-                      child: Text(
-                        widget.post.contentPost,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: 10),
-                  _buildImages(widget.post.listAnh),
-
-                  SizedBox(height: 10),
-
-                ],
+              Container(
+                alignment: Alignment.center,
+                child: Container(
+                  margin: EdgeInsets.only(top: 5),
+                  height: 0.5, // Chiều cao của thanh ngang
+                  width: 330, // Độ dày của thanh ngang
+                  color: Color(0xC0C0C0C0),
+                ),
               ),
-            ),
-            Container(
-              alignment: Alignment.center,
-              child: Container(
-                margin: EdgeInsets.only(top: 5),
-                height: 0.5, // Chiều cao của thanh ngang
-                width: 330, // Độ dày của thanh ngang
-                color: Color(0xC0C0C0C0),
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.only(top: 5, left: 30, right: 30),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          // setState(() {
-                          //   statelike?contlike=contlike-1:contlike=contlike+1;
-                          //   statelike = !statelike;
-                          // });
-                          // postController.postid.value = widget.post.id;
-                          // postController.Like();
-                          // print("Like");
-                          postController.Like(widget.post.id);
-print("đã bấm nút like");
+              Container(
+                padding: EdgeInsets.only(top: 5, left: 30, right: 30),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            // setState(() {
+                            //   statelike?contlike=contlike-1:contlike=contlike+1;
+                            //   statelike = !statelike;
+                            // });
+                            // postController.postid.value = postHT!.id;
+                            // postController.Like();
+                            // print("Like");
+                            postController.Like(postHT!.id);
+                            print("đã bấm nút like");
 
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                          child: Row(
-                              children: [
-                                Icon(widget.post.user_liked ? Icons.thumb_up : Icons.thumb_up_outlined, size: 20,
-                                color: widget.post.user_liked ? Colors.blue : Colors.black,),
-SizedBox(width: 2,),Text(widget.post.like_count.toString(),
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold
-                                ),),
-                                ]),
-                        ),
-                      ),
-
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          postController.loadOnePost(context, widget.post.id);
-                          // Thực hiện hành động khi người dùng nhấn vào văn bản
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => QuestionDetailScreen(post: widget.post)),
-                          );
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                          child: Row(
-                              children: [
-                                Icon(Icons.mode_comment_outlined, size: 20,),
-                                SizedBox(width: 2,),Text(widget.post.comment_count.toString(),
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold
-                                  ),),
-                              ]),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                          child: GestureDetector(
-                            onTap: ()
-                            {
-                              homeController.postid.value = widget.post.id;
-                              homeController.Saved();
-                            },
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                             child: Row(
                                 children: [
-                                  Icon(Icons.bookmark_outline, size: 20,),
-                                  SizedBox(width: 2,),Text(widget.post.like_count.toString(),
+                                  Icon(postHT!.user_liked ? Icons.thumb_up : Icons.thumb_up_outlined, size: 20,
+                                    color: postHT!.user_liked ? Colors.blue : Colors.black,),
+                                  SizedBox(width: 2,),Text(postHT!.like_count.toString(),
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold
                                     ),),
                                 ]),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
-      );
+
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            postController.loadOnePost(context, postHT!.id);
+                            // Thực hiện hành động khi người dùng nhấn vào văn bản
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => QuestionDetailScreen(post: postHT!)),
+                            );
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                            child: Row(
+                                children: [
+                                  Icon(Icons.mode_comment_outlined, size: 20,),
+                                  SizedBox(width: 2,),Text(postHT!.comment_count.toString(),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold
+                                    ),),
+                                ]),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                            child: GestureDetector(
+                              onTap: ()
+                              {
+                                homeController.postid.value = postHT!.id;
+                                homeController.Saved();
+                              },
+                              child: Row(
+                                  children: [
+                                    Icon(Icons.bookmark_outline, size: 20,),
+                                    SizedBox(width: 2,),Text(postHT!.like_count.toString(),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold
+                                      ),),
+                                  ]),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        );
   }
   Widget _buildImages(List<String> images) {
     int imageCount = images.length;
@@ -400,16 +421,16 @@ SizedBox(width: 2,),Text(widget.post.like_count.toString(),
                         ));
                       },
                       child: _buildSecondImage(imageUrls[1])),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => ImageDetail(
-                              index: 2,
-                              listAnh: imageUrls,
-                            ),
-                          ));
-                        },
-                        child: _buildSecondImage(imageUrls[2])),
+                  GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => ImageDetail(
+                            index: 2,
+                            listAnh: imageUrls,
+                          ),
+                        ));
+                      },
+                      child: _buildSecondImage(imageUrls[2])),
 
                 ],
               ),

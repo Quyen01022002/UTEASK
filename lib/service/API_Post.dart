@@ -19,7 +19,8 @@ import '../model/CommentEntity.dart';
 import '../model/InteractionsEntity.dart';
 
 class API_Post {
-  static Future<List<PostModel>?> LoadSavedPost(int userid, String token) async {
+  static Future<List<PostModel>?> LoadSavedPost(int userid,
+      String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/save/$userid'),
       headers: {
@@ -46,9 +47,10 @@ class API_Post {
       return null;
     }
   }
+
   static Future<String?> DeliverKhoa(String questions) async {
     final response = await http.post(
-      Uri.parse('http://192.168.178.92:8081/classify'),
+      Uri.parse('http://192.168.40.92:8081/classify'),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -66,7 +68,7 @@ class API_Post {
       if (responseData.isNotEmpty) {
         final responseData = jsonDecode(response.body);
         //String utf8Data = utf8.decode(responseData.runes.toList());
-        String khoa=responseData['khoa'];
+        String khoa = responseData['khoa'];
         print(khoa);
 
         return khoa;
@@ -77,6 +79,7 @@ class API_Post {
       return null;
     }
   }
+
   static Future<List<PostModel>?> LoadMainHome(int userid, String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/post/$userid'),
@@ -91,10 +94,10 @@ class API_Post {
       if (responseData.isNotEmpty) {
         String utf8Data = utf8.decode(responseData.runes.toList());
         ApiReponse<List<PostModel>> listPost =
-            ApiReponse<List<PostModel>>.fromJson(
+        ApiReponse<List<PostModel>>.fromJson(
           utf8Data,
-          (dynamic json) =>
-              List<PostModel>.from(json.map((x) => PostModel.fromJson(x))),
+              (dynamic json) =>
+          List<PostModel>.from(json.map((x) => PostModel.fromJson(x))),
         );
         return listPost.payload;
       } else {
@@ -105,8 +108,8 @@ class API_Post {
     }
   }
 
-  static Future<PostEntity?> post(
-      PostEntity post, List<String> img, String token, int groupId) async {
+  static Future<PostEntity?> post(PostEntity post, List<String> img,
+      String token, int groupId) async {
     final url = Uri.parse('$baseUrl/post/post');
 
     final headers = {
@@ -114,7 +117,7 @@ class API_Post {
       'Authorization': 'Bearer $token',
     };
     List<Map<String, String>> listAnh =
-        img.map((imageUrl) => {'linkPicture': imageUrl}).toList();
+    img.map((imageUrl) => {'linkPicture': imageUrl}).toList();
 
     final Map<String, dynamic> data = {
       "groups": groupId,
@@ -128,8 +131,9 @@ class API_Post {
       body: jsonEncode(data),
     );
   }
- static Future<PostEntity?> postClass(
-      PostEntity post, List<String> img, String token, int groupId,BuildContext context) async {
+
+  static Future<PostEntity?> postClass(PostEntity post, List<String> img,
+      String token, int groupId, BuildContext context) async {
     final url = Uri.parse('$baseUrl/post/post');
 
     final headers = {
@@ -137,7 +141,7 @@ class API_Post {
       'Authorization': 'Bearer $token',
     };
     List<Map<String, String>> listAnh =
-        img.map((imageUrl) => {'linkPicture': imageUrl}).toList();
+    img.map((imageUrl) => {'linkPicture': imageUrl}).toList();
 
     final Map<String, dynamic> data = {
       "classes": groupId,
@@ -155,11 +159,12 @@ class API_Post {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => DefaultTabController(
-            initialIndex: 2,
-            length: 3,
-            child: ClassDetailTeacher(classes: classModel),
-          ),
+          builder: (context) =>
+              DefaultTabController(
+                initialIndex: 2,
+                length: 3,
+                child: ClassDetailTeacher(classes: classModel),
+              ),
         ),
       );
 
@@ -168,8 +173,8 @@ class API_Post {
     }
   }
 
-  static Future<PostEntity?> upatePost(
-      PostEntity post, List<String> img, String token) async {
+  static Future<PostEntity?> upatePost(PostEntity post, List<String> img,
+      String token) async {
     final url = Uri.parse('$baseUrl/post/update');
 
     final headers = {
@@ -177,7 +182,7 @@ class API_Post {
       'Authorization': 'Bearer $token',
     };
     List<Map<String, String>> listAnh =
-        img.map((imageUrl) => {'linkPicture': imageUrl}).toList();
+    img.map((imageUrl) => {'linkPicture': imageUrl}).toList();
 
     final Map<String, dynamic> data = {
       "contentPost": post.content_post,
@@ -191,8 +196,8 @@ class API_Post {
     );
   }
 
-  static Future<InteractionsEntity?> Liked(
-      String token, int postid, int userId) async {
+  static Future<InteractionsEntity?> Liked(String token, int postid,
+      int userId) async {
     final url = Uri.parse('$baseUrl/interations?post=$postid&user=$userId');
     final headers = {
       "Content-Type": "application/json",
@@ -205,8 +210,8 @@ class API_Post {
     );
   }
 
-  static Future<InteractionsEntity?> Saved(
-      String token,int userid, int postid) async {
+  static Future<InteractionsEntity?> Saved(String token, int userid,
+      int postid) async {
     final url = Uri.parse('$baseUrl/save/add?userId=$userid&postId=$postid');
     final headers = {
       "Content-Type": "application/json",
@@ -218,8 +223,9 @@ class API_Post {
       headers: headers,
     );
   }
-  static Future<InteractionsEntity?> Delete(
-      String token,int userid, int postid) async {
+
+  static Future<InteractionsEntity?> Delete(String token, int userid,
+      int postid) async {
     final url = Uri.parse('$baseUrl/save?userId=$userid&postId=$postid');
     final headers = {
       "Content-Type": "application/json",
@@ -232,8 +238,8 @@ class API_Post {
     );
   }
 
-  static Future<CommentEntity?> Comments(
-      int userid, int postid, String content, String token) async {
+  static Future<CommentEntity?> Comments(int userid, int postid, String content,
+      String token) async {
     final url = Uri.parse('$baseUrl/comments/cmt2');
     final headers = {"Content-Type": "application/json",
       'Authorization': 'Bearer $token',
@@ -256,7 +262,7 @@ class API_Post {
 
       if (responseData.isNotEmpty) {
         CommentEntity listPost =
-            CommentEntity.fromJson(json.decode(responseData));
+        CommentEntity.fromJson(json.decode(responseData));
         return listPost;
       } else {
         return null;
@@ -289,10 +295,10 @@ class API_Post {
       if (responseData.isNotEmpty) {
         String utf8Data = utf8.decode(responseData.runes.toList());
         ApiReponse<List<PostModel>> listPost =
-            ApiReponse<List<PostModel>>.fromJson(
+        ApiReponse<List<PostModel>>.fromJson(
           utf8Data,
-          (dynamic json) =>
-              List<PostModel>.from(json.map((x) => PostModel.fromJson(x))),
+              (dynamic json) =>
+          List<PostModel>.from(json.map((x) => PostModel.fromJson(x))),
         );
         return listPost.payload;
       } else {
@@ -303,7 +309,8 @@ class API_Post {
     }
   }
 
-  static Future<List<PostModel>?> LoadTop10onClass(int userid, String token) async {
+  static Future<List<PostModel>?> LoadTop10onClass(int userid,
+      String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/post/teacher/$userid/top10'),
       headers: {
@@ -330,6 +337,7 @@ class API_Post {
       return null;
     }
   }
+
   static Future<List<PostModel>?> Load5OnMonth(int userid, String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/post/classes/top5/$userid'),
@@ -357,6 +365,7 @@ class API_Post {
       return null;
     }
   }
+
   static Future<String?> LoadCountOfYear(int userid, String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/post/classes/countYear/$userid'),
@@ -369,7 +378,6 @@ class API_Post {
       final responseData = response.body;
 
       if (responseData.isNotEmpty) {
-
         Map<String, dynamic> data = jsonDecode(responseData);
         String payload = data['payload'];
 
@@ -381,6 +389,7 @@ class API_Post {
       return null;
     }
   }
+
   static Future<String?> LoadCountThongKe(int userid, String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/class/thongke/$userid'),
@@ -393,7 +402,6 @@ class API_Post {
       final responseData = response.body;
 
       if (responseData.isNotEmpty) {
-
         Map<String, dynamic> data = jsonDecode(responseData);
         String payload = data['payload'];
 
@@ -405,7 +413,9 @@ class API_Post {
       return null;
     }
   }
-  static Future<List<PostModel>?> searchPost(int userid, String token, String keyword) async {
+
+  static Future<List<PostModel>?> searchPost(int userid, String token,
+      String keyword) async {
     final response = await http.get(
       Uri.parse('$baseUrl/post/$userid/search?q=$keyword'),
       headers: {
@@ -432,7 +442,9 @@ class API_Post {
       return null;
     }
   }
-  static Future<List<PostModel>?> getAllLikePost(int userid, String token) async {
+
+  static Future<List<PostModel>?> getAllLikePost(int userid,
+      String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/post/$userid/allMyLike'),
       headers: {
@@ -480,7 +492,7 @@ class API_Post {
         ApiReponse<PostModel>.fromJson(
           utf8Data,
               (dynamic json) =>
-          PostModel.fromJson(json),
+              PostModel.fromJson(json),
         );
         return listPost.payload;
       } else {
@@ -488,9 +500,11 @@ class API_Post {
       }
     } else {
       return null;
-    }}
+    }
+  }
 
-  static Future<List<CommentEntity>?> getAllComment(int postid, String token) async {
+  static Future<List<CommentEntity>?> getAllComment(int postid,
+      String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/comments/$postid/getcmnt'),
       headers: {
@@ -508,7 +522,7 @@ class API_Post {
         ApiReponse<List<CommentEntity>>.fromJson(
           utf8Data,
               (dynamic json) =>
-          List<CommentEntity>.from(json.map((x) =>CommentEntity.fromJson(x))),
+          List<CommentEntity>.from(json.map((x) => CommentEntity.fromJson(x))),
         );
         return listPost.payload;
       } else {
@@ -518,7 +532,9 @@ class API_Post {
       return null;
     }
   }
-  static Future<List<CommentResponse>?> getAllMyComment(int userid, String token) async {
+
+  static Future<List<CommentResponse>?> getAllMyComment(int userid,
+      String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/comments/$userid/getAllComment'),
       headers: {
@@ -536,7 +552,8 @@ class API_Post {
         ApiReponse<List<CommentResponse>>.fromJson(
           utf8Data,
               (dynamic json) =>
-          List<CommentResponse>.from(json.map((x) =>CommentResponse.fromJson(x))),
+          List<CommentResponse>.from(
+              json.map((x) => CommentResponse.fromJson(x))),
         );
         return listPost.payload;
       } else {
@@ -546,7 +563,9 @@ class API_Post {
       return null;
     }
   }
-  static Future<List<CommentResponse>?> getAllCommentClasses(int userid, String token, int pagenumber) async {
+
+  static Future<List<CommentResponse>?> getAllCommentClasses(int userid,
+      String token, int pagenumber) async {
     final response = await http.get(
       Uri.parse('$baseUrl/comments/classes/$userid/getAllComment/$pagenumber'),
       headers: {
@@ -564,7 +583,8 @@ class API_Post {
         ApiReponse<List<CommentResponse>>.fromJson(
           utf8Data,
               (dynamic json) =>
-          List<CommentResponse>.from(json.map((x) =>CommentResponse.fromJson(x))),
+          List<CommentResponse>.from(
+              json.map((x) => CommentResponse.fromJson(x))),
         );
         return listPost.payload;
       } else {
@@ -575,7 +595,8 @@ class API_Post {
     }
   }
 
-  static Future<List<InteractionResponse>?> getAllMyLike(int userid, String token) async {
+  static Future<List<InteractionResponse>?> getAllMyLike(int userid,
+      String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/interations/$userid/activity'),
       headers: {
@@ -593,7 +614,8 @@ class API_Post {
         ApiReponse<List<InteractionResponse>>.fromJson(
           utf8Data,
               (dynamic json) =>
-          List<InteractionResponse>.from(json.map((x) =>InteractionResponse.fromJson(x))),
+          List<InteractionResponse>.from(
+              json.map((x) => InteractionResponse.fromJson(x))),
         );
         return listPost.payload;
       } else {
@@ -604,7 +626,8 @@ class API_Post {
     }
   }
 
-  static Future<List<PostModel>?> LoadPostOfGroup(int groupid, int page, int userid, String token) async {
+  static Future<List<PostModel>?> LoadPostOfGroup(int groupid, int page,
+      int userid, String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/group/$groupid/allpost?page=$page&userid=$userid'),
       headers: {
@@ -633,21 +656,21 @@ class API_Post {
   }
 
 
-  static Future<CommentEntity?> setAnswer(int cmt, String token) async{
+  static Future<CommentEntity?> setAnswer(int cmt, String token) async {
     final url = Uri.parse('$baseUrl/comments/setAnswer/$cmt');
     final headers = {
       "Content-Type": "application/json",
       'Authorization': 'Bearer $token',
     };
     final response = await http.put(
-      url,
-      headers: headers
+        url,
+        headers: headers
     );
 
     if (response.statusCode == 200) {
       final responseData = response.body;
 
-      if (responseData.isNotEmpty){
+      if (responseData.isNotEmpty) {
         String utf8Data = utf8.decode(responseData.runes.toList());
         ApiReponse<CommentEntity> group = ApiReponse<CommentEntity>.fromJson(
           utf8Data,
@@ -666,7 +689,7 @@ class API_Post {
   }
 
 
-  static Future<CommentEntity?> setAnswerToCmt(int cmt, String token) async{
+  static Future<CommentEntity?> setAnswerToCmt(int cmt, String token) async {
     final url = Uri.parse('$baseUrl/comments/setAnswerToCmt/$cmt');
     final headers = {
       "Content-Type": "application/json",
@@ -680,7 +703,7 @@ class API_Post {
     if (response.statusCode == 200) {
       final responseData = response.body;
 
-      if (responseData.isNotEmpty){
+      if (responseData.isNotEmpty) {
         String utf8Data = utf8.decode(responseData.runes.toList());
         ApiReponse<CommentEntity> group = ApiReponse<CommentEntity>.fromJson(
           utf8Data,
@@ -694,10 +717,9 @@ class API_Post {
       // Handle error scenarios here
       return null;
     }
-
-
   }
-  static Future<void> deleteComment(int cmt, String token) async{
+
+  static Future<void> deleteComment(int cmt, String token) async {
     final url = Uri.parse('$baseUrl/comments/$cmt');
     final headers = {
       "Content-Type": "application/json",
@@ -707,6 +729,40 @@ class API_Post {
         url,
         headers: headers
     );
+  }
+
+  static Future<String?> reportPost(int iduser, int idpost, String reason,
+      String token) async {
+    final url = Uri.parse('$baseUrl/report/posts/$idpost');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+
+    final Map<String, dynamic> data = {
+      "createById": iduser,
+      "content_report": reason,
+    };
+
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(data),
+    );
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        Map<String, dynamic> data = jsonDecode(responseData);
+        String payload = data['payload'];
+
+        return payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
 
   }
 }

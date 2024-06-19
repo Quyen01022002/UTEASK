@@ -97,6 +97,7 @@ class HomeGroupController extends GetxController {
   }
 
   RxInt pagenumber = 0.obs;
+  RxInt pagenumber3 = 0.obs;
   Stream<List<PostModel>>? allPostFollowingStream;
   void GetListPost(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
@@ -158,6 +159,22 @@ class HomeGroupController extends GetxController {
     }
     allPostFollowingStream = Stream.fromIterable([listPost!]);
   }
+
+  Future<List<PostModel>?> morePosts(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+    return await API_Group.LoadMainHome(adminId, token, pagenumber3.value);
+  }
+
+  RxInt pagenumber4 = 0.obs;
+  Future<List<PostModel>?> morePostsClass(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+    return await API_Group.LoadPostClass(adminId, token, pagenumber4.value);
+  }
+
   void addlistMembers(List<int> listuserid) {}
   List<UserMember>? users = [];
 

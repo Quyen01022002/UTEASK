@@ -216,4 +216,39 @@ class API_Profile
       return null;
     }
   }
+
+  static Future<String?> reportUser(int iduser, int iduser2, String reason,
+      String token) async {
+    final url = Uri.parse('$baseUrl/report/users/$iduser2');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+
+    final Map<String, dynamic> data = {
+      "createById": iduser,
+      "content_report": reason,
+    };
+
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(data),
+    );
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        Map<String, dynamic> data = jsonDecode(responseData);
+        String payload = data['payload'];
+
+        return payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+
+  }
 }

@@ -1,16 +1,20 @@
+import 'package:askute/controller/MyProfileController.dart';
+import 'package:askute/model/PostModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ReportUser extends StatefulWidget {
-  const ReportUser({Key? key}) : super(key: key);
+  final CreateBy user;
+  const ReportUser({Key? key, required  this.user}) : super(key: key);
 
   @override
   State<ReportUser> createState() => _ReportUserState();
 }
 
 class _ReportUserState extends State<ReportUser> {
+  final MyProfileController myProfileController = Get.put(MyProfileController());
   String selectedReason = '';
-  TextEditingController customReasonController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -68,43 +72,43 @@ class _ReportUserState extends State<ReportUser> {
                               fontSize: 16,
                             ),
                           ),
-                          value: 'Option 1',
+                          value: 'Người dùng đăng nội dung phản cảm',
                           groupValue: selectedReason,
                           onChanged: (value) {
                             setState(() {
-                              selectedReason = 'Option 3';
+                              selectedReason = 'Người dùng đăng nội dung phản cảm';
                             });
                           },
                         ),
                         RadioListTile(
                           dense: true,
                           title: Text(
-                            'Tải khoản giả mạo',
+                            'Người dùng đăng nội dung phản cảm',
                             style: TextStyle(
                               fontSize: 16,
                             ),
                           ),
-                          value: 'Option 2',
+                          value: 'Người dùng đăng nội dung phản cảm',
                           groupValue: selectedReason,
                           onChanged: (value) {
                             setState(() {
-                              selectedReason = 'Option 2';
+                              selectedReason = 'Người dùng đăng nội dung phản cảm';
                             });
                           },
                         ),
                         RadioListTile(
                           dense: true,
                           title: Text(
-                            'Tài khoản vi phạm bản quyền',
+                            'Người dùng đăng nội dung phản cảm',
                             style: TextStyle(
                               fontSize: 16,
                             ),
                           ),
-                          value: 'Option 3',
+                          value: 'Người dùng đăng nội dung phản cảm',
                           groupValue: selectedReason,
                           onChanged: (value) {
                             setState(() {
-                              selectedReason = 'Option 3';
+                              selectedReason = 'Người dùng đăng nội dung phản cảm';
                             });
                           },
                         ),
@@ -116,17 +120,17 @@ class _ReportUserState extends State<ReportUser> {
                               fontSize: 16,
                             ),
                           ),
-                          value: 'Option 4',
+                          value: 'Khác',
                           groupValue: selectedReason,
                           onChanged: (value) {
                             setState(() {
-                              selectedReason = 'Option 4';
+                              selectedReason = 'Khác';
                             });
                           },
                         ),
                         // Visibility widget to show/hide input field based on option selection
                         Visibility(
-                          visible: selectedReason == 'Option 4',
+                          visible: selectedReason == 'Khác',
                           child: Container(
                             margin: EdgeInsets.only(left: 16, right: 16),
                             padding: EdgeInsets.all(12),
@@ -138,7 +142,7 @@ class _ReportUserState extends State<ReportUser> {
                               borderRadius: BorderRadius.circular(8.0), // Set the border radius
                             ),
                             child: TextFormField(
-                              controller: customReasonController,
+                              controller: myProfileController.reasonText,
                               decoration: InputDecoration(
                                 hintText: 'Nhập lý do khác',
                                 border: InputBorder.none, // Remove the default border
@@ -161,11 +165,9 @@ class _ReportUserState extends State<ReportUser> {
                       backgroundColor: Color(0xFF8587F1),
                     ),
                     onPressed: () {
-                      // Perform the report action here
-                      print('Selected Reason: $selectedReason');
-                      if (selectedReason == 'Option 4') {
-                        print('Custom Reason: ${customReasonController.text}');
-                      }
+
+                      myProfileController.reportUser(BuildContext, widget.user.id, selectedReason);
+                      Navigator.of(context).pop();
                     },
                     child: Container(
                       margin: EdgeInsets.all(10),
@@ -205,19 +207,19 @@ class _ReportUserState extends State<ReportUser> {
             height: 100.0,
             child: CircleAvatar(
               backgroundImage: NetworkImage(
-                  'https://i.pinimg.com/564x/6d/9c/23/6d9c2393908ad508854ed24224682608.jpg'),
+                  widget.user.profilePicture),
               radius: 50.0,
             ),
           ),
           SizedBox(height: 8.0),
           Text(
-            'Duy Hào',
+            widget.user.firstName+ " " + widget.user.lastName,
             style: TextStyle(
               fontWeight: FontWeight.bold,
             ),
           ),
           Text(
-            '@weihao.7640',
+            widget.user.email,
             style: TextStyle(
               color: Color(0xFF4F4F4F),
             ),
