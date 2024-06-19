@@ -51,13 +51,15 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
           body: FutureBuilder<UserProfile?>(
             future: fetchData(),
             builder: (context, snapshot) {
-              if (snapshot.data!= null && snapshot.connectionState == ConnectionState.waiting) {
+              if (snapshot.data != null && snapshot.connectionState == ConnectionState.waiting) {
                 // Hiển thị màn hình chờ khi dữ liệu đang được tải
                 return CircularProgressIndicator();
-              } else if (snapshot.hasError) {
+              }
+              else if (snapshot.hasError) {
                 // Hiển thị lỗi nếu có lỗi xảy ra trong quá trình tải dữ liệu
-                return Text('Error: Không tải được trang cá nhân');
-              } else if (snapshot.hasData) {
+                return Text('Error: ${snapshot.error} ${snapshot.data!}' );
+              }
+              else if (snapshot.hasData) {
                 return Container(
                   decoration: BoxDecoration(color: Colors.white),
                   child: Column(

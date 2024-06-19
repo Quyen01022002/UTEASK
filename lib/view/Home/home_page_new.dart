@@ -232,47 +232,7 @@ class _HomeScreen3State extends State<HomeScreen3> {
                     ),
                   ];
                 },
-                body: selectedValue == 'Đang theo dõi'
-                    ? Column(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(left: 60, right: 15),
-                      child: Row(
-                        children: [
-                          GestureDetector(
-                              onTap: () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  backgroundColor: Colors.transparent,
-                                  builder: (BuildContext context) {
-                                    return _buildPopup(context,
-                                        homeGroupController.groups!);
-                                  },
-                                );
-                              },
-                              child: Icon(Icons.filter_list)),
-                          Expanded(
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: [
-                                  Row(
-                                    children: homeGroupController.groupsJoin!
-                                        .map((post) {
-                                      return categoryItem(post: post);
-                                    }).toList(),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    _buildPost(),
-                  ],
-                )
-                    : _buildPost(),
+                body: _buildPost(),
               ),
               Positioned(
                 top: -20,

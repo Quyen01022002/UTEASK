@@ -90,6 +90,7 @@ class _SettingScreenState extends State<SettingScreen> {
               //myProfileController.loadMyProfile();
               sendFriendRequestNotification("dAJ6qbMRS32nP4rYUgDcqZ:APA91bHNsRXeb3jCcIR1DepEZRKqMPznbZqknhk0xIL_iAul3sRlR-HNk7tD446nJdxL1ddSXBeH6XteS1B62C0cFiGIgghKsfnzLyk3PcvQWUBNA_zgmui0uo5iGXCATT7ufpJ1ji8K");
               myProfileController.ortherId.value = myProfileController.myId.value;
+              myProfileController.loadUserOther(myProfileController.ortherId.value, context);
               Navigator.push(
                 context,
                 PageTransition(

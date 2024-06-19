@@ -59,6 +59,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
   @override
   void initState() {
     super.initState();
+    post = widget.post;
     _startTimer();
     _listController.add(_textFirst);
     _imageWidgets.add(_buildFirstTextFieldWidget());
@@ -78,6 +79,20 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
     }
 
     return contentList;
+  }
+
+  List<Widget> toWidget(String cmtContent) {
+    List<ContentComment> content = parseContent(cmtContent);
+    List<Widget> contentWg = [];
+    for (int i = 0; i < content.length; i++) {
+      if (content[i].type == 'TEXT') {
+        contentWg.add(_buiText(content[i].content));
+      } else if (content[i].type == 'IMAGE') {
+        contentWg.add(_buiImage(content[i].content));
+      }
+    }
+
+    return contentWg;
   }
 
   late Timer _timer;
@@ -276,7 +291,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                     ),
                     SliverFillRemaining(
                       hasScrollBody: true,
-                      child: _buildComment(),
+                      child: _buildComment(0),
                     )
                   ],
                 ),
@@ -357,64 +372,103 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
     }
   }
 
+bool? reply;
+  CommentEntity? cmtUserToReply;
   Widget _buildInputAllField() {
-    return Container(
+    return post!.statusCmtPostEnum == 'False' ? Container(
       color: Colors.grey[200],
       padding: EdgeInsets.all(8),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: _pickImage,
-            child: Icon(Icons.image),
-          ),
-          SizedBox(width: 8),
-          Expanded(
-            child: Container(
-              constraints: BoxConstraints(maxHeight: 200),
-              padding: EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                border: Border.all(),
-                borderRadius: BorderRadius.circular(8.0),
+      child: Text("Chủ bài viết đã khóa bình luận hoặc lượt bình luân đã bị hạn chế!"),
+
+
+    ): Column(
+      children: [
+        reply == true ?
+            Container(
+              color: Colors.grey[200],
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Row(
+                    //crossAxisAlignment:  CrossAxisAlignment.end,
+                    children: [
+                      Text("Trả lời: "),
+                      _buildUserComment(cmtUserToReply!),
+                    ],
+                  ),
+
+                  GestureDetector(
+                    onTap: (){
+                      reply = false;
+                      _buildInputAllField();
+                    },
+                    child: Icon(Icons.close),
+                  )
+                ],
               ),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // TextField(
-                    //   controller: _textFirst,
-                    //   decoration: InputDecoration(
-                    //     hintText: 'Nhập nội dung của bạn...',
-                    //     border: InputBorder.none,
-                    //   ),
-                    // ),
-                    // SizedBox(height: 8),
-                    // ..._imageWidgets,
-                    ..._imageWidgets,
-                  ],
+
+            ) : Container(),
+        Container(
+          color: Colors.grey[200],
+          padding: EdgeInsets.all(8),
+          child: Row(
+            children: [
+              GestureDetector(
+                onTap: _pickImage,
+                child: Icon(Icons.image),
+              ),
+              SizedBox(width: 8),
+              Expanded(
+                child: Container(
+                  constraints: BoxConstraints(maxHeight: 200),
+                  padding: EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // TextField(
+                        //   controller: _textFirst,
+                        //   decoration: InputDecoration(
+                        //     hintText: 'Nhập nội dung của bạn...',
+                        //     border: InputBorder.none,
+                        //   ),
+                        // ),
+                        // SizedBox(height: 8),
+                        // ..._imageWidgets,
+                        ..._imageWidgets,
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
+              SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: () async {
+                  // Xử lý nút gửi bình luận
+                  await _goToListTypeContentComment();
+                  postController.CommentToQuestion(context, listContent, reply!, cmtUserToReply!.comment_id!);
+                  _imageWidgets.clear();
+                  listContent.clear();
+                  _listController.clear();
+                  TextEditingController _textFirsts = TextEditingController();
+                  _listController.add(_textFirsts);
+                  _imageWidgets.add(_buildFirstTextFieldWidget());
+                  setState(() {
+                    reply = false;
+                    _buildInputAllField();
+                    _imageWidgets;
+                  });
+                },
+                child: Text('Đăng'),
+              ),
+            ],
           ),
-          SizedBox(width: 8),
-          ElevatedButton(
-            onPressed: () async {
-              // Xử lý nút gửi bình luận
-              await _goToListTypeContentComment();
-              postController.CommentToQuestion(context, listContent);
-              _imageWidgets.clear();
-              listContent.clear();
-              _listController.clear();
-              TextEditingController _textFirsts = TextEditingController();
-              _listController.add(_textFirsts);
-              _imageWidgets.add(_buildFirstTextFieldWidget());
-              setState(() {
-                _imageWidgets;
-              });
-            },
-            child: Text('Đăng'),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -655,7 +709,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
     );
   }
 
-  Widget _buildComment() {
+  Widget _buildComment(int round0) {
     return StreamBuilder<List<CommentEntity>>(
         stream: listCommentStream,
         builder: (context, snapshot) {
@@ -663,6 +717,8 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
             return ListView.builder(
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
+                  if (snapshot.data![index].cmtReply != 0 && round0 == 0)
+                    return Container();
                   List<ContentComment> content =
                       parseContent(snapshot.data![index].content_cmt!);
                   List<Widget> contentWg = [];
@@ -674,10 +730,11 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                     }
                   }
                   if (snapshot.data![index].is_reply == false)
-                    return _buildOneComment(snapshot.data![index], contentWg);
+                    return _buildOneComment(
+                        snapshot.data![index], contentWg, round0);
                   else
                     return _buildOneCommentReply(
-                        snapshot.data![index], contentWg);
+                        snapshot.data![index], contentWg, round0);
                 });
           } else {
             return Container();
@@ -700,168 +757,318 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
             child: Image.network(link)));
   }
 
-  Widget _buildOneComment(CommentEntity cmt, List<Widget> contentWidget) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10), // Đặt bán kính của viền tròn
-        border: Border.all(
-          color: Colors.black, // Màu sắc của viền tròn
-          width: 0.1, // Độ dày của viền tròn
-        ),
-      ),
-      padding: EdgeInsets.all(5),
-      margin: EdgeInsets.all(5.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildUserComment(cmt),
-          SizedBox(
-            height: 10,
-          ),
-          GestureDetector(
-            onTapDown: _getTapPosition,
-            onLongPress: () {
-              cmtIsSelect = cmt.comment_id!;
-              _showContextMenu(context, cmt);
-            },
-            child: Container(
-                padding: EdgeInsets.only(left: 38, right: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ...contentWidget,
-                  ],
-                )),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          Row(
-            children: [
-              Expanded(
-                flex: 8,
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 38,
-                    ),
-                    Icon(Icons.reply_outlined, size: 15),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    Icon(Icons.thumb_up_outlined, size: 15),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    Icon(Icons.thumb_down_outlined, size: 15),
-                  ],
+  Widget _buildOneComment(
+      CommentEntity cmt, List<Widget> contentWidget, int round) {
+    return round == 0
+        ? Column(children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                // Đặt bán kính của viền tròn
+                border: Border.all(
+                  color: Colors.black, // Màu sắc của viền tròn
+                  width: 0.1, // Độ dày của viền tròn
                 ),
               ),
-              Expanded(
-                flex: 2,
-                child: Icon(Icons.bookmarks_outlined, size: 15),
+              padding: EdgeInsets.all(5),
+              margin: EdgeInsets.all(5.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildUserComment(cmt),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  GestureDetector(
+                    onTapDown: _getTapPosition,
+                    onLongPress: () {
+                      cmtIsSelect = cmt.comment_id!;
+                      _showContextMenu(context, cmt);
+                    },
+                    child: Container(
+                        padding: EdgeInsets.only(left: 38, right: 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ...contentWidget,
+                          ],
+                        )),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 8,
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 38,
+                            ),
+                            Icon(Icons.reply_outlined, size: 15),
+                            SizedBox(
+                              width: 20,
+                            ),
+                            Icon(Icons.thumb_up_outlined, size: 15),
+                            SizedBox(
+                              width: 20,
+                            ),
+                            Icon(Icons.thumb_down_outlined, size: 15),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Icon(Icons.bookmarks_outlined, size: 15),
+                      ),
+                    ],
+                  )
+                ],
               ),
-            ],
-          )
-        ],
-      ),
-    );
+            ),
+            cmt.listCommentReply!.length != 0
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: List.generate(
+                      cmt.listCommentReply!.length,
+                      (index) => Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8.0),
+                        child: _buildOneComment(
+                            cmt.listCommentReply![index]!,
+                            toWidget(
+                                cmt.listCommentReply![index]!.content_cmt!),
+                            1),
+                      ),
+                    ),
+                  )
+                : Container()
+          ])
+        : Column(children: [
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Container(),
+                ),
+                Expanded(
+                  flex: 8,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      // Đặt bán kính của viền tròn
+                      border: Border.all(
+                        color: Colors.black, // Màu sắc của viền tròn
+                        width: 0.1, // Độ dày của viền tròn
+                      ),
+                    ),
+                    padding: EdgeInsets.all(5),
+                    margin:
+                        EdgeInsets.only(top: 5, bottom: 5, right: 5, left: 5),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildUserComment(cmt),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        GestureDetector(
+                          onTapDown: _getTapPosition,
+                          onLongPress: () {
+                            cmtIsSelect = cmt.comment_id!;
+                            _showContextMenu(context, cmt);
+                          },
+                          child: Container(
+                              padding: EdgeInsets.only(left: 38, right: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ...contentWidget,
+                                ],
+                              )),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 8,
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 38,
+                                  ),
+                                  Icon(Icons.reply_outlined, size: 15),
+                                  SizedBox(
+                                    width: 20,
+                                  ),
+                                  Icon(Icons.thumb_up_outlined, size: 15),
+                                  SizedBox(
+                                    width: 20,
+                                  ),
+                                  Icon(Icons.thumb_down_outlined, size: 15),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Icon(Icons.bookmarks_outlined, size: 15),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            cmt.listCommentReply!.length != 0
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: List.generate(
+                      cmt.listCommentReply!.length,
+                      (index) => Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8.0),
+                        child: _buildOneComment(
+                            cmt.listCommentReply![index]!,
+                            toWidget(
+                                cmt.listCommentReply![index]!.content_cmt!),
+                            1),
+                      ),
+                    ),
+                  )
+                : Container()
+          ]);
   }
 
   void _showContextMenu(BuildContext context, CommentEntity cmt) async {
     final RenderBox overlay =
         Overlay.of(context).context.findRenderObject() as RenderBox;
-if (loginController.role.value == "RoleEnum.HEADDEPARTMENT"){
-    print(loginController.role.value);}
-else
-  print("oooooooo");
+    if (loginController.role.value == "RoleEnum.HEADDEPARTMENT") {
+      print(loginController.role.value);
+    } else
+      print("oooooooo");
     showMenu(
       context: context,
       position: RelativeRect.fromRect(
         _tapPosition & Size(40, 40), // smaller rect, the touch area
         Offset.zero & overlay.size, // larger rect, the entire screen
       ),
-      items: (loginController.role.value == "RoleEnum.TEACHER" || loginController.role.value == "RoleEnum.HEADDEPARTMENT") && loginController.idMe.value == cmt.user_id! ?
-      [
-        cmt.is_reply==false ?
-        PopupMenuItem<int>(
-          value: 1,
-          child: Text('Đánh dấu là câu trả lời đúng'),
-        ) : PopupMenuItem<int>(
-          value: 3,
-          child: Text('Không phải câu trả lời đúng'),
-        ),
-        PopupMenuItem<int>(
-          value: 2,
-          child: Text('Xóa câu trả lời'),
-        ),
-      ]:
-        (loginController.role.value == "RoleEnum.TEACHER" || loginController.role.value == "RoleEnum.HEADDEPARTMENT") && loginController.idMe.value != cmt.user_id! ?
-    [
-      cmt.is_reply==false ?
-      PopupMenuItem<int>(
-        value: 1,
-        child: Text('Đánh dấu là câu trả lời đúng'),
-      ) : PopupMenuItem<int>(
-        value: 3,
-        child: Text('Không phải câu trả lời đúng'),
-      ),
-    ]
-
-            :
-         loginController.idMe.value == widget.post.createBy.id ?
-        [
-          cmt.is_reply==false ?
-          PopupMenuItem<int>(
-            value: 1,
-            child: Text('Đánh dấu là câu trả lời đúng'),
-          ) : PopupMenuItem<int>(
-            value: 3,
-            child: Text('Không phải câu trả lời đúng'),
-          ),
-          PopupMenuItem<int>(
-            value: 2,
-            child: Text('Xóa câu trả lời'),
-          ),
-        ]: loginController.idMe.value == cmt.user_id!
+      items: (loginController.role.value == "RoleEnum.TEACHER" ||
+                  loginController.role.value == "RoleEnum.HEADDEPARTMENT") &&
+              loginController.idMe.value == cmt.user_id!
           ? [
-
+              PopupMenuItem<int>(
+                value: 4,
+                child: Text('Trả lời'),
+              ),
+              cmt.is_reply == false
+                  ? PopupMenuItem<int>(
+                      value: 1,
+                      child: Text('Đánh dấu là câu trả lời đúng'),
+                    )
+                  : PopupMenuItem<int>(
+                      value: 3,
+                      child: Text('Không phải câu trả lời đúng'),
+                    ),
               PopupMenuItem<int>(
                 value: 2,
                 child: Text('Xóa câu trả lời'),
               ),
             ]
-          : [
-              // PopupMenuItem<int>(
-              //   value: 1,
-              //   child: Text('Xóa câu trả lời'),
-              // ),
-            ],
+          : (loginController.role.value == "RoleEnum.TEACHER" ||
+                      loginController.role.value ==
+                          "RoleEnum.HEADDEPARTMENT") &&
+                  loginController.idMe.value != cmt.user_id!
+              ? [
+                  PopupMenuItem<int>(
+                    value: 4,
+                    child: Text('Trả lời'),
+                  ),
+                  cmt.is_reply == false
+                      ? PopupMenuItem<int>(
+                          value: 1,
+                          child: Text('Đánh dấu là câu trả lời đúng'),
+                        )
+                      : PopupMenuItem<int>(
+                          value: 3,
+                          child: Text('Không phải câu trả lời đúng'),
+                        ),
+                ]
+              : loginController.idMe.value == widget.post.createBy.id
+                  ? [
+                      PopupMenuItem<int>(
+                        value: 4,
+                        child: Text('Trả lời'),
+                      ),
+                      cmt.is_reply == false
+                          ? PopupMenuItem<int>(
+                              value: 1,
+                              child: Text('Đánh dấu là câu trả lời đúng'),
+                            )
+                          : PopupMenuItem<int>(
+                              value: 3,
+                              child: Text('Không phải câu trả lời đúng'),
+                            ),
+                      PopupMenuItem<int>(
+                        value: 2,
+                        child: Text('Xóa câu trả lời'),
+                      ),
+                    ]
+                  : loginController.idMe.value == cmt.user_id!
+                      ? [
+                          PopupMenuItem<int>(
+                            value: 4,
+                            child: Text('Trả lời'),
+                          ),
+                          PopupMenuItem<int>(
+                            value: 2,
+                            child: Text('Xóa câu trả lời'),
+                          ),
+                        ]
+                      : [
+                          // PopupMenuItem<int>(
+                          //   value: 1,
+                          //   child: Text('Xóa câu trả lời'),
+                          // ),
+                        ],
       elevation: 8.0,
     ).then((value) {
       if (value != null) {
-        _onMenuItemSelected(int.parse(value.toString()), cmtIsSelect);
+        _onMenuItemSelected(int.parse(value.toString()), cmt);
       }
     });
   }
 
-  void _onMenuItemSelected(int value, int cmtid) {
+  void _onMenuItemSelected(int value, CommentEntity cmtid) {
     // Handle the menu item selection here
     switch (value) {
       case 1:
         {
-          postController.setAnswer(context, cmtid);
+          postController.setAnswer(context, cmtid.comment_id!);
           print('1111111');
           cmtIsSelect = 0;
-        break;}
+          break;
+        }
       case 2:
         {
-print('22222222');
-      postController.deleteCmt(context, cmtid);
-        break;}
+          print('22222222');
+          postController.deleteCmt(context, cmtid.comment_id!);
+          break;
+        }
       case 3:
         {
-          postController.setAnswerToCmt(BuildContext, cmtid);
+          postController.setAnswerToCmt(BuildContext, cmtid.comment_id!);
+          break;
+        }
+      case 4:
+        {
+          reply = true;
+          cmtUserToReply = cmtid;
+          setState(() {
+            _buildInputAllField();
+          });
           break;
         }
     }
@@ -874,7 +1081,8 @@ print('22222222');
     });
   }
 
-  Widget _buildOneCommentReply(CommentEntity cmt, List<Widget> contentWidget) {
+  Widget _buildOneCommentReply(
+      CommentEntity cmt, List<Widget> contentWidget, int round) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.green[50],
