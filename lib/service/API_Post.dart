@@ -271,6 +271,37 @@ class API_Post {
       return null;
     }
   }
+  static Future<CommentEntity?> ReplyComments(int userid, int comment_id, String content,
+      String token) async {
+    final url = Uri.parse('$baseUrl/comments/$comment_id/reply');
+    final headers = {"Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+    final Map<String, dynamic> data = {
+      "userid": userid,
+      "cmtReply": content,
+    };
+
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        CommentEntity listPost =
+        CommentEntity.fromJson(json.decode(responseData));
+        return listPost;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
 
   static void deletePost(int? postid, String token) async {
     await http.delete(

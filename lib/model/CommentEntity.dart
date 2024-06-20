@@ -13,7 +13,8 @@ class CommentEntity {
   final String? last_name;
   final String? avatar;
   final bool? is_reply;
-
+  final List<CommentEntity?>? listCommentReply;
+  final int? cmtReply;
 
   CommentEntity({
     this.comment_id,
@@ -25,9 +26,17 @@ class CommentEntity {
     this.last_name,
     this.avatar,
 this.is_reply,
+    this.listCommentReply,
+    this.cmtReply
   });
 
-  factory CommentEntity.fromJson(Map<String, dynamic> data) => CommentEntity(
+  factory CommentEntity.fromJson(Map<String, dynamic> data) {
+
+
+    final listReply = (data['commentsReplyList'] as List)
+        .map((item) => CommentEntity.fromJson(item))
+        .toList();
+    return CommentEntity(
     comment_id: data["commentId"] ?? 0,
     user_id: data["createBy"]["id"] ?? 0,
     post_id: data["postID"]["id"] ?? 0,
@@ -37,6 +46,8 @@ this.is_reply,
     last_name: data["createBy"]["lastName"] ?? "",
     avatar: data["createBy"]["profilePicture"] ?? "",
     is_reply: data["isAnwser"] ?? false,
-  );
+    listCommentReply: listReply,
+      cmtReply: data["cmtReply"] ?? 0
+  );}
 
 }

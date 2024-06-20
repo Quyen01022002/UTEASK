@@ -64,6 +64,11 @@ class _PostScreenState extends State<PostScreenNew> {
     });
 
   }
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
 
   void initCurrentUser() async {
     final prefs = await SharedPreferences.getInstance();
@@ -182,7 +187,7 @@ class _PostScreenState extends State<PostScreenNew> {
                     SizedBox(height: 8),
                     GestureDetector(
                       onTap: () {
-                        postController.loadOnePost(context, postHT!.id);
+                       postController.loadOnePost(context, postHT!.id);
                         // Thực hiện hành động khi người dùng nhấn vào văn bản
                         Navigator.push(
                           context,
