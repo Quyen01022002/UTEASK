@@ -393,7 +393,7 @@ class _PostScreenState extends State<PostScreenNew> {
     return Container(
 
       child: Container(
-        height: (MediaQuery.of(context).size.width -30)*1.058,
+        height: (MediaQuery.of(context).size.width -30)*1.028,
         width: (MediaQuery.of(context).size.width - 30),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -450,7 +450,7 @@ class _PostScreenState extends State<PostScreenNew> {
     return Container(
 
       child: Container(
-        height: (MediaQuery.of(context).size.width -30)*1.058,
+        height: (MediaQuery.of(context).size.width -30)*1.028,
         width: (MediaQuery.of(context).size.width - 30),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,

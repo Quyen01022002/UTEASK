@@ -149,23 +149,21 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
+          appBar: AppBar(
+              title: Text('Bài đăng thảo luận của ${widget.post.createBy.lastName}')),
       body: Stack(
         children: [
           Column(
+            //crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
-                child: CustomScrollView(
-                  slivers: <Widget>[
-                    SliverAppBar(
-                      title: Text('Bài thảo luận của Duy Hào'),
-                    ),
-                    SliverToBoxAdapter(
+                child: SingleChildScrollView(
                       child: StreamBuilder<PostModel>(
                           stream: postCurrent,
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
                               return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   _buildOwnerUser(),
                                   _buildContent(),
@@ -194,13 +192,6 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                                           children: [
                                             GestureDetector(
                                               onTap: () {
-                                                // setState(() {
-                                                //   statelike?contlike=contlike-1:contlike=contlike+1;
-                                                //   statelike = !statelike;
-                                                // });
-                                                // postController.postid.value = widget.post.id;
-                                                // postController.Like();
-                                                // print("Like");
                                                 postController.Like(
                                                     postController
                                                         .postid.value);
@@ -282,18 +273,24 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                                     width: 400, // Độ dày của thanh ngang
                                     color: Color(0xC0C0C0C0),
                                   ),
+                                  // SingleChildScrollView(
+                                  //   child: Container(
+                                  //     height: double.maxFinite,
+                                  //     child: Column(
+                                  //       children: [
+                                  //         _buildComment(0),
+                                  //       ],
+                                  //     ),
+                                  //   ),
+                                  // )
+                                  _buildComment(0),
                                 ],
                               );
                             } else {
                               return Container();
                             }
                           }),
-                    ),
-                    SliverFillRemaining(
-                      hasScrollBody: true,
-                      child: _buildComment(0),
-                    )
-                  ],
+                    
                 ),
               ),
               SizedBox(
@@ -711,6 +708,42 @@ bool? reply;
 
   Widget _buildComment(int round0) {
     return StreamBuilder<List<CommentEntity>>(
+          stream: listCommentStream,
+          builder: (context, snapshot) {
+            if (snapshot.hasData && snapshot.data != null) {
+              return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  shrinkWrap: true, // Đảm bảo ListView.builder chỉ chiếm không gian cần thiết
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    if (snapshot.data![index].cmtReply != 0 && round0 == 0)
+                      return Container();
+                    List<ContentComment> content =
+                        parseContent(snapshot.data![index].content_cmt!);
+                    List<Widget> contentWg = [];
+                    for (int i = 0; i < content.length; i++) {
+                      if (content[i].type == 'TEXT') {
+                        contentWg.add(_buiText(content[i].content));
+                      } else if (content[i].type == 'IMAGE') {
+                        contentWg.add(_buiImage(content[i].content));
+                      }
+                    }
+                    if (snapshot.data![index].is_reply == false)
+                      return _buildOneComment(
+                          snapshot.data![index], contentWg, round0);
+                    else
+                      return _buildOneCommentReply(
+                          snapshot.data![index], contentWg, round0);
+                  });
+            } else {
+              return CircularProgressIndicator();
+            }
+          }
+    );
+  }
+
+  Widget _buildComment2(int round0) {
+    return StreamBuilder<List<CommentEntity>>(
         stream: listCommentStream,
         builder: (context, snapshot) {
           if (snapshot.hasData && snapshot.data != null) {
@@ -720,7 +753,7 @@ bool? reply;
                   if (snapshot.data![index].cmtReply != 0 && round0 == 0)
                     return Container();
                   List<ContentComment> content =
-                      parseContent(snapshot.data![index].content_cmt!);
+                  parseContent(snapshot.data![index].content_cmt!);
                   List<Widget> contentWg = [];
                   for (int i = 0; i < content.length; i++) {
                     if (content[i].type == 'TEXT') {
