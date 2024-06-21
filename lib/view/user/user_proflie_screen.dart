@@ -1,6 +1,8 @@
 import 'package:askute/controller/LoginController.dart';
 import 'package:askute/controller/MyProfileController.dart';
+import 'package:askute/model/PostModel.dart';
 import 'package:askute/model/UserProfile.dart';
+import 'package:askute/view/component/post_newScreen.dart';
 import 'package:askute/view/user/DisplayBackGroudImagePage.dart';
 import 'package:askute/view/user/DisplaySelectedImagePage.dart';
 import 'package:askute/view/user/edit_profile_user_screen.dart';
@@ -24,11 +26,13 @@ class ProfileUserScreen extends StatefulWidget {
 class _ProfileUserScreenState extends State<ProfileUserScreen> {
   MyProfileController myProfileController = Get.put(MyProfileController());
   LoginController loginController = Get.put(LoginController());
-
+  final ScrollController _scrollController = ScrollController();
+  List<PostModel> _posts = [];
+  bool _isLoading = false;
   @override
   void initState() {
     super.initState();
-   // fetchData();
+   _fetchPosts();
 
       myProfileController.loadMyProfile();
   }
@@ -39,103 +43,116 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
 
       return myProfileController.loadUserOther(loginController.idMe.value, context);
   }
-
+  Future<void> _fetchPosts() async {
+    if (_isLoading) return;
+    setState(() {
+      _isLoading = true;
+    });
+    List<PostModel>? response;
+    response = myProfileController.listPost;
+    if (response!= null && response.length!=0) {
+      setState(() {
+        _posts.addAll(response!);
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+      throw Exception('Failed to load posts');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) {
-            return [];
-          },
-          body: FutureBuilder<UserProfile?>(
-            future: fetchData(),
-            builder: (context, snapshot) {
-              if (snapshot.data != null && snapshot.connectionState == ConnectionState.waiting) {
-                // Hiển thị màn hình chờ khi dữ liệu đang được tải
-                return CircularProgressIndicator();
-              }
-              else if (snapshot.hasError) {
-                // Hiển thị lỗi nếu có lỗi xảy ra trong quá trình tải dữ liệu
-                return Text('Error: ${snapshot.error} ${snapshot.data!}' );
-              }
-              else if (snapshot.hasData) {
-                return Container(
-                  decoration: BoxDecoration(color: Colors.white),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildAccount(snapshot.data!),
-                      Container(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      10), // Điều chỉnh góc bo tròn
+        body: Expanded(
+          child: SingleChildScrollView(
+            child: FutureBuilder<UserProfile?>(
+              future: fetchData(),
+              builder: (context, snapshot) {
+                if (snapshot.data != null && snapshot.connectionState == ConnectionState.waiting) {
+                  // Hiển thị màn hình chờ khi dữ liệu đang được tải
+                  return CircularProgressIndicator();
+                }
+                else if (snapshot.hasError) {
+                  // Hiển thị lỗi nếu có lỗi xảy ra trong quá trình tải dữ liệu
+                  return Text('Error: ${snapshot.error} ${snapshot.data!}' );
+                }
+                else if (snapshot.hasData) {
+                  return Container(
+                    decoration: BoxDecoration(color: Colors.white),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildAccount(snapshot.data!),
+                        Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        10), // Điều chỉnh góc bo tròn
+                                  ),
+                                  backgroundColor: Color(0xFFFFFFFF),
+                                  fixedSize: Size(300, 50),
                                 ),
-                                backgroundColor: Color(0xFFFFFFFF),
-                                fixedSize: Size(300, 50),
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          EditProfileUserScreen()), // Thay NewPage() bằng trang mới của bạn
-                                );
-                              },
-                              child: Container(
-                                margin: EdgeInsets.only(
-                                    left: 10, bottom: 10, top: 10),
-                                width: 250,
-                                alignment: Alignment.center,
-                                // Align the text to the center
-                                child: Text(
-                                  'Chỉnh sửa thông tin cá nhân',
-                                  style: TextStyle(
-                                    color: Colors.black,
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            EditProfileUserScreen()), // Thay NewPage() bằng trang mới của bạn
+                                  );
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.only(
+                                      left: 10, bottom: 10, top: 10),
+                                  width: 250,
+                                  alignment: Alignment.center,
+                                  // Align the text to the center
+                                  child: Text(
+                                    'Chỉnh sửa thông tin cá nhân',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
 
-                      Container(
-                        margin: EdgeInsets.only(top: 5),
-                        height: 10, // Chiều cao của thanh ngang
-                        width: 500, // Độ dày của thanh ngang
-                        color: Color(0xC0C0C0C0),
-                      ),
+                        Container(
+                          margin: EdgeInsets.only(top: 5),
+                          height: 10, // Chiều cao của thanh ngang
+                          width: 500, // Độ dày của thanh ngang
+                          color: Color(0xC0C0C0C0),
+                        ),
 
-                      Obx(
-                        () => Expanded(
-                            child: HotPostQuestionScreen(
-                                listPost: myProfileController.listPost.value)),
-                      ),
+                        _buildPost(),
 
-                      // Container(child: Center(
-                      //   child: ListView.builder(
-                      //     itemCount: myProfileController.listPost.length,
-                      //     itemBuilder: (context, index) {
-                      //       final post = myProfileController.listPost[index];
-                      //       return AnimatedOpacity(
-                      //         duration: Duration(milliseconds: 100),
-                      //         opacity: 1,
-                      //         child: PostScreen(post: post),
-                      //       );
-                      //     },
-                      //   ),
-                      // ))
-                    ],
-                  ),
-                );
-              } else return Container();
-            },
+                        // Container(child: Center(
+                        //   child: ListView.builder(
+                        //     itemCount: myProfileController.listPost.length,
+                        //     itemBuilder: (context, index) {
+                        //       final post = myProfileController.listPost[index];
+                        //       return AnimatedOpacity(
+                        //         duration: Duration(milliseconds: 100),
+                        //         opacity: 1,
+                        //         child: PostScreen(post: post),
+                        //       );
+                        //     },
+                        //   ),
+                        // ))
+                      ],
+                    ),
+                  );
+                } else return Container();
+              },
+            ),
           ),
         ),
       ),
@@ -231,6 +248,26 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
             ],
           ),
         );
+  }
+  Widget _buildPost(){
+    return ListView.builder(
+      controller: _scrollController,
+      itemCount: _posts.length + 1,
+      shrinkWrap: true, // Đảm bảo ListView.builder chỉ chiếm không gian cần thiết
+      physics: NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        if (index == _posts.length) {
+          return _isLoading ? Center(child: CircularProgressIndicator()) : SizedBox.shrink();
+        }
+        return Column(
+          children: [
+            PostScreenNew(post: _posts[index]),
+          ],
+        );
+      },
+    );
+
+
   }
 }
 
