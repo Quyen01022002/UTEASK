@@ -27,7 +27,7 @@ class PostController extends GetxController {
     tokenString.value = token;
     postid.value = id;
     final post = await API_Post.getOnePost(id, adminId, token);
-    final listComment = await API_Post.getAllComment(postid.value, token);
+    final listComment = await API_Post.getAllComment(id, token);
     if (post != null) {
       postState = Stream.fromIterable([post!]);
       listCommentStream = Stream.fromIterable([listComment!]);

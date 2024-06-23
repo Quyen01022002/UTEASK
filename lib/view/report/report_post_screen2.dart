@@ -4,10 +4,9 @@ import 'package:askute/view/Quetions/QuestionDetail.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
-
 class ReportPost extends StatefulWidget {
   final PostModel post;
+
   const ReportPost({super.key, required this.post});
 
   @override
@@ -63,7 +62,8 @@ class _ReportPostState extends State<ReportPost> {
                           ),
                         ),
                         RadioListTile(
-                          dense: true, // Set dense to true to reduce vertical spacing
+                          dense: true,
+                          // Set dense to true to reduce vertical spacing
                           title: Text(
                             'Người dùng đăng nội dung phản cảm',
                             style: TextStyle(
@@ -74,7 +74,8 @@ class _ReportPostState extends State<ReportPost> {
                           groupValue: selectedReason,
                           onChanged: (value) {
                             setState(() {
-                              selectedReason = 'Người dùng đăng nội dung phản cảm';
+                              selectedReason =
+                                  'Người dùng đăng nội dung phản cảm';
                             });
                           },
                         ),
@@ -134,26 +135,27 @@ class _ReportPostState extends State<ReportPost> {
                             padding: EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               border: Border.all(
-                                color: Colors.grey, // You can set the border color
+                                color: Colors.grey,
+                                // You can set the border color
                                 width: 1.0, // You can set the border width
                               ),
-                              borderRadius: BorderRadius.circular(8.0), // Set the border radius
+                              borderRadius: BorderRadius.circular(
+                                  8.0), // Set the border radius
                             ),
                             child: TextFormField(
                               controller: postController.reasonText,
                               decoration: InputDecoration(
                                 hintText: 'Nhập lý do khác',
-                                border: InputBorder.none, // Remove the default border
+                                border: InputBorder
+                                    .none, // Remove the default border
                               ),
                             ),
                           ),
                         ),
-
                       ],
                     ),
                   ),
                   SizedBox(height: 10.0),
-
                   Container(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -167,16 +169,16 @@ class _ReportPostState extends State<ReportPost> {
                             backgroundColor: Color(0xFF8587F1),
                           ),
                           onPressed: () {
-
-                            postController.reportPost(BuildContext, widget.post.id,selectedReason);
+                            postController.reportPost(
+                                BuildContext, widget.post.id, selectedReason);
                             Navigator.of(context).pop();
-
                           },
                           child: Container(
                             margin: EdgeInsets.all(10),
                             padding: EdgeInsets.all(10),
                             width: 250,
-                            alignment: Alignment.center, // Align the text to the center
+                            alignment: Alignment.center,
+                            // Align the text to the center
                             child: Text(
                               'Báo cáo bài viết',
                               style: TextStyle(
@@ -189,15 +191,11 @@ class _ReportPostState extends State<ReportPost> {
                     ),
                   ),
                 ],
-
               ),
             ),
-
           ),
-
         ],
       ),
-
     );
   }
 
@@ -238,7 +236,7 @@ class _ReportPostState extends State<ReportPost> {
             CircleAvatar(
               radius: 25,
               backgroundImage:
-              NetworkImage(widget.post.createBy.profilePicture),
+                  NetworkImage(widget.post.createBy.profilePicture),
               // Hoặc sử dụng NetworkImage nếu avatar từ một URL
               // backgroundImage: NetworkImage('URL_TO_AVATAR'),
             ),
@@ -312,8 +310,8 @@ class _ReportPostState extends State<ReportPost> {
   Widget _buildSingleImage(List<String> list) {
     //Nếu list ảnh chỉ có một hình ảnh
     return Container(
-      height: MediaQuery.of(context).size.width * 0.99,
-      width: MediaQuery.of(context).size.width * 0.99,
+      height: MediaQuery.of(context).size.width * 0.99 - 8,
+      width: MediaQuery.of(context).size.width * 0.99 - 8,
       child: GestureDetector(
           onTap: () {
             Navigator.of(context).push(MaterialPageRoute(
@@ -363,8 +361,8 @@ class _ReportPostState extends State<ReportPost> {
   Widget _buildThreeImages(List<String> imageUrls) {
     // nếu list ảnh có 3 hình ảnh
     return Container(
-      height: MediaQuery.of(context).size.width * 0.985,
-      width: MediaQuery.of(context).size.width,
+      height: (MediaQuery.of(context).size.width - 16) * 0.96 - 16,
+      width: MediaQuery.of(context).size.width - 16 - 16,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -378,11 +376,11 @@ class _ReportPostState extends State<ReportPost> {
                 ));
               },
               child: Container(
-                  width: MediaQuery.of(context).size.width * 0.5 * 0.99,
-                  height: MediaQuery.of(context).size.height * 0.99,
+                  width: (MediaQuery.of(context).size.width - 16) * 0.5 * 0.99 - 16,
+                  height: (MediaQuery.of(context).size.height - 16) * 0.99 - 16,
                   child: _buildFirstImage(imageUrls[0]))),
           Container(
-            height: MediaQuery.of(context).size.height,
+            height: MediaQuery.of(context).size.height - 16 - 16,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -417,8 +415,8 @@ class _ReportPostState extends State<ReportPost> {
   Widget _buildFourImages(List<String> imageUrls) {
     //nếu list ảnh có 4 hình ảnh trở lên
     return Container(
-      height: MediaQuery.of(context).size.width * 0.985,
-      width: MediaQuery.of(context).size.width,
+      height: (MediaQuery.of(context).size.width - 16) * 0.96 - 16,
+      width: MediaQuery.of(context).size.width -16 -16,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -432,11 +430,11 @@ class _ReportPostState extends State<ReportPost> {
                 ));
               },
               child: Container(
-                  width: MediaQuery.of(context).size.width * 0.5 * 0.99,
-                  height: MediaQuery.of(context).size.height * 0.99,
+                  width: (MediaQuery.of(context).size.width - 16) * 0.5 * 0.99 - 16,
+                  height: (MediaQuery.of(context).size.height - 16) * 0.99 - 16,
                   child: _buildFirstImage(imageUrls[0]))),
           Container(
-            height: MediaQuery.of(context).size.height,
+            height: MediaQuery.of(context).size.height - 16 - 16,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -463,9 +461,14 @@ class _ReportPostState extends State<ReportPost> {
                         ));
                       },
                       child: Container(
-                        height:
-                        MediaQuery.of(context).size.height * 0.25 * 0.99,
-                        width: MediaQuery.of(context).size.width * 0.5 * 0.99,
+                        height: (MediaQuery.of(context).size.height - 16) *
+                                0.25 *
+                                0.99 -
+                            16,
+                        width: (MediaQuery.of(context).size.width - 16) *
+                                0.5 *
+                                0.99 -
+                            16,
                         color: Colors.black
                             .withOpacity(0.5), // Độ mờ ở đây, giả sử 0.5
                       ),
@@ -495,8 +498,8 @@ class _ReportPostState extends State<ReportPost> {
     //xây dựng khung ảnh đầu tiên của bộ đôi, bộ ba ảnh
     return Image.network(
       imageUrl,
-      width: MediaQuery.of(context).size.width * 0.985 * 0.5,
-      height: MediaQuery.of(context).size.height * 0.99,
+      width: (MediaQuery.of(context).size.width - 16) * 0.985 * 0.5 - 16,
+      height: (MediaQuery.of(context).size.height - 16) * 0.99 - 16,
       fit: BoxFit.cover,
     );
   }
@@ -505,8 +508,8 @@ class _ReportPostState extends State<ReportPost> {
     //xây dựng khung ảnh thứ 2,3 của bộ ba ảnh trở lên
     return Image.network(
       imageUrl,
-      width: MediaQuery.of(context).size.width * 0.5 * 0.99,
-      height: MediaQuery.of(context).size.height * 0.25 * 0.99,
+      width: (MediaQuery.of(context).size.width - 16) * 0.5 * 0.99 - 16,
+      height: (MediaQuery.of(context).size.height - 16) * 0.25 * 0.99 - 16,
       fit: BoxFit.cover,
     );
   }

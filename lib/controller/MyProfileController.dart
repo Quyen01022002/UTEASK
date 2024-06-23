@@ -27,7 +27,7 @@ class MyProfileController extends GetxController {
   RxBool isFriend = true.obs;
   RxList<PostModel> listPost = List<PostModel>.empty(growable: true).obs;
   RxList<UserEnity> listFriends = List<UserEnity>.empty(growable: true).obs;
-
+  UserProfile? userProfileOther;
 
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
@@ -59,6 +59,7 @@ class MyProfileController extends GetxController {
         lastNameController.text = userProfile.last_name!;
         emailController.text = userProfile.email!;
         phoneController.text = userProfile.phone!;
+        userProfileOther = userProfile;
         print(userProfile.isFriends);
         update();
       }
