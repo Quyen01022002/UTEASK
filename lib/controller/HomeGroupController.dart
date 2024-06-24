@@ -35,6 +35,7 @@ class HomeGroupController extends GetxController {
   List<UserMember>? listUserMembers = [];
   List<PostModel> listPost = [];
   List<PostModel> listPostClass = [];
+  RxList<GroupModel> deliverGroup = List<GroupModel>.empty(growable: true).obs;
   final textControllerMota = TextEditingController();
   final textControllerNameGroup = TextEditingController();
   final desc = RxString('');
@@ -230,6 +231,27 @@ class HomeGroupController extends GetxController {
     List<GroupModel>? result = await API_Group.getAllGroupsJoin(token, userId);
     if (result != null) groupsJoin = result;
     groupsJoinStream = Stream.fromIterable([groupsJoin!]);
+  }
+
+  Future<List<GroupModel>?> loadGroupJoinValue(BuildContext context) async
+  {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getInt('id') ?? 0;
+      final token = prefs.getString('token') ?? "";
+      List<GroupModel>? result = await API_Group.getAllGroupsJoin(token, userId);
+      if (result!=null)
+        {
+          deliverGroup.clear();
+          deliverGroup.addAll(result);
+
+        }
+    return result;
+
+    }
+    finally {
+
+    }
   }
 
   Future<void> deleteGroup(BuildContext context, int id) async {

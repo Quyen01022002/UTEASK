@@ -50,7 +50,7 @@ class API_Post {
 
   static Future<String?> DeliverKhoa(String questions) async {
     final response = await http.post(
-      Uri.parse('http://192.168.1.6:8081/classify'),
+      Uri.parse('http://192.168.1.2:8081/classify'),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -109,7 +109,7 @@ class API_Post {
   }
 
   static Future<PostEntity?> post(PostEntity post, List<String> img,
-      String token, int groupId) async {
+      String token, int groupId, int sector, String sttview, String sttcmt) async {
     final url = Uri.parse('$baseUrl/post/post');
 
     final headers = {
@@ -123,6 +123,9 @@ class API_Post {
       "groups": groupId,
       "contentPost": post.content_post,
       "listAnh": listAnh,
+      "statusViewPostEnum": sttview,
+      "statusCmtPostEnum": sttcmt,
+      "sector": sector,
     };
 
     await http.post(
