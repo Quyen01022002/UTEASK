@@ -330,6 +330,7 @@ class _GroupTeacherState extends State<GroupTeacher> {
                           return Text(
                               'Không tìm thấy giảng viên với email đã nhập');
                         } else if (snapshot.hasData) {
+                          homeGroupController.idUserAdded.value = snapshot.data!.id!;
                           return Row(
                             children: [
                               CircleAvatar(
@@ -386,6 +387,8 @@ class _GroupTeacherState extends State<GroupTeacher> {
               ),
               ElevatedButton(
                 onPressed: () {
+                  print("emailText: ${homeGroupController.emailText.text}");
+                  print("Lĩnh vực: ${_selectedValue}");
                   // Xử lý sự kiện lưu lĩnh vực ở đây
                   if (homeGroupController.emailText.text.trim() != '' &&
                       _selectedValue != null) {

@@ -1,5 +1,6 @@
 import 'package:askute/controller/HomeGroupController.dart';
 import 'package:askute/model/PostModel.dart';
+import 'package:askute/model/UserProgress.dart';
 import 'package:askute/view/Home/hot_post_screen.dart';
 import 'package:askute/view/Home/list_post_screen.dart';
 import 'package:askute/view/teacher/Home/Sector/ListSector.dart';
@@ -200,6 +201,12 @@ class _HomeSectorState extends State<HomeSector> {
     return homeGroupController.loadPostOfGroup(context);
   }
 
+  Future<List<UserProgress>?> fetchDataProgress() async {
+    // Đây là ví dụ về việc tải dữ liệu từ cơ sở dữ liệu hoặc một API
+    // Thay thế phần này bằng hàm thực sự để tải dữ liệu của bạn
+    return homeGroupController.loadTeacherProgress(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -262,7 +269,7 @@ class _HomeSectorState extends State<HomeSector> {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
                                     // Hiển thị màn hình chờ khi dữ liệu đang được tải
-                                    return CircularProgressIndicator();
+                                    return Center(child: CircularProgressIndicator());
                                   } else if (snapshot.hasError) {
                                     // Hiển thị lỗi nếu có lỗi xảy ra trong quá trình tải dữ liệu
                                     return Text('Error: ${snapshot.error}');
@@ -427,33 +434,51 @@ class _HomeSectorState extends State<HomeSector> {
   }
 
   Widget _buildUserList() {
-    return ListView.builder(
-      //shrinkWrap: true,
-      // physics: AlwaysScrollableScrollPhysics(),
-      itemCount: users.length,
-      itemBuilder: (context, index) {
-        return _buildUserItem(users[index]);
-      },
+    return FutureBuilder(
+      future: fetchDataProgress(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Hiển thị màn hình chờ khi dữ liệu đang được tải
+          return Center(child: Container(
+              child: CircularProgressIndicator()));
+        }
+        else if (snapshot.hasError) {
+          // Hiển thị lỗi nếu có lỗi xảy ra trong quá trình tải dữ liệu
+          return Text('Error: ${snapshot.error} ${snapshot.data!}' );
+        }
+        else if (snapshot.hasData && snapshot.data!.length == 0){
+          return Text("Chưa có giảng viên nào trong Khoa");
+        }
+        else {
+        return ListView.builder(
+          //shrinkWrap: true,
+          // physics: AlwaysScrollableScrollPhysics(),
+          itemCount: snapshot.data!.length,
+          itemBuilder: (context, index) {
+            return _buildUserItem(snapshot.data![index]);
+          },
+        );}
+      }
     );
   }
 
-  Widget _buildUserItem(UserSEC user) {
+  Widget _buildUserItem(UserProgress user) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundImage: NetworkImage(user.avatarUrl),
+        backgroundImage: NetworkImage(user.userProfile!.avatarUrl!),
       ),
-      title: Text(user.name),
+      title: Text('${user.userProfile!.first_name!} ${user.userProfile!.last_name!}'),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           LinearProgressIndicator(
-            value: user.progress,
+            value: user.countAllPostReply == 0? 1 : user.countPostRelied!/user.countAllPostReply!,
             backgroundColor: Colors.grey[300],
             color: Colors.blue,
           ),
           SizedBox(height: 5),
-          Text('Câu hỏi nhận được: ${user.questionsReceived}'),
-          Text('Câu hỏi đã hoàn thành: ${user.questionsCompleted}'),
+          Text('Câu hỏi nhận được: ${user.countAllPostReply}'),
+          Text('Câu hỏi đã hoàn thành: ${user.countPostRelied}'),
         ],
       ),
     );
