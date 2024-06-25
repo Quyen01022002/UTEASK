@@ -1,3 +1,4 @@
+import 'package:askute/controller/HomeGroupController.dart';
 import 'package:askute/model/Class.dart';
 import 'package:askute/model/PostEnity.dart';
 import 'package:askute/model/SectorResponse.dart';
@@ -16,12 +17,13 @@ import '../model/GroupModel.dart';
 import '../view/dashboard/DashBoard.dart';
 
 class CreatePostController extends GetxController {
+  HomeGroupController homeGroupController = Get.put(HomeGroupController());
   final textControllerContent = TextEditingController();
   RxList<GroupModel> deliverGroup = List<GroupModel>.empty(growable: true).obs;
   RxList<String> imagePaths = <String>[].obs;
   final contentpost = RxString('');
   RxList<SectorResponse> listSt = List<SectorResponse>.empty(growable: true).obs;
-  void createpost(BuildContext context) async {
+  void createpost(BuildContext context, String statusView, String statusCmt) async {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('id') ?? 0;
 
@@ -31,14 +33,14 @@ class CreatePostController extends GetxController {
         timestamp: DateTime.now(),
         status: "");
     final token = prefs.getString('token') ?? "";
-    await API_Post.post(userEnity, imagePaths.value, token, 0, 1, "ALLUSER", "ALLUSER");
-
-    Future.delayed(Duration(milliseconds: 100), () {
+    await API_Post.post(userEnity, imagePaths.value, token, 0, 1, statusView,statusCmt);
+    await Future.delayed(Duration(milliseconds: 100), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => DashBoard()),
+        MaterialPageRoute(builder: (context) => DashBoardVer2()),
       );
     });
+    Navigator.of(context).pop();
   }
 
   void createpostGroup(BuildContext context, int id, int sector, String sttview, String sttcmt) async {
@@ -52,8 +54,10 @@ class CreatePostController extends GetxController {
         status: "",);
     final token = prefs.getString('token') ?? "";
     await API_Post.post(userEnity, imagePaths.value, token, id, sector, sttview, sttcmt);
+    update();
+    Navigator.of(context).pop();
 
-    Future.delayed(Duration(milliseconds: 100), () {
+    await Future.delayed(Duration(milliseconds: 100), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => DashBoardVer2()),

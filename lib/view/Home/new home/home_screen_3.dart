@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> {
       _isLoading = true;
     });
 
-    final response = await homeGroupController.morePosts(context);
+    final response = await homeGroupController.morePosts(context,0);
     if (response!= null && response.length!=0) {
       setState(() {
         homeGroupController.pagenumber3.value++;

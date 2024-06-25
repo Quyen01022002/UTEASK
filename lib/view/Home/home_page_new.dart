@@ -40,6 +40,8 @@ class _HomeScreen3State extends State<HomeScreen3> {
 
   void initState() {
     super.initState();
+    homeGroupController.pagenumber3.value = 0;
+    _posts.clear();
     _fetchPosts();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
@@ -55,7 +57,7 @@ class _HomeScreen3State extends State<HomeScreen3> {
     });
     List<PostModel>? response;
     if (selectedValue == 'Đang theo dõi')
-      response = await homeGroupController.morePosts(context);
+      response = await homeGroupController.morePosts(context, homeGroupController.pagenumber3.value);
     else if (selectedValue == 'Theo lớp')
       response = await homeGroupController.morePostsClass(context);
     else

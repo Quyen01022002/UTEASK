@@ -8,6 +8,7 @@ import 'package:askute/model/CommentResponse.dart';
 import 'package:askute/model/InteractionsResponse.dart';
 import 'package:askute/model/PostEnity.dart';
 import 'package:askute/model/PostModel.dart';
+import 'package:askute/model/UserProgress.dart';
 import 'package:askute/service/API_Class.dart';
 import 'package:askute/service/const.dart';
 import 'package:askute/view/teacher/Home/Class/ClassDetailTeacher.dart';
@@ -678,6 +679,63 @@ class API_Post {
           utf8Data,
               (dynamic json) =>
           List<PostModel>.from(json.map((x) => PostModel.fromJson(x))),
+        );
+        return listPost.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  static Future<List<UserProgress>?> LoadTeacherProgress(int groupid, int page,
+      int userid, String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/group/$groupid/loadProgress/$userid'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<UserProgress>> listPost =
+        ApiReponse<List<UserProgress>>.fromJson(
+          utf8Data,
+              (dynamic json) =>
+          List<UserProgress>.from(json.map((x) => UserProgress.fromJson(x))),
+        );
+        return listPost.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+  static Future<List<UserProgress>?> LoadTeacherSectorProgress(int groupid, int sectorid, int page,
+      int userid, String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/group/$groupid/$sectorid/loadProgress/$userid'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<UserProgress>> listPost =
+        ApiReponse<List<UserProgress>>.fromJson(
+          utf8Data,
+              (dynamic json) =>
+          List<UserProgress>.from(json.map((x) => UserProgress.fromJson(x))),
         );
         return listPost.payload;
       } else {
