@@ -372,12 +372,10 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
 bool? reply  = false;
   CommentEntity? cmtUserToReply;
   Widget _buildInputAllField() {
-    return post!.statusCmtPostEnum == 'False' ? Container(
+    return post!.statusCmtPostEnum == 'ONLYME' ? Container(
       color: Colors.grey[200],
       padding: EdgeInsets.all(8),
       child: Text("Chủ bài viết đã khóa bình luận hoặc lượt bình luân đã bị hạn chế!"),
-
-
     ): Column(
       children: [
         reply == true ?
