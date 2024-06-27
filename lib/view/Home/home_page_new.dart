@@ -305,6 +305,12 @@ class _HomeScreen3State extends State<HomeScreen3> {
           return Column(
             children: [
               PostScreenNew(post: _posts[index]),
+              Container(
+                margin: EdgeInsets.only(top: 5),
+                height: 10, // Chiều cao của thanh ngang
+                width: 500, // Độ dày của thanh ngang
+                color: Colors.black12,
+              ),
             ],
           );
         },
