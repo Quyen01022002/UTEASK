@@ -51,8 +51,8 @@ class PostModel {
         listAnh: listImg,
         createBy: createBy,
     groupid: json['groupid']??0,
-    statusViewPostEnum: json['statusViewPostEnum'],
-      statusCmtPostEnum: json['statusCmtPostEnum']
+    statusViewPostEnum: json['statusViewPostEnum']??'',
+      statusCmtPostEnum: json['statusCmtPostEnum']??''
 
     );
   }

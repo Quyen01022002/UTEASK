@@ -39,7 +39,7 @@ class CreatePostController extends GetxController {
     });
   }
 
-  void createpostGroup(BuildContext context, int id) async {
+  Future<String> createpostGroup(BuildContext context, int id) async {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('id') ?? 0;
 
@@ -49,14 +49,37 @@ class CreatePostController extends GetxController {
         timestamp: DateTime.now(),
         status: "");
     final token = prefs.getString('token') ?? "";
-    await API_Post.post(userEnity, imagePaths.value, token, id);
+    String? rules=await API_Post.CommunicateRules(textControllerContent.text);
+    print(rules);
+    if(rules=="VP")
+      {
+        final adminId = prefs.getInt('id') ?? 0;
+        final token = prefs.getString('token') ?? "";
+        String reason2 = "Vi phạm quy tắc cộng đồng";
+        PostEntity? postEntity = await API_Post.post(userEnity, imagePaths.value, token, id);
 
-    Future.delayed(Duration(milliseconds: 100), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => DashBoardVer2()),
-      );
-    });
+        if (postEntity != null) {
+          await API_Post.reportPost(adminId, postEntity.post_id, reason2, token);
+        } else {
+          // Handle the case where postEntity is null
+          print('Failed to create post');
+        }
+
+        return "VP";
+      }
+    else
+      {
+        await API_Post.post(userEnity, imagePaths.value, token, id);
+        Future.delayed(Duration(milliseconds: 100), () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => DashBoardVer2()),
+          );
+        });
+        print("HL");
+        return "HL";
+      }
+
   }
 
   void DeliverKhoa(BuildContext context) async {

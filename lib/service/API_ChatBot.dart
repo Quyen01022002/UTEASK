@@ -5,7 +5,7 @@ import '../model/BotReponse.dart';
 class API_ChatBot {
   static Future<List<BotReponse>> questions(String question) async {
     final response = await http.post(
-      Uri.parse('http://192.168.178.92:5002/webhook'),
+      Uri.parse('http://192.168.230.92:5002/webhook'),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
       },

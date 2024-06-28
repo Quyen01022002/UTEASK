@@ -50,7 +50,7 @@ class API_Post {
 
   static Future<String?> DeliverKhoa(String questions) async {
     final response = await http.post(
-      Uri.parse('http://192.168.178.92:8081/classify'),
+      Uri.parse('http://192.168.230.92:8081/classify'),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -69,6 +69,37 @@ class API_Post {
         final responseData = jsonDecode(response.body);
         //String utf8Data = utf8.decode(responseData.runes.toList());
         String khoa = responseData['khoa'];
+        print(khoa);
+
+        return khoa;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+  static Future<String?> CommunicateRules(String questions) async {
+    final response = await http.post(
+      Uri.parse('http://192.168.230.92:5000/predict'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({
+        "questions": questions
+      }),
+    );
+
+    print("api");
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      print("success");
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        final responseData = jsonDecode(response.body);
+        //String utf8Data = utf8.decode(responseData.runes.toList());
+        String khoa = responseData['label'];
         print(khoa);
 
         return khoa;
@@ -762,7 +793,7 @@ class API_Post {
     );
   }
 
-  static Future<String?> reportPost(int iduser, int idpost, String reason,
+  static Future<String?> reportPost(int iduser, int? idpost, String reason,
       String token) async {
     final url = Uri.parse('$baseUrl/report/posts/$idpost');
     final headers = {
