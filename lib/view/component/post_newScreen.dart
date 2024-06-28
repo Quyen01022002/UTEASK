@@ -98,14 +98,15 @@ class _PostScreenState extends State<PostScreenNew> {
                     children: [
                       GestureDetector(
                         onTap: (){
-                          if (loginController.idMe.value != postHT!.createBy.id)
+                          if (loginController.idMe.value != postHT!.createBy.id){
+                            myProfileController.ortherId.value = postHT!.createBy.id;
                             Navigator.push(
                               context,
                               PageTransition(
                                 type: PageTransitionType.rightToLeft,
                                 child: ProfileUserOther(id: postHT!.createBy.id,),
                               ),
-                            );
+                            );}
                           else
                             Navigator.push(
                               context,
@@ -189,10 +190,13 @@ class _PostScreenState extends State<PostScreenNew> {
                       onTap: () {
                        postController.loadOnePost(context, postHT!.id);
                         // Thực hiện hành động khi người dùng nhấn vào văn bản
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => QuestionDetailScreen(post: postHT!)),
-                        );
+                       Navigator.push(
+                         context,
+                         PageTransition(
+                           type: PageTransitionType.rightToLeft,
+                           child: QuestionDetailScreen(post: postHT!,),
+                         ),
+                       );
                       },
                       child: Container(
                         padding: EdgeInsets.only(left: 5),
@@ -393,7 +397,7 @@ class _PostScreenState extends State<PostScreenNew> {
     return Container(
 
       child: Container(
-        height: (MediaQuery.of(context).size.width -30)*1.058,
+        height: (MediaQuery.of(context).size.width -30)*1.028,
         width: (MediaQuery.of(context).size.width - 30),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -450,7 +454,7 @@ class _PostScreenState extends State<PostScreenNew> {
     return Container(
 
       child: Container(
-        height: (MediaQuery.of(context).size.width -30)*1.058,
+        height: (MediaQuery.of(context).size.width -30)*1.028,
         width: (MediaQuery.of(context).size.width - 30),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,

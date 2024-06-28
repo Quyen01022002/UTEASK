@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:askute/model/PostModel.dart';
+import 'package:askute/model/UserProgress.dart';
+
 import '../model/ApiReponse.dart';
 import '../model/UserProfile.dart';
 import 'package:http/http.dart' as http;
@@ -251,4 +254,88 @@ class API_Profile
     }
 
   }
+
+
+  static Future<UserProgress?> LoadMyProgress(
+      int userid, String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/user/$userid/loadProgress'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<UserProgress> userProfileResponse = ApiReponse<UserProgress>.fromJson(
+          utf8Data,
+              (dynamic json) => UserProgress.fromJson(json),
+        );
+        return userProfileResponse.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+  static Future<List<PostModel>?> LoadMyPost(int userid, String token, int pagenumber) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/user/$userid/posts/$pagenumber'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<PostModel>> listPost =
+        ApiReponse<List<PostModel>>.fromJson(
+          utf8Data,
+              (dynamic json) =>
+          List<PostModel>.from(json.map((x) => PostModel.fromJson(x))),
+        );
+        return listPost.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  static Future<List<PostModel>?> LoadOtherPost(int userid, String token, int pagenumber) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/user/other/$userid/posts/$pagenumber'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<PostModel>> listPost =
+        ApiReponse<List<PostModel>>.fromJson(
+          utf8Data,
+              (dynamic json) =>
+          List<PostModel>.from(json.map((x) => PostModel.fromJson(x))),
+        );
+        return listPost.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
 }

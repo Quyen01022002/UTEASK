@@ -3,6 +3,7 @@ import 'package:askute/model/Class.dart';
 import 'package:askute/model/GroupModel.dart';
 import 'package:askute/model/PostModel.dart';
 import 'package:askute/model/UserProfile.dart';
+import 'package:askute/model/UserProgress.dart';
 import 'package:askute/service/API_Post.dart';
 import 'package:askute/service/API_Profile.dart';
 
@@ -35,6 +36,7 @@ class HomeGroupController extends GetxController {
   List<UserMember>? listUserMembers = [];
   List<PostModel> listPost = [];
   List<PostModel> listPostClass = [];
+  RxList<GroupModel> deliverGroup = List<GroupModel>.empty(growable: true).obs;
   final textControllerMota = TextEditingController();
   final textControllerNameGroup = TextEditingController();
   final desc = RxString('');
@@ -160,11 +162,11 @@ class HomeGroupController extends GetxController {
     allPostFollowingStream = Stream.fromIterable([listPost!]);
   }
 
-  Future<List<PostModel>?> morePosts(BuildContext context) async {
+  Future<List<PostModel>?> morePosts(BuildContext context, int page) async {
     final prefs = await SharedPreferences.getInstance();
     final adminId = prefs.getInt('id') ?? 0;
     final token = prefs.getString('token') ?? "";
-    return await API_Group.LoadMainHome(adminId, token, pagenumber3.value);
+    return await API_Group.LoadMainHome(adminId, token, page);
   }
 
   RxInt pagenumber4 = 0.obs;
@@ -230,6 +232,27 @@ class HomeGroupController extends GetxController {
     List<GroupModel>? result = await API_Group.getAllGroupsJoin(token, userId);
     if (result != null) groupsJoin = result;
     groupsJoinStream = Stream.fromIterable([groupsJoin!]);
+  }
+
+  Future<List<GroupModel>?> loadGroupJoinValue(BuildContext context) async
+  {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getInt('id') ?? 0;
+      final token = prefs.getString('token') ?? "";
+      List<GroupModel>? result = await API_Group.getAllGroupsJoin(token, userId);
+      if (result!=null)
+        {
+          deliverGroup.clear();
+          deliverGroup.addAll(result);
+
+        }
+    return result;
+
+    }
+    finally {
+
+    }
   }
 
   Future<void> deleteGroup(BuildContext context, int id) async {
@@ -510,6 +533,21 @@ update();
       final adminId = prefs.getInt('id') ?? 0;
       final token = prefs.getString('token') ?? "";
       final rs = await API_Post.LoadPostOfGroup(group_id.value, 0, adminId, token);
+      return rs;
+
+    }
+    finally {
+
+    }
+  }
+
+  Future<List<UserProgress>?> loadTeacherProgress(BuildContext context) async
+  {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final adminId = prefs.getInt('id') ?? 0;
+      final token = prefs.getString('token') ?? "";
+      final rs = await API_Post.LoadTeacherProgress(group_id.value, 0, adminId, token);
       return rs;
 
     }

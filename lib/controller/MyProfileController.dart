@@ -27,7 +27,8 @@ class MyProfileController extends GetxController {
   RxBool isFriend = true.obs;
   RxList<PostModel> listPost = List<PostModel>.empty(growable: true).obs;
   RxList<UserEnity> listFriends = List<UserEnity>.empty(growable: true).obs;
-
+  UserProfile? userProfileOther;
+  RxInt pagenumber = 0.obs;
 
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
@@ -59,6 +60,7 @@ class MyProfileController extends GetxController {
         lastNameController.text = userProfile.last_name!;
         emailController.text = userProfile.email!;
         phoneController.text = userProfile.phone!;
+        userProfileOther = userProfile;
         print(userProfile.isFriends);
         update();
       }
@@ -100,7 +102,8 @@ class MyProfileController extends GetxController {
     myToken.value = prefs.getString('token')!;
     final us =await API_Profile.profile(id, myToken.value);
     await API_Profile.profile(id, myToken.value);
-
+    if(us!= null)
+    {listPost.value = us.listpost!;}
     return await API_Profile.profile(id, myToken.value);
   }
 
@@ -248,5 +251,18 @@ class MyProfileController extends GetxController {
     reasonText.text = "";
   }
 
+
+  Future<List<PostModel>?> loadMyPost(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+    return await API_Profile.LoadMyPost(adminId, token, pagenumber.value);
+  }
+  Future<List<PostModel>?> loadOtherPost(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+    return await API_Profile.LoadOtherPost(ortherId.value, token, pagenumber.value);
+  }
 
 }

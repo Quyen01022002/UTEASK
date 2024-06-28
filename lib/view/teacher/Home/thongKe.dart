@@ -64,7 +64,11 @@ class _ThongKeState extends State<ThongKe> {
                           ),
                         ),
                         SizedBox(height: 10),
-                        AspectRatio(
+                        _homeController.top5Month == null || _homeController.top5Month.length == 0?
+                        Container(
+                          child: Center(child: Text("Không có bài viết nào")),
+                        )
+                            : AspectRatio(
                           aspectRatio: 1.5,
                           child: LineChart(
                             LineChartData(

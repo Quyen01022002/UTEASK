@@ -34,7 +34,7 @@ class MessageBoxResponse {
     return MessageBoxResponse(
         id: json['id'] ?? 0,
         name: json['name'] ?? '',
-        Avatar: json['Avatar'] ?? '',
+        Avatar: json['avatar'] ?? '',
         messageMembersList: listMembers,
         messagesList: listMessages);
   }
