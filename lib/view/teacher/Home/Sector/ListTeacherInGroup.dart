@@ -24,134 +24,6 @@ class _GroupTeacherState extends State<GroupTeacher> {
       Get.put(HomeGroupController());
 
   //final ClassModel classes;
-  final List<UserSEC> users = [
-    UserSEC(
-      avatarUrl: 'https://i.pravatar.cc/150?img=1',
-      name: 'Nguyen Van A',
-      progress: 0.8,
-      questionsReceived: 20,
-      questionsCompleted: 16,
-    ),
-    UserSEC(
-      avatarUrl: 'https://i.pravatar.cc/150?img=2',
-      name: 'Tran Thi B',
-      progress: 0.5,
-      questionsReceived: 10,
-      questionsCompleted: 5,
-    ),
-    UserSEC(
-      avatarUrl: 'https://i.pravatar.cc/150?img=3',
-      name: 'Le Van C',
-      progress: 0.9,
-      questionsReceived: 15,
-      questionsCompleted: 13,
-    ),
-    UserSEC(
-      avatarUrl: 'https://i.pravatar.cc/150?img=1',
-      name: 'Nguyen Van A',
-      progress: 0.8,
-      questionsReceived: 20,
-      questionsCompleted: 16,
-    ),
-    UserSEC(
-      avatarUrl: 'https://i.pravatar.cc/150?img=2',
-      name: 'Tran Thi B',
-      progress: 0.5,
-      questionsReceived: 10,
-      questionsCompleted: 5,
-    ),
-    UserSEC(
-      avatarUrl: 'https://i.pravatar.cc/150?img=3',
-      name: 'Le Van C',
-      progress: 0.9,
-      questionsReceived: 15,
-      questionsCompleted: 13,
-    ),
-    UserSEC(
-      avatarUrl: 'https://i.pravatar.cc/150?img=1',
-      name: 'Nguyen Van A',
-      progress: 0.8,
-      questionsReceived: 20,
-      questionsCompleted: 16,
-    ),
-    UserSEC(
-      avatarUrl: 'https://i.pravatar.cc/150?img=2',
-      name: 'Tran Thi B',
-      progress: 0.5,
-      questionsReceived: 10,
-      questionsCompleted: 5,
-    ),
-    UserSEC(
-      avatarUrl: 'https://i.pravatar.cc/150?img=3',
-      name: 'Le Van C',
-      progress: 0.9,
-      questionsReceived: 15,
-      questionsCompleted: 13,
-    ),
-    UserSEC(
-      avatarUrl: 'https://i.pravatar.cc/150?img=1',
-      name: 'Nguyen Van A',
-      progress: 0.8,
-      questionsReceived: 20,
-      questionsCompleted: 16,
-    ),
-    UserSEC(
-      avatarUrl: 'https://i.pravatar.cc/150?img=2',
-      name: 'Tran Thi B',
-      progress: 0.5,
-      questionsReceived: 10,
-      questionsCompleted: 5,
-    ),
-    UserSEC(
-      avatarUrl: 'https://i.pravatar.cc/150?img=3',
-      name: 'Le Van C',
-      progress: 0.9,
-      questionsReceived: 15,
-      questionsCompleted: 13,
-    ),
-    UserSEC(
-      avatarUrl: 'https://i.pravatar.cc/150?img=1',
-      name: 'Nguyen Van A',
-      progress: 0.8,
-      questionsReceived: 20,
-      questionsCompleted: 16,
-    ),
-    UserSEC(
-      avatarUrl: 'https://i.pravatar.cc/150?img=2',
-      name: 'Tran Thi B',
-      progress: 0.5,
-      questionsReceived: 10,
-      questionsCompleted: 5,
-    ),
-    UserSEC(
-      avatarUrl: 'https://i.pravatar.cc/150?img=3',
-      name: 'Le Van C',
-      progress: 0.9,
-      questionsReceived: 15,
-      questionsCompleted: 13,
-    ),
-    UserSEC(
-      avatarUrl: 'https://i.pravatar.cc/150?img=1',
-      name: 'Nguyen Van A',
-      progress: 0.8,
-      questionsReceived: 20,
-      questionsCompleted: 16,
-    ),
-    UserSEC(
-      avatarUrl: 'https://i.pravatar.cc/150?img=2',
-      name: 'Tran Thi B',
-      progress: 0.5,
-      questionsReceived: 10,
-      questionsCompleted: 5,
-    ),
-    UserSEC(
-      avatarUrl: 'https://i.pravatar.cc/150?img=3',
-      name: 'Le Van C',
-      progress: 0.9,
-      questionsReceived: 15,
-      questionsCompleted: 13,
-    ),
-  ];
   String? _selectedValue; // Giá trị mặc định của ComboBox
   List<String> _options = [
     'Công nghệ phần mềm',
@@ -458,6 +330,7 @@ class _GroupTeacherState extends State<GroupTeacher> {
                           return Text(
                               'Không tìm thấy giảng viên với email đã nhập');
                         } else if (snapshot.hasData) {
+                          homeGroupController.idUserAdded.value = snapshot.data!.id!;
                           return Row(
                             children: [
                               CircleAvatar(
@@ -514,6 +387,8 @@ class _GroupTeacherState extends State<GroupTeacher> {
               ),
               ElevatedButton(
                 onPressed: () {
+                  print("emailText: ${homeGroupController.emailText.text}");
+                  print("Lĩnh vực: ${_selectedValue}");
                   // Xử lý sự kiện lưu lĩnh vực ở đây
                   if (homeGroupController.emailText.text.trim() != '' &&
                       _selectedValue != null) {

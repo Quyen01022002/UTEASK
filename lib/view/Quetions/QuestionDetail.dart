@@ -369,15 +369,13 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
     }
   }
 
-bool? reply;
+bool? reply  = false;
   CommentEntity? cmtUserToReply;
   Widget _buildInputAllField() {
-    return post!.statusCmtPostEnum == 'False' ? Container(
+    return post!.statusCmtPostEnum == 'ONLYME' ? Container(
       color: Colors.grey[200],
       padding: EdgeInsets.all(8),
       child: Text("Chủ bài viết đã khóa bình luận hoặc lượt bình luân đã bị hạn chế!"),
-
-
     ): Column(
       children: [
         reply == true ?
@@ -447,7 +445,10 @@ bool? reply;
                 onPressed: () async {
                   // Xử lý nút gửi bình luận
                   await _goToListTypeContentComment();
-                  postController.CommentToQuestion(context, listContent, reply!, cmtUserToReply!.comment_id!);
+                  if (reply == false)
+                  postController.CommentToQuestion(context, listContent, false,0);
+                  else
+                    postController.CommentToQuestion(context, listContent, true, cmtUserToReply!.comment_id!);
                   _imageWidgets.clear();
                   listContent.clear();
                   _listController.clear();

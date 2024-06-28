@@ -1,4 +1,6 @@
 import 'package:askute/model/CommentResponse.dart';
+import 'package:askute/model/UserProgress.dart';
+import 'package:askute/service/API_Profile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,6 +13,7 @@ class HomeController extends GetxController {
   RxList<PostModel> listPost = List<PostModel>.empty(growable: true).obs;
   RxList<PostModel> top10Post = List<PostModel>.empty(growable: true).obs;
   RxList<PostModel> top10PostClass = List<PostModel>.empty(growable: true).obs;
+  RxList<PostModel> listPostNotReply = List<PostModel>.empty(growable: true).obs;
   RxList<PostModel> top5Month = List<PostModel>.empty(growable: true).obs;
   RxList<int> countMont = List<int>.empty(growable: true).obs;
   RxList<int> countTK = List<int>.empty(growable: true).obs;
@@ -144,6 +147,34 @@ class HomeController extends GetxController {
         update();
       }
       allPostHotClassStream = Stream.fromIterable([result!]);
+    }
+    finally {
+      isloaded(false);
+    }
+  }
+  Future<UserProgress?> loadMyProgress(BuildContext context) async{
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('id') ?? 0;
+    myId.value = userId;
+    final token = prefs.getString('token') ?? "";
+    return await API_Profile.LoadMyProgress(userId, token);
+  }
+
+  void loadPostNotReply(BuildContext context) async
+  {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      isloaded(true);
+      print("load");
+      final userId = prefs.getInt('id') ?? 0;
+      myId.value = userId;
+      final token = prefs.getString('token') ?? "";
+      List<PostModel>? result = await API_Post.LoadPostNotReply(userId, token);
+      if (result != null) {
+        listPostNotReply.clear();
+        listPostNotReply.addAll(result);
+        update();
+      }
     }
     finally {
       isloaded(false);

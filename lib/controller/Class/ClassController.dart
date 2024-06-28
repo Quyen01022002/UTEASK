@@ -36,7 +36,7 @@ class ClassController extends GetxController{
         listPost: [],
         groups: groups,
         backAvatar: '',
-        avatar: ''
+        avatar: 'https://vinabook.edu.vn/wp-content/uploads/2020/11/hop-nhom-can-su-dung.png'
 
     );
 

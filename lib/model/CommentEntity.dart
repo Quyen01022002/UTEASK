@@ -45,7 +45,7 @@ this.is_reply,
     first_name: data["createBy"]["firstName"] ?? "",
     last_name: data["createBy"]["lastName"] ?? "",
     avatar: data["createBy"]["profilePicture"] ?? "",
-    is_reply: data["isAnwser"] ?? false,
+    is_reply: data["anwser"] ?? false,
     listCommentReply: listReply,
       cmtReply: data["cmtReply"] ?? 0
   );}

@@ -8,6 +8,7 @@ import 'package:askute/model/CommentResponse.dart';
 import 'package:askute/model/InteractionsResponse.dart';
 import 'package:askute/model/PostEnity.dart';
 import 'package:askute/model/PostModel.dart';
+import 'package:askute/model/UserProgress.dart';
 import 'package:askute/service/API_Class.dart';
 import 'package:askute/service/const.dart';
 import 'package:askute/view/teacher/Home/Class/ClassDetailTeacher.dart';
@@ -50,7 +51,7 @@ class API_Post {
 
   static Future<String?> DeliverKhoa(String questions) async {
     final response = await http.post(
-      Uri.parse('http://192.168.1.6:8081/classify'),
+      Uri.parse('http://192.168.1.2:8081/classify'),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -109,7 +110,7 @@ class API_Post {
   }
 
   static Future<PostEntity?> post(PostEntity post, List<String> img,
-      String token, int groupId) async {
+      String token, int groupId, int sector, String sttview, String sttcmt) async {
     final url = Uri.parse('$baseUrl/post/post');
 
     final headers = {
@@ -123,6 +124,9 @@ class API_Post {
       "groups": groupId,
       "contentPost": post.content_post,
       "listAnh": listAnh,
+      "statusViewPostEnum": sttview,
+      "statusCmtPostEnum": sttcmt,
+      "sector": sector,
     };
 
     await http.post(
@@ -343,6 +347,35 @@ class API_Post {
       String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/post/teacher/$userid/top10'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<PostModel>> listPost =
+        ApiReponse<List<PostModel>>.fromJson(
+          utf8Data,
+              (dynamic json) =>
+          List<PostModel>.from(json.map((x) => PostModel.fromJson(x))),
+        );
+        return listPost.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  static Future<List<PostModel>?> LoadPostNotReply(int userid,
+      String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/post/teacher/$userid/notReply/'),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -675,6 +708,63 @@ class API_Post {
           utf8Data,
               (dynamic json) =>
           List<PostModel>.from(json.map((x) => PostModel.fromJson(x))),
+        );
+        return listPost.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  static Future<List<UserProgress>?> LoadTeacherProgress(int groupid, int page,
+      int userid, String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/group/$groupid/loadProgress/$userid'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<UserProgress>> listPost =
+        ApiReponse<List<UserProgress>>.fromJson(
+          utf8Data,
+              (dynamic json) =>
+          List<UserProgress>.from(json.map((x) => UserProgress.fromJson(x))),
+        );
+        return listPost.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+  static Future<List<UserProgress>?> LoadTeacherSectorProgress(int groupid, int sectorid, int page,
+      int userid, String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/group/$groupid/$sectorid/loadProgress/$userid'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<UserProgress>> listPost =
+        ApiReponse<List<UserProgress>>.fromJson(
+          utf8Data,
+              (dynamic json) =>
+          List<UserProgress>.from(json.map((x) => UserProgress.fromJson(x))),
         );
         return listPost.payload;
       } else {

@@ -24,17 +24,25 @@ class ProfileUserScreen extends StatefulWidget {
 }
 
 class _ProfileUserScreenState extends State<ProfileUserScreen> {
-  MyProfileController myProfileController = Get.put(MyProfileController());
+  final MyProfileController myProfileController = Get.put(MyProfileController());
+
   LoginController loginController = Get.put(LoginController());
   final ScrollController _scrollController = ScrollController();
   List<PostModel> _posts = [];
   bool _isLoading = false;
-  @override
+
   void initState() {
     super.initState();
+    myProfileController.pagenumber.value = 0;
+    _posts.clear();
    _fetchPosts();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+        _fetchPosts();
+      }
+    });
 
-      myProfileController.loadMyProfile();
+      //myProfileController.loadMyProfile();
   }
 
   Future<UserProfile?> fetchData() async {
@@ -49,9 +57,10 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
       _isLoading = true;
     });
     List<PostModel>? response;
-    response = myProfileController.listPost;
+    response = await myProfileController.loadMyPost(context);
     if (response!= null && response.length!=0) {
       setState(() {
+        myProfileController.pagenumber.value++;
         _posts.addAll(response!);
         _isLoading = false;
       });
@@ -63,17 +72,22 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
     }
   }
   @override
+  void dispose() {
+    _scrollController.dispose();
+    myProfileController.pagenumber.value = 0;
+    super.dispose();
+  }
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Expanded(
-          child: SingleChildScrollView(
+        body: SingleChildScrollView(
             child: FutureBuilder<UserProfile?>(
               future: fetchData(),
               builder: (context, snapshot) {
                 if (snapshot.data != null && snapshot.connectionState == ConnectionState.waiting) {
                   // Hiển thị màn hình chờ khi dữ liệu đang được tải
-                  return CircularProgressIndicator();
+                  return Center(child: CircularProgressIndicator());
                 }
                 else if (snapshot.hasError) {
                   // Hiển thị lỗi nếu có lỗi xảy ra trong quá trình tải dữ liệu
@@ -154,7 +168,7 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
               },
             ),
           ),
-        ),
+
       ),
     );
   }
@@ -235,12 +249,12 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
                       SizedBox(
                         height: 10,
                       ),
-                      Text(
-                        pro.phone.toString(),
-                        style: TextStyle(
-                          fontSize: 14,
-                        ),
-                      ),
+                      // Text(
+                      //   pro.phone.toString(),
+                      //   style: TextStyle(
+                      //     fontSize: 14,
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
@@ -262,6 +276,12 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
         return Column(
           children: [
             PostScreenNew(post: _posts[index]),
+            Container(
+              margin: EdgeInsets.only(top: 5),
+              height: 10, // Chiều cao của thanh ngang
+              width: 500, // Độ dày của thanh ngang
+              color: Colors.black12,
+            ),
           ],
         );
       },

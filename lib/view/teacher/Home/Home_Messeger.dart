@@ -59,8 +59,10 @@ class _Home_MessegerState extends State<Home_Messeger> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: Text('Messages'),
+          automaticallyImplyLeading: false,
+          title: Text('Tin nhắn'),
           actions: [
             IconButton(
               icon: Icon(Icons.search),
