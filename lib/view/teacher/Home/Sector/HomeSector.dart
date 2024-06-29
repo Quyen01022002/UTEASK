@@ -3,6 +3,7 @@ import 'package:askute/model/PostModel.dart';
 import 'package:askute/model/UserProgress.dart';
 import 'package:askute/view/Home/hot_post_screen.dart';
 import 'package:askute/view/Home/list_post_screen.dart';
+import 'package:askute/view/teacher/Home/Sector/ListPostReport.dart';
 import 'package:askute/view/teacher/Home/Sector/ListSector.dart';
 import 'package:askute/view/teacher/Home/Sector/ListTeacherInGroup.dart';
 import 'package:flutter/cupertino.dart';
@@ -174,103 +175,208 @@ class _HomeSectorState extends State<HomeSector> {
   Widget _buildViewer() {
     return GetBuilder<HomeGroupController>(builder: (controller) {
       return Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        child: Column(
           children: [
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  PageTransition(
-                    type: PageTransitionType.rightToLeft,
-                    child: GroupSector(),
-                  ),
-                );
-              },
-              child: Container(
-                height: 50,
-                width: MediaQuery.of(context).size.width * 0.40,
-                margin: EdgeInsets.symmetric(horizontal: 5.0),
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image:
-                        AssetImage('assets/images/backgroud_profile_page.png'),
-                    // Thay đổi đường dẫn tới ảnh của bạn
-                    fit: BoxFit.cover, // Đảm bảo ảnh sẽ che đầy Container
-                  ),
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        controller.countSec.toString(),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.rightToLeft,
+                        child: GroupSector(),
                       ),
-                      Text(
-                        ' Lĩnh vực',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    );
+                  },
+                  child: Container(
+                    height: 50,
+                    width: MediaQuery.of(context).size.width * 0.40,
+                    margin: EdgeInsets.symmetric(horizontal: 5.0),
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image:
+                            AssetImage('assets/images/backgroud_profile_page.png'),
+                        // Thay đổi đường dẫn tới ảnh của bạn
+                        fit: BoxFit.cover, // Đảm bảo ảnh sẽ che đầy Container
                       ),
-                    ],
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            controller.countSec.toString(),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            ' Lĩnh vực',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.rightToLeft,
+                        child: GroupTeacher(),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    height: 50,
+                    width: MediaQuery.of(context).size.width * 0.40,
+                    margin: EdgeInsets.symmetric(horizontal: 5.0),
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image:
+                            AssetImage('assets/images/backgroud_profile_page.png'),
+                        fit: BoxFit.cover, // Đảm bảo ảnh sẽ che đầy Container
+                      ),
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            controller.countTeac.toString(),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            ' Giảng viên',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  PageTransition(
-                    type: PageTransitionType.rightToLeft,
-                    child: GroupTeacher(),
-                  ),
-                );
-              },
-              child: Container(
-                height: 50,
-                width: MediaQuery.of(context).size.width * 0.40,
-                margin: EdgeInsets.symmetric(horizontal: 5.0),
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image:
+            SizedBox(height: 10,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.rightToLeft,
+                        child: ListPostReportScreen(),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    height: 50,
+                    width: MediaQuery.of(context).size.width * 0.40,
+                    margin: EdgeInsets.symmetric(horizontal: 5.0),
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image:
                         AssetImage('assets/images/backgroud_profile_page.png'),
-                    fit: BoxFit.cover, // Đảm bảo ảnh sẽ che đầy Container
-                  ),
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        controller.countTeac.toString(),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        // Thay đổi đường dẫn tới ảnh của bạn
+                        fit: BoxFit.cover, // Đảm bảo ảnh sẽ che đầy Container
                       ),
-                      Text(
-                        ' Giảng viên',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            controller.countSec.toString(),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            ' Chờ duyệt',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.rightToLeft,
+                        child: GroupTeacher(),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    height: 50,
+                    width: MediaQuery.of(context).size.width * 0.40,
+                    margin: EdgeInsets.symmetric(horizontal: 5.0),
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image:
+                        AssetImage('assets/images/backgroud_profile_page.png'),
+                        fit: BoxFit.cover, // Đảm bảo ảnh sẽ che đầy Container
+                      ),
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Text(
+                          //   controller.countTeac.toString(),
+                          //   style: TextStyle(
+                          //     color: Colors.white,
+                          //     fontSize: 20,
+                          //     fontWeight: FontWeight.bold,
+                          //   ),
+                          // ),
+                          Text(
+                            'Thống kê',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

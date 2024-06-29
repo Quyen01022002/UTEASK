@@ -6,6 +6,7 @@ import 'package:askute/model/GroupMemberRequest.dart';
 import 'package:askute/model/Class.dart';
 import 'package:askute/model/GroupModel.dart';
 import 'package:askute/model/PostModel.dart';
+import 'package:askute/model/ReportPostResponse.dart';
 import 'package:askute/model/SectorResponse.dart';
 import 'package:askute/model/UsersEnity.dart';
 import 'package:askute/service/const.dart';
@@ -601,6 +602,34 @@ class API_Group{
       if (responseData.isNotEmpty){
         String utf8Data = utf8.decode(responseData.runes.toList());
         ApiReponse<List<SectorMembers>> listgroup = ApiReponse<List<SectorMembers>>.fromJson(utf8Data, (dynamic json) => List<SectorMembers>.from(json.map((x) => SectorMembers.fromJson(x))),
+        );
+        return listgroup.payload;
+      }
+      else
+      {
+        return null;
+      }
+    } else {
+      // Handle error scenarios here
+      return null;
+    }
+  }
+
+  static Future<List<ReportPostResponse>?> loadListReportPostInGroup(int groupid, int pagenumber, String token) async {
+    final url = Uri.parse('$baseUrl/report/getInGroup/${groupid}/${pagenumber}');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+    final response = await http.get(
+      url,
+      headers: headers,
+    );
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+      if (responseData.isNotEmpty){
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<ReportPostResponse>> listgroup = ApiReponse<List<ReportPostResponse>>.fromJson(utf8Data, (dynamic json) => List<ReportPostResponse>.from(json.map((x) => ReportPostResponse.fromJson(x))),
         );
         return listgroup.payload;
       }

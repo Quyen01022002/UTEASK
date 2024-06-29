@@ -116,6 +116,23 @@ class PostController extends GetxController {
   reasonText.text = "";
   }
 
+  void CamPost(BuildContext context, int idreport) async{
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    userid.value = adminId;
+    final token = prefs.getString('token') ?? "";
+    await API_Post.CamPost(idreport, token);
+    update();
+  }
+  void DuyetPost(BuildContext context, int idreport) async{
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    userid.value = adminId;
+    final token = prefs.getString('token') ?? "";
+    await API_Post.DuyetPost(idreport, token);
+    update();
+  }
+
 
 
 
