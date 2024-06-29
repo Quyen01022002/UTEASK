@@ -1,9 +1,11 @@
 import 'package:askute/controller/HomeController.dart';
 import 'package:askute/controller/HomeGroupController.dart';
+import 'package:askute/controller/PostController.dart';
 import 'package:askute/model/UserProgress.dart';
 import 'package:askute/view/component/one_comment.dart';
 import 'package:askute/view/user/user_proflie_other.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/widgets.dart';
@@ -22,7 +24,7 @@ class HomePageTeacher extends StatefulWidget {
 
 class _HomePageTeacherState extends State<HomePageTeacher> {
   final HomeController _homeController = Get.put(HomeController());
-
+final PostController _postController = Get.put(PostController());
   @override
   void initState() {
     super.initState();
@@ -30,7 +32,7 @@ class _HomePageTeacherState extends State<HomePageTeacher> {
     _homeController.load10HotPost(context);
   //  _homeController.load10HotPostOnAllClassOfTeacher(context);
     _homeController.loadPostNotReply(context);
-    _homeController.loadCommentClasses(context);
+    _homeController.loadCommentByMe(context);
   }
 
   List<ContentComment> parseContent(String contentString) {
@@ -51,6 +53,7 @@ class _HomePageTeacherState extends State<HomePageTeacher> {
   Future<UserProgress?> fetchData() async {
     // Đây là ví dụ về việc tải dữ liệu từ cơ sở dữ liệu hoặc một API
     // Thay thế phần này bằng hàm thực sự để tải dữ liệu của bạn
+    _homeController.loadCommentByMe(context);
     return _homeController.loadMyProgress(context);
   }
 
@@ -317,27 +320,41 @@ class _HomePageTeacherState extends State<HomePageTeacher> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Container(
-                          width: 100,
-                          height: 100,
-                          child: Text(
-                            cmt.post_id!.contentPost,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                        GestureDetector(
+                          onTap: () async {
+                            final post = await _postController.loadAPost(context, cmt.post_id!.id!);
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: QuestionDetailScreen(post: post!,),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            width: cmt.post_id!.listAnh.length!=0 ? 100 : 300,
+                            height: cmt.post_id!.listAnh.length!=0? 100: 50,
+                            child: Text(
+                              cmt.post_id!.contentPost,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ),
-                        Container(
+                        cmt.post_id!.listAnh.length!=0 ?   Container(
                           width: 100,
                           height: 100,
                           child: Image.network(
-                            cmt.post_id!.listAnh[0],
+                             cmt.post_id!.listAnh[0],
                             width: 100,
                             height: 60,
                             fit: BoxFit.cover,
                           ),
-                        ),
+                        ) : Container(),
                       ],
                     ),
                   ),

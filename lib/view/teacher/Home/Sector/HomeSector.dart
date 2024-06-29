@@ -308,14 +308,14 @@ class _HomeSectorState extends State<HomeSector> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            controller.countSec.toString(),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          // Text(
+                          //   controller.countSec.toString(),
+                          //   style: TextStyle(
+                          //     color: Colors.white,
+                          //     fontSize: 20,
+                          //     fontWeight: FontWeight.bold,
+                          //   ),
+                          // ),
                           Text(
                             ' Chờ duyệt',
                             style: TextStyle(
