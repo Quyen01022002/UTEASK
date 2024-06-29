@@ -97,7 +97,7 @@ class _CreatePostState extends State<CreatePost> {
     List<String> imagePaths = [];
     for (var image in _images) {
       var url =
-          Uri.parse('https://api.cloudinary.com/v1_1/dq21kejpj/image/upload');
+      Uri.parse('https://api.cloudinary.com/v1_1/dq21kejpj/image/upload');
 
       var request = http.MultipartRequest('POST', url);
       request.fields['upload_preset'] = 'q8pgyal8';
@@ -181,16 +181,23 @@ class _CreatePostState extends State<CreatePost> {
                                 child: statecontent == true
                                     ? ElevatedButton(
                                         onPressed: () async {
-                                          setState(() {
-                                            statepost = true;
-                                          });
-
                                           postController.contentpost.value =
                                               postController
                                                   .textControllerContent.text;
                                           await _uploadImages();
-                                          postController.createpostGroup(
+                                          String rules= await postController.createpostGroup(
                                               context, groupid, int.parse(_selectedValue!), _selectedValueView!, _selectedValueCmt!);
+                                          if(rules=="VP")
+                                            {
+                                              _showBottomSheetVP(context, postController, groupid);
+                                            }
+                                          else
+                                            {
+                                              setState(() {
+                                                statepost = true;
+                                              });
+
+                                            }
                                         },
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.blue,
@@ -355,81 +362,81 @@ class _CreatePostState extends State<CreatePost> {
                           ),
                         ),
 
-                        // Column(
-                        //   children: [
-                        //     Container(
-                        //       decoration: BoxDecoration(
-                        //         border: Border(
-                        //           bottom: BorderSide(
-                        //             width: 1,
-                        //             color: Colors
-                        //                 .grey, // You can specify the color here
-                        //           ),
-                        //           top: BorderSide(
-                        //             width: 1,
-                        //             color: Colors
-                        //                 .grey, // You can specify the color here
-                        //           ),
-                        //         ),
-                        //       ),
-                        //       child: GestureDetector(
-                        //         onTap: _getImagesFromCamera,
-                        //         child: Row(
-                        //           children: [
-                        //             Padding(
-                        //               padding: const EdgeInsets.all(12.0),
-                        //               child: Icon(
-                        //                 Icons.image,
-                        //                 color: Colors.green,
-                        //                 size: 30,
-                        //               ),
-                        //             ),
-                        //             Text("Ảnh"),
-                        //           ],
-                        //         ),
-                        //       ),
-                        //     ),
-                        //     Container(
-                        //       decoration: BoxDecoration(
-                        //         border: Border(
-                        //           bottom: BorderSide(
-                        //             width: 1,
-                        //             color: Colors.grey,
-                        //           ),
-                        //         ),
-                        //       ),
-                        //       child: GestureDetector(
-                        //         onTap: _getImagesFromGallery,
-                        //         child: Row(
-                        //           children: [
-                        //             Padding(
-                        //               padding: const EdgeInsets.all(12.0),
-                        //               child: Icon(
-                        //                 Icons.camera_alt_outlined,
-                        //                 size: 30,
-                        //                 color: Colors.blue,
-                        //               ),
-                        //             ),
-                        //             Text("Camera"),
-                        //           ],
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ],
-                        // ),
-                      ],
-                    ),
-                  ),
-                ),
+                  // Column(
+                  //   children: [
+                  //     Container(
+                  //       decoration: BoxDecoration(
+                  //         border: Border(
+                  //           bottom: BorderSide(
+                  //             width: 1,
+                  //             color: Colors
+                  //                 .grey, // You can specify the color here
+                  //           ),
+                  //           top: BorderSide(
+                  //             width: 1,
+                  //             color: Colors
+                  //                 .grey, // You can specify the color here
+                  //           ),
+                  //         ),
+                  //       ),
+                  //       child: GestureDetector(
+                  //         onTap: _getImagesFromCamera,
+                  //         child: Row(
+                  //           children: [
+                  //             Padding(
+                  //               padding: const EdgeInsets.all(12.0),
+                  //               child: Icon(
+                  //                 Icons.image,
+                  //                 color: Colors.green,
+                  //                 size: 30,
+                  //               ),
+                  //             ),
+                  //             Text("Ảnh"),
+                  //           ],
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     Container(
+                  //       decoration: BoxDecoration(
+                  //         border: Border(
+                  //           bottom: BorderSide(
+                  //             width: 1,
+                  //             color: Colors.grey,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //       child: GestureDetector(
+                  //         onTap: _getImagesFromGallery,
+                  //         child: Row(
+                  //           children: [
+                  //             Padding(
+                  //               padding: const EdgeInsets.all(12.0),
+                  //               child: Icon(
+                  //                 Icons.camera_alt_outlined,
+                  //                 size: 30,
+                  //                 color: Colors.blue,
+                  //               ),
+                  //             ),
+                  //             Text("Camera"),
+                  //           ],
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                ],
               ),
             ),
-          )
+          ),
+        ),
+      ),
+    )
         : Center(
-            child: SpinKitFoldingCube(
-              color: Colors.blue,
-              size: 50.0,
-            ),
-          );
+      child: SpinKitFoldingCube(
+        color: Colors.blue,
+        size: 50.0,
+      ),
+    );
   }
   Widget _buildKhoa() {
     print("số trang: $intinipage");
@@ -609,6 +616,52 @@ void _showBottomSheet(BuildContext context, _CreatePostState state) {
               },
             ),
             // Add more items as needed
+          ],
+        ),
+      );
+    },
+  );
+}
+
+void _showBottomSheetVP(BuildContext context,CreatePostController createPostController,int groupId) {
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext builderContext) {
+      return Container(
+        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Text(
+              'Thông báo',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Câu hỏi của bạn đã bị hệ thống tự động phát hiện vi phạm quy tắc cộng đồng. Nếu bạn tin rằng có sai sót, vui lòng tiếp tục để yêu cầu xét duyệt từ quản trị viên.',
+              style: TextStyle(
+                fontSize: 16,
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue,
+              ),
+              child: Text(
+                'Tiếp tục',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
           ],
         ),
       );

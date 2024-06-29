@@ -236,7 +236,7 @@ class _ReportPostState extends State<ReportPost> {
             CircleAvatar(
               radius: 25,
               backgroundImage:
-                  NetworkImage(widget.post.createBy.profilePicture),
+                  NetworkImage(widget.post.createBy!.profilePicture),
               // Hoặc sử dụng NetworkImage nếu avatar từ một URL
               // backgroundImage: NetworkImage('URL_TO_AVATAR'),
             ),
@@ -248,9 +248,9 @@ class _ReportPostState extends State<ReportPost> {
                   width: 10,
                 ),
                 Text(
-                  widget.post.createBy.firstName +
+                  widget.post.createBy!.firstName +
                       ' ' +
-                      widget.post.createBy.lastName,
+                      widget.post.createBy!.lastName,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -283,7 +283,7 @@ class _ReportPostState extends State<ReportPost> {
               fontSize: 18,
             ),
           ),
-          _buildImages(widget.post.listAnh),
+          _buildImages(widget.post.listAnh!),
         ],
       ),
     );

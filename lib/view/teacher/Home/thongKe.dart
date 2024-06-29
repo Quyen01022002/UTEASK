@@ -102,9 +102,9 @@ class _ThongKeState extends State<ThongKe> {
                                     if (index >= 0 && index <
                                         _homeController.top5Month.length) {
                                       return _homeController.top5Month[index]
-                                          .createBy.firstName + ' ' +
+                                          .createBy!.firstName + ' ' +
                                           _homeController.top5Month[index]
-                                              .createBy.lastName;
+                                              .createBy!.lastName;
                                     }
                                     return '';
                                   },

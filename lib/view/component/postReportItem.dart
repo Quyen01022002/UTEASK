@@ -111,7 +111,7 @@ class _PostReportItemState extends State<PostReportItem> {
               },
               child: Container(
                 padding: EdgeInsets.all(8),
-                height: widget.reportPostResponse.postModel.listAnh.length == 0
+                height: widget.reportPostResponse.postModel.listAnh!.length == 0
                     ? 110
                     : 150,
                 width: 300,
@@ -124,7 +124,7 @@ class _PostReportItemState extends State<PostReportItem> {
                   borderRadius:
                       BorderRadius.circular(8.0), // Set the border radius
                 ),
-                child: widget.reportPostResponse.postModel.listAnh.length == 0
+                child: widget.reportPostResponse.postModel.listAnh!.length == 0
                     ? Row(
                         children: [
                           Expanded(
@@ -143,7 +143,7 @@ class _PostReportItemState extends State<PostReportItem> {
                                             radius: 15,
                                             backgroundImage: NetworkImage(widget
                                                 .reportPostResponse
-                                                .postModel.createBy
+                                                .postModel.createBy!
                                                 .profilePicture),
                                             // Hoặc sử dụng NetworkImage nếu avatar từ một URL
                                             // backgroundImage: NetworkImage('URL_TO_AVATAR'),
@@ -157,7 +157,7 @@ class _PostReportItemState extends State<PostReportItem> {
                                             GestureDetector(
                                               onTap: () {},
                                               child: Text(
-                                                "${widget.reportPostResponse.postModel.createBy.firstName} ${widget.reportPostResponse.postModel.createBy.lastName}",
+                                                "${widget.reportPostResponse.postModel.createBy!.firstName} ${widget.reportPostResponse.postModel.createBy!.lastName}",
                                                 style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.bold,
@@ -211,7 +211,7 @@ class _PostReportItemState extends State<PostReportItem> {
                                             radius: 15,
                                             backgroundImage: NetworkImage(widget
                                                 .reportPostResponse
-                                                .postModel.createBy
+                                                .postModel.createBy!
                                                 .profilePicture),
                                             // Hoặc sử dụng NetworkImage nếu avatar từ một URL
                                             // backgroundImage: NetworkImage('URL_TO_AVATAR'),
@@ -225,7 +225,7 @@ class _PostReportItemState extends State<PostReportItem> {
                                             GestureDetector(
                                               onTap: () {},
                                               child: Text(
-                                                "${widget.reportPostResponse.postModel.createBy.firstName} ${widget.reportPostResponse.postModel.createBy.lastName}",
+                                                "${widget.reportPostResponse.postModel.createBy!.firstName} ${widget.reportPostResponse.postModel.createBy!.lastName}",
                                                 style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.bold,
@@ -270,7 +270,7 @@ class _PostReportItemState extends State<PostReportItem> {
                                         // Bo góc ảnh nếu cần
                                         child: Image.network(
                                           widget.reportPostResponse.postModel
-                                              .listAnh[0],
+                                              .listAnh![0],
                                           fit: BoxFit.cover,
                                           width: double.infinity,
                                           // Đảm bảo ảnh chiếm toàn bộ chiều rộng của Stack
@@ -279,7 +279,7 @@ class _PostReportItemState extends State<PostReportItem> {
                                         ),
                                       ),
                                     ),
-                                    widget.reportPostResponse.postModel.listAnh
+                                    widget.reportPostResponse.postModel.listAnh!
                                                 .length ==
                                             1
                                         ? Container()
@@ -296,7 +296,7 @@ class _PostReportItemState extends State<PostReportItem> {
                                               ),
                                               child: Center(
                                                 child: Text(
-                                                  "+${(widget.reportPostResponse.postModel.listAnh.length - 1).toString()}",
+                                                  "+${(widget.reportPostResponse.postModel.listAnh!.length - 1).toString()}",
                                                   style: TextStyle(
                                                     color: Colors.white,
                                                     fontSize: 16,

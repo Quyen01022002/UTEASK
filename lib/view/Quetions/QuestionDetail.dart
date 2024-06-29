@@ -150,7 +150,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
     return SafeArea(
         child: Scaffold(
           appBar: AppBar(
-              title: Text('Bài đăng thảo luận của ${widget.post.createBy.lastName}')),
+              title: Text('Bài đăng thảo luận của ${widget.post.createBy?.lastName}')),
       body: Stack(
         children: [
           Column(
@@ -582,7 +582,7 @@ bool? reply  = false;
               fontSize: 18,
             ),
           ),
-          _buildImages(widget.post.listAnh),
+          _buildImages(widget.post.listAnh!),
         ],
       ),
     );
@@ -672,7 +672,7 @@ bool? reply  = false;
             CircleAvatar(
               radius: 25,
               backgroundImage:
-                  NetworkImage(widget.post.createBy.profilePicture),
+                  NetworkImage(widget.post.createBy!.profilePicture),
               // Hoặc sử dụng NetworkImage nếu avatar từ một URL
               // backgroundImage: NetworkImage('URL_TO_AVATAR'),
             ),
@@ -684,9 +684,9 @@ bool? reply  = false;
                   width: 10,
                 ),
                 Text(
-                  widget.post.createBy.firstName +
+                  widget.post.createBy!.firstName +
                       ' ' +
-                      widget.post.createBy.lastName,
+                      widget.post.createBy!.lastName,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -1030,7 +1030,7 @@ bool? reply  = false;
                           child: Text('Không phải câu trả lời đúng'),
                         ),
                 ]
-              : loginController.idMe.value == widget.post.createBy.id
+              : loginController.idMe.value == widget.post.createBy!.id
                   ? [
                       PopupMenuItem<int>(
                         value: 4,

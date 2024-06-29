@@ -18,19 +18,26 @@ import '../view/dashboard/DashBoard.dart';
 class ChatBoxController extends GetxController {
 
 
-  Future<String?> chatBot(BuildContext context,String questions) async {
+  Future<List<String>?> chatBot(BuildContext context,String questions) async {
 
-    List<BotReponse>? botReponse=await API_ChatBot.questions(questions);
-    print(botReponse);
-    if(botReponse!.isNotEmpty&&botReponse!.length==1)
-      {
-        return botReponse[0].text;
-      }
-    else
-      {
-        return "Xin lỗi tôi không hiểu câu hỏi của bạn";
-      }
+    List<BotResponse>? botReponse = await API_ChatBot.questions(questions);
+    List<String> listReponse = [];
 
+    if (botReponse != null && botReponse.isNotEmpty) {
+      // Collect all text fields from the list of responses
+      listReponse.addAll(botReponse.map((response) => response.text ?? '').toList());
+
+      // If you need to handle the case where only one response is expected
+      if (botReponse.length == 1) {
+        // Returning a list even if there's only one response for consistency
+        return listReponse;
+      } else {
+        // Handle multiple responses as needed
+        return listReponse;
+      }
+    } else {
+      return ["Xin lỗi tôi không hiểu câu hỏi của bạn"];
+    }
 
   }
 

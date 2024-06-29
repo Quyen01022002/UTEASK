@@ -25,10 +25,12 @@ class _BotChatState extends State<BotChat> {
         _messages.add({"sender": "user", "message": _controller.text});
       });
 
-      String? response = await chatBoxController.chatBot(context, _controller.text);
+      List<String>? response = await chatBoxController.chatBot(context, _controller.text);
 
       setState(() {
-        _messages.add({"sender": "bot", "message": response ?? 'No response'});
+        for (var item in response!) {
+          _messages.add({"sender": "bot", "message": item ?? 'No response'});
+        }
         _controller.clear();
       });
     }

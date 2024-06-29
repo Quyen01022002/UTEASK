@@ -1,8 +1,14 @@
 import 'dart:convert';
 
 List<PostModel> postModelListFromJson(String jsonString) {
-  final jsonData = json.decode(jsonString) as List;
-  return jsonData.map((item) => PostModel.fromJson(item)).toList();
+  if (jsonString.isEmpty) {
+    return [];
+  }
+
+  final jsonData = json.decode(jsonString) as List<dynamic>;
+  return jsonData
+      .map((item) => PostModel.fromJson(item as Map<String, dynamic>))
+      .toList();
 }
 
 class PostModel {
@@ -13,8 +19,8 @@ class PostModel {
   final int comment_count;
   final int like_count;
   final bool user_liked;
-  final List<String> listAnh;
-  final CreateBy createBy;
+  final List<String>? listAnh;
+  final CreateBy? createBy;
   final int groupid;
   final String statusViewPostEnum;
   final String statusCmtPostEnum;
@@ -27,36 +33,39 @@ class PostModel {
     required this.comment_count,
     required this.like_count,
     required this.user_liked,
-    required this.createBy,
-    required this.listAnh,
+    this.createBy,
+    this.listAnh,
     required this.groupid,
     required this.statusViewPostEnum,
-    required this.statusCmtPostEnum
+    required this.statusCmtPostEnum,
   });
 
   factory PostModel.fromJson(Map<String, dynamic> json) {
-    final createBy = CreateBy.fromJson(json['createBy']);
-    final listImg = (json['listAnh'] as List)
+    final createBy = json['createBy'] != null
+        ? CreateBy.fromJson(json['createBy'] as Map<String, dynamic>)
+        : null;
+
+    final listImg = json['listAnh'] != null
+        ? (json['listAnh'] as List<dynamic>)
         .map((item) => item['linkPicture'].toString())
-        .toList();
+        .toList()
+        : null;
 
     return PostModel(
-        id: json['id'] ?? 0,
-        contentPost: json['contentPost'] ?? '',
-        timeStamp: json['timeStamp'] ?? '',
-        status: json['status'] == 'true',
-        comment_count: json['comment_count'] ?? 0,
-        like_count: json['like_count'] ?? 0,
-        user_liked: json['user_liked'] ?? false,
-        listAnh: listImg,
-        createBy: createBy,
-    groupid: json['groupid']??0,
-    statusViewPostEnum: json['statusViewPostEnum'],
-      statusCmtPostEnum: json['statusCmtPostEnum']
-
+      id: json['id'] ?? 0,
+      contentPost: json['contentPost'] ?? '',
+      timeStamp: json['timeStamp'] ?? '',
+      status: json['status'] == true,
+      comment_count: json['comment_count'] ?? 0,
+      like_count: json['like_count'] ?? 0,
+      user_liked: json['user_liked'] ?? false,
+      listAnh: listImg,
+      createBy: createBy,
+      groupid: json['groupid'] ?? 0,
+      statusViewPostEnum: json['statusViewPostEnum'] ?? '',
+      statusCmtPostEnum: json['statusCmtPostEnum'] ?? '',
     );
   }
-
 }
 
 class CreateBy {
@@ -76,7 +85,17 @@ class CreateBy {
     required this.profilePicture,
   });
 
-  factory CreateBy.fromJson(Map<String, dynamic> json) {
+  factory CreateBy.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return CreateBy(
+        id: 0,
+        firstName: "",
+        lastName: "",
+        phone: "",
+        email: "",
+        profilePicture: "",
+      );
+    }
     return CreateBy(
       id: json['id'] ?? 0,
       firstName: json['firstName'] ?? "",
@@ -97,7 +116,13 @@ class Picture {
     required this.link_picture,
   });
 
-  factory Picture.fromJson(Map<String, dynamic> json) {
+  factory Picture.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return Picture(
+        id: 0,
+        link_picture: "",
+      );
+    }
     return Picture(
       id: json['id'] ?? 0,
       link_picture: json['linkPicture'] ?? "",

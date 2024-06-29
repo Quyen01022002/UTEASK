@@ -1,16 +1,20 @@
-class BotReponse {
-  final String? recipient_id;
+class BotResponse {
+  final String? recipientId;
   final String? text;
 
-  BotReponse({
-    required this.recipient_id,
+  BotResponse({
+    required this.recipientId,
     required this.text,
   });
 
-  factory BotReponse.fromJson(Map<String, dynamic> json) {
-    return BotReponse(
-      recipient_id: json['recipient_id'] ?? '',
+  factory BotResponse.fromJson(Map<String, dynamic> json) {
+    return BotResponse(
+      recipientId: json['recipient_id'] ?? '',
       text: json['text'] ?? '',
     );
+  }
+
+  static List<BotResponse> listFromJson(List<dynamic> jsonList) {
+    return jsonList.map((json) => BotResponse.fromJson(json)).toList();
   }
 }

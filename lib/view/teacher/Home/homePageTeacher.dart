@@ -134,7 +134,7 @@ final PostController _postController = Get.put(PostController());
                   builder: (BuildContext context) {
                     return Stack(
                       children: [
-                        item.listAnh.length != 0
+                        item.listAnh!.length != 0
                             ? GestureDetector(
                           onTap: (){
                             Navigator.push(
@@ -151,7 +151,7 @@ final PostController _postController = Get.put(PostController());
                                   decoration: BoxDecoration(
                                     image: DecorationImage(
                                       image:
-                                          NetworkImage(item.listAnh.first.toString()),
+                                          NetworkImage(item.listAnh!.first.toString()),
                                       // Thay đổi đường dẫn tới ảnh của bạn
                                       fit: BoxFit
                                           .cover, // Đảm bảo ảnh sẽ che đầy Container
@@ -234,7 +234,7 @@ final PostController _postController = Get.put(PostController());
                                 PageTransition(
                                   type: PageTransitionType.rightToLeft,
                                   child: ProfileUserOther(
-                                    id: item.createBy.id,
+                                    id: item.createBy!.id,
                                   ),
                                 ),
                               );
@@ -246,13 +246,13 @@ final PostController _postController = Get.put(PostController());
                                 children: [
                                   CircleAvatar(
                                     backgroundImage: NetworkImage(
-                                        item.createBy.profilePicture.toString()),
+                                        item.createBy!.profilePicture.toString()),
                                     radius: 35.0, // Bán kính của avatar
                                   ),
                                   SizedBox(width: 10.0),
                                   Expanded(
                                     child: Text(
-                                      "${item.createBy.firstName} ${item.createBy.lastName}",
+                                      "${item.createBy!.firstName} ${item.createBy!.lastName}",
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold,

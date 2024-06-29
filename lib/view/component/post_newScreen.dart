@@ -90,7 +90,7 @@ class _PostScreenState extends State<PostScreenNew> {
                       context,
                       PageTransition(
                         type: PageTransitionType.rightToLeft,
-                        child: ProfileUserOther(id: postHT!.createBy.id,),
+                        child: ProfileUserOther(id: postHT!.createBy?.id,),
                       ),
                     );
                   },
@@ -98,13 +98,13 @@ class _PostScreenState extends State<PostScreenNew> {
                     children: [
                       GestureDetector(
                         onTap: (){
-                          if (loginController.idMe.value != postHT!.createBy.id){
-                            myProfileController.ortherId.value = postHT!.createBy.id;
+                          if (loginController.idMe.value != postHT!.createBy?.id){
+                            myProfileController.ortherId.value = postHT!.createBy!.id;
                             Navigator.push(
                               context,
                               PageTransition(
                                 type: PageTransitionType.rightToLeft,
-                                child: ProfileUserOther(id: postHT!.createBy.id,),
+                                child: ProfileUserOther(id: postHT!.createBy!.id,),
                               ),
                             );}
                           else
@@ -112,14 +112,14 @@ class _PostScreenState extends State<PostScreenNew> {
                               context,
                               PageTransition(
                                 type: PageTransitionType.rightToLeft,
-                                child: ProfileUserScreen(id: postHT!.createBy.id,),
+                                child: ProfileUserScreen(id: postHT!.createBy!.id,),
                               ),
                             );
                         },
                         child: CircleAvatar(
                           radius: 20,
                           backgroundImage:
-                          NetworkImage(postHT!.createBy.profilePicture),
+                          NetworkImage(postHT!.createBy!.profilePicture),
                           // Hoặc sử dụng NetworkImage nếu avatar từ một URL
                           // backgroundImage: NetworkImage('URL_TO_AVATAR'),
                         ),
@@ -133,7 +133,7 @@ class _PostScreenState extends State<PostScreenNew> {
 
                             },
                             child: Text(
-                              postHT!.createBy.firstName+" " + postHT!.createBy.lastName,
+                              postHT!.createBy!.firstName+" " + postHT!.createBy!.lastName,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -212,7 +212,7 @@ class _PostScreenState extends State<PostScreenNew> {
                     ),
 
                     SizedBox(height: 10),
-                    _buildImages(postHT!.listAnh),
+                    _buildImages(postHT!.listAnh!),
 
                     SizedBox(height: 10),
 
