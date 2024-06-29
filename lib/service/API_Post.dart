@@ -659,6 +659,37 @@ class API_Post {
     }
   }
 
+  static Future<List<CommentResponse>?> getAllCommentByMe(int userid,
+      String token, int pagenumber) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/comments/group/$userid/getAllComment/$pagenumber'),
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<CommentResponse>> listPost =
+        ApiReponse<List<CommentResponse>>.fromJson(
+          utf8Data,
+              (dynamic json) =>
+          List<CommentResponse>.from(
+              json.map((x) => CommentResponse.fromJson(x))),
+        );
+        return listPost.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
   static Future<List<InteractionResponse>?> getAllMyLike(int userid,
       String token) async {
     final response = await http.get(

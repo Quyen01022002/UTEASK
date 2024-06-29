@@ -241,4 +241,23 @@ class HomeController extends GetxController {
       isloaded(false);
     }
   }
+  Future<void> loadCommentByMe(BuildContext context) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      isloaded(true);
+      final userId = prefs.getInt('id') ?? 0;
+      myId.value = userId;
+      final token = prefs.getString('token') ?? "";
+      List<CommentResponse>? result = await API_Post.getAllCommentByMe(userId, token, pagenumberCmt.value);
+      if (result != null) {
+        listComment.clear();
+        listComment.addAll(result);
+        update();
+      }
+      //allPostHotClassStream = Stream.fromIterable([result!]);
+    }
+    finally {
+      isloaded(false);
+    }
+  }
 }
