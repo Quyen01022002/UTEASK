@@ -2,6 +2,7 @@ import 'package:askute/model/GroupMemberRequest.dart';
 import 'package:askute/model/Class.dart';
 import 'package:askute/model/GroupModel.dart';
 import 'package:askute/model/PostModel.dart';
+import 'package:askute/model/ReportPostResponse.dart';
 import 'package:askute/model/UserProfile.dart';
 import 'package:askute/model/UserProgress.dart';
 import 'package:askute/service/API_Post.dart';
@@ -548,6 +549,21 @@ update();
       final adminId = prefs.getInt('id') ?? 0;
       final token = prefs.getString('token') ?? "";
       final rs = await API_Post.LoadTeacherProgress(group_id.value, 0, adminId, token);
+      return rs;
+
+    }
+    finally {
+
+    }
+  }
+  RxInt pageReport = 0.obs;
+  Future<List<ReportPostResponse>?> loadListReportPost(BuildContext context) async
+  {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final adminId = prefs.getInt('id') ?? 0;
+      final token = prefs.getString('token') ?? "";
+      final rs = await API_Group.loadListReportPostInGroup(group_id.value, pageReport.value, token);
       return rs;
 
     }

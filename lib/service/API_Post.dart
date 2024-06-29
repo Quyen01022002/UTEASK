@@ -8,6 +8,7 @@ import 'package:askute/model/CommentResponse.dart';
 import 'package:askute/model/InteractionsResponse.dart';
 import 'package:askute/model/PostEnity.dart';
 import 'package:askute/model/PostModel.dart';
+import 'package:askute/model/ReportPostResponse.dart';
 import 'package:askute/model/UserProgress.dart';
 import 'package:askute/service/API_Class.dart';
 import 'package:askute/service/const.dart';
@@ -882,5 +883,64 @@ class API_Post {
       return null;
     }
 
+  }
+
+  static Future<ReportPostResponse?> DuyetPost(int idreport, String token) async {
+    final url = Uri.parse('$baseUrl/report/${idreport}/duyet');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+    final response = await http.put(
+        url,
+        headers: headers
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<ReportPostResponse> group = ApiReponse<ReportPostResponse>.fromJson(
+          utf8Data,
+              (dynamic json) => ReportPostResponse.fromJson(json),
+        );
+        return group.payload;
+      }
+      else
+        return null;
+    } else {
+      // Handle error scenarios here
+      return null;
+    }
+  }
+  static Future<ReportPostResponse?> CamPost(int idreport, String token) async {
+    final url = Uri.parse('$baseUrl/report/${idreport}/cam');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+    final response = await http.put(
+        url,
+        headers: headers
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<ReportPostResponse> group = ApiReponse<ReportPostResponse>.fromJson(
+          utf8Data,
+              (dynamic json) => ReportPostResponse.fromJson(json),
+        );
+        return group.payload;
+      }
+      else
+        return null;
+    } else {
+      // Handle error scenarios here
+      return null;
+    }
   }
 }
