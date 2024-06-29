@@ -79,7 +79,7 @@ class _SavedPostItemState extends State<SavedPostItem> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Image.network(
-                  widget.post.listAnh.first.toString(),
+                  widget.post.listAnh!.first.toString(),
                   width: 80,
                   height: 80,
                   fit: BoxFit.cover,
@@ -108,7 +108,7 @@ class _SavedPostItemState extends State<SavedPostItem> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Tác giả: ${widget.post.createBy.firstName} ${widget.post.createBy.lastName}',
+                  'Tác giả: ${widget.post.createBy!.firstName} ${widget.post.createBy!.lastName}',
                   style: TextStyle(
                     fontStyle: FontStyle.italic,
                   ),

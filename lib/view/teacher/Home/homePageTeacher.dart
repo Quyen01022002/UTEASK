@@ -131,7 +131,7 @@ class _HomePageTeacherState extends State<HomePageTeacher> {
                   builder: (BuildContext context) {
                     return Stack(
                       children: [
-                        item.listAnh.length != 0
+                        item.listAnh!.length != 0
                             ? GestureDetector(
                           onTap: (){
                             Navigator.push(
@@ -148,7 +148,7 @@ class _HomePageTeacherState extends State<HomePageTeacher> {
                                   decoration: BoxDecoration(
                                     image: DecorationImage(
                                       image:
-                                          NetworkImage(item.listAnh.first.toString()),
+                                          NetworkImage(item.listAnh!.first.toString()),
                                       // Thay đổi đường dẫn tới ảnh của bạn
                                       fit: BoxFit
                                           .cover, // Đảm bảo ảnh sẽ che đầy Container
@@ -231,7 +231,7 @@ class _HomePageTeacherState extends State<HomePageTeacher> {
                                 PageTransition(
                                   type: PageTransitionType.rightToLeft,
                                   child: ProfileUserOther(
-                                    id: item.createBy.id,
+                                    id: item.createBy!.id,
                                   ),
                                 ),
                               );
@@ -243,13 +243,13 @@ class _HomePageTeacherState extends State<HomePageTeacher> {
                                 children: [
                                   CircleAvatar(
                                     backgroundImage: NetworkImage(
-                                        item.createBy.profilePicture.toString()),
+                                        item.createBy!.profilePicture.toString()),
                                     radius: 35.0, // Bán kính của avatar
                                   ),
                                   SizedBox(width: 10.0),
                                   Expanded(
                                     child: Text(
-                                      "${item.createBy.firstName} ${item.createBy.lastName}",
+                                      "${item.createBy!.firstName} ${item.createBy!.lastName}",
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold,

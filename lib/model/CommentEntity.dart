@@ -47,7 +47,7 @@ this.is_reply,
     avatar: data["createBy"]["profilePicture"] ?? "",
     is_reply: data["anwser"] ?? false,
     listCommentReply: listReply,
-      cmtReply: data["cmtReply"] ?? 0
+        cmtReply: data["cmtReply"] ?? 0
   );}
 
 }

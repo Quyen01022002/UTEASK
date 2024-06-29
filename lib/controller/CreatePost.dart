@@ -1,6 +1,7 @@
 import 'package:askute/controller/HomeGroupController.dart';
 import 'package:askute/model/Class.dart';
 import 'package:askute/model/PostEnity.dart';
+import 'package:askute/model/PostModel.dart';
 import 'package:askute/model/SectorResponse.dart';
 import 'package:askute/service/API_Class.dart';
 import 'package:askute/service/API_Group.dart';
@@ -31,9 +32,9 @@ class CreatePostController extends GetxController {
         user_id: userId,
         content_post: textControllerContent.text,
         timestamp: DateTime.now(),
-        status: "");
+        status: true);
     final token = prefs.getString('token') ?? "";
-    await API_Post.post(userEnity, imagePaths.value, token, 0, 1, statusView,statusCmt);
+    await API_Post.post(userEnity, imagePaths.value, token, 0, 1, statusView,statusCmt,true);
     await Future.delayed(Duration(milliseconds: 100), () {
       Navigator.pushReplacement(
         context,
@@ -43,8 +44,7 @@ class CreatePostController extends GetxController {
     Navigator.of(context).pop();
   }
 
-  Future<String> createpostGroup(BuildContext context, int id) async {
-  void createpostGroup(BuildContext context, int id, int sector, String sttview, String sttcmt) async {
+  Future<String> createpostGroup(BuildContext context, int id, int sector, String sttview, String sttcmt) async {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('id') ?? 0;
 
@@ -52,7 +52,7 @@ class CreatePostController extends GetxController {
         user_id: userId,
         content_post: textControllerContent.text,
         timestamp: DateTime.now(),
-        status: "",);
+        status: true,);
     final token = prefs.getString('token') ?? "";
     String? rules=await API_Post.CommunicateRules(textControllerContent.text);
     print(rules);
@@ -61,21 +61,21 @@ class CreatePostController extends GetxController {
         final adminId = prefs.getInt('id') ?? 0;
         final token = prefs.getString('token') ?? "";
         String reason2 = "Vi phạm quy tắc cộng đồng";
-        PostEntity? postEntity = await API_Post.post(userEnity, imagePaths.value, token, id);
-
+        PostEntity? postEntity =await API_Post.post(userEnity, imagePaths.value, token, id, sector, sttview, sttcmt,false);
         if (postEntity != null) {
           await API_Post.reportPost(adminId, postEntity.post_id, reason2, token);
         } else {
-          // Handle the case where postEntity is null
           print('Failed to create post');
         }
-
         return "VP";
       }
     else
       {
-        await API_Post.post(userEnity, imagePaths.value, token, id);
-        Future.delayed(Duration(milliseconds: 100), () {
+        await API_Post.post(userEnity, imagePaths.value, token, id, sector, sttview, sttcmt,true);
+        update();
+        Navigator.of(context).pop();
+
+        await Future.delayed(Duration(milliseconds: 100), () {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => DashBoardVer2()),
@@ -84,17 +84,6 @@ class CreatePostController extends GetxController {
         print("HL");
         return "HL";
       }
-
-    await API_Post.post(userEnity, imagePaths.value, token, id, sector, sttview, sttcmt);
-    update();
-    Navigator.of(context).pop();
-
-    await Future.delayed(Duration(milliseconds: 100), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => DashBoardVer2()),
-      );
-    });
   }
 
   void DeliverKhoa(BuildContext context, String content) async {
@@ -128,7 +117,7 @@ class CreatePostController extends GetxController {
         user_id: userId,
         content_post: textControllerContent.text,
         timestamp: DateTime.now(),
-        status: "");
+        status: true);
     final token = prefs.getString('token') ?? "";
     await API_Post.postClass(userEnity, imagePaths.value, token, id, context);
   }
@@ -141,7 +130,7 @@ class CreatePostController extends GetxController {
         user_id: userId,
         content_post: textControllerContent.text,
         timestamp: DateTime.now(),
-        status: "");
+        status: true);
     final token = prefs.getString('token') ?? "";
     await API_Post.upatePost(userEnity, imagePaths.value, token);
 

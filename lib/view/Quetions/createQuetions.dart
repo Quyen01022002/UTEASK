@@ -181,16 +181,23 @@ class _CreatePostState extends State<CreatePost> {
                                 child: statecontent == true
                                     ? ElevatedButton(
                                         onPressed: () async {
-                                          setState(() {
-                                            statepost = true;
-                                          });
-
                                           postController.contentpost.value =
                                               postController
                                                   .textControllerContent.text;
                                           await _uploadImages();
-                                          postController.createpostGroup(
+                                          String rules= await postController.createpostGroup(
                                               context, groupid, int.parse(_selectedValue!), _selectedValueView!, _selectedValueCmt!);
+                                          if(rules=="VP")
+                                            {
+                                              _showBottomSheetVP(context, postController, groupid);
+                                            }
+                                          else
+                                            {
+                                              setState(() {
+                                                statepost = true;
+                                              });
+
+                                            }
                                         },
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.blue,

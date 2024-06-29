@@ -51,7 +51,7 @@ class API_Post {
 
   static Future<String?> DeliverKhoa(String questions) async {
     final response = await http.post(
-      Uri.parse('http://192.168.1.2:8081/classify'),
+      Uri.parse('http://192.168.60.92:8081/classify'),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -82,7 +82,7 @@ class API_Post {
   }
   static Future<String?> CommunicateRules(String questions) async {
     final response = await http.post(
-      Uri.parse('http://192.168.230.92:5000/predict'),
+      Uri.parse('http://192.168.60.92:5000/predict'),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -140,32 +140,60 @@ class API_Post {
     }
   }
 
-  static Future<PostEntity?> post(PostEntity post, List<String> img,
-      String token, int groupId, int sector, String sttview, String sttcmt) async {
+  static Future<PostEntity?> post(
+      PostEntity post,
+      List<String> img,
+      String token,
+      int groupId,
+      int sector,
+      String sttview,
+      String sttcmt,
+      bool status
+      ) async {
     final url = Uri.parse('$baseUrl/post/post');
 
     final headers = {
       "Content-Type": "application/json",
       'Authorization': 'Bearer $token',
     };
-    List<Map<String, String>> listAnh =
-    img.map((imageUrl) => {'linkPicture': imageUrl}).toList();
+
+    List<Map<String, String>> listAnh = img.map((imageUrl) => {'linkPicture': imageUrl}).toList();
 
     final Map<String, dynamic> data = {
       "groups": groupId,
       "contentPost": post.content_post,
       "listAnh": listAnh,
+      "status": status,
       "statusViewPostEnum": sttview,
       "statusCmtPostEnum": sttcmt,
       "sector": sector,
     };
 
-    await http.post(
+    final response = await http.post(
       url,
       headers: headers,
       body: jsonEncode(data),
     );
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+
+      if (responseData.isNotEmpty) {
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<PostEntity> listPost =
+        ApiReponse<PostEntity>.fromJson(
+          utf8Data,
+              (dynamic json) =>
+              PostEntity.fromJson(json),
+        );
+        return listPost.payload;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
   }
+
 
   static Future<PostEntity?> postClass(PostEntity post, List<String> img,
       String token, int groupId, BuildContext context) async {
