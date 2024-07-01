@@ -149,8 +149,9 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-          appBar: AppBar(
-              title: Text('Bài đăng thảo luận của ${widget.post.createBy?.lastName}')),
+      appBar: AppBar(
+          title:
+              Text('Bài đăng thảo luận của ${widget.post.createBy?.lastName}')),
       body: Stack(
         children: [
           Column(
@@ -158,139 +159,131 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
             children: [
               Expanded(
                 child: SingleChildScrollView(
-                      child: StreamBuilder<PostModel>(
-                          stream: postCurrent,
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  _buildOwnerUser(),
-                                  _buildContent(),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  Container(
-                                    alignment: Alignment.center,
-                                    child: Container(
-                                      margin: EdgeInsets.only(top: 5),
-                                      height: 0.5,
-                                      // Chiều cao của thanh ngang
-                                      width: 330,
-                                      // Độ dày của thanh ngang
-                                      color: Color(0xC0C0C0C0),
-                                    ),
-                                  ),
-                                  Container(
-                                    margin:
-                                        EdgeInsets.only(top: 10, bottom: 10),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
+                  child: StreamBuilder<PostModel>(
+                      stream: postCurrent,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              _buildOwnerUser(),
+                              _buildContent(),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Container(
+                                alignment: Alignment.center,
+                                child: Container(
+                                  margin: EdgeInsets.only(top: 5),
+                                  height: 0.5,
+                                  // Chiều cao của thanh ngang
+                                  width: 330,
+                                  // Độ dày của thanh ngang
+                                  color: Color(0xC0C0C0C0),
+                                ),
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(top: 10, bottom: 10),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Column(
                                       children: [
-                                        Column(
-                                          children: [
-                                            GestureDetector(
-                                              onTap: () {
-                                                postController.Like(
-                                                    postController
-                                                        .postid.value);
-                                                print("đã bấm nút like");
-                                              },
-                                              child: Container(
-                                                padding: EdgeInsets.symmetric(
-                                                    vertical: 8,
-                                                    horizontal: 12),
-                                                child: Row(children: [
-                                                  Icon(
-                                                    snapshot.data!.user_liked
-                                                        ? Icons.thumb_up
-                                                        : Icons
-                                                            .thumb_up_outlined,
-                                                    size: 20,
-                                                    color: snapshot
-                                                            .data!.user_liked
-                                                        ? Colors.blue
-                                                        : Colors.black,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 2,
-                                                  ),
-                                                  Text(
-                                                    snapshot.data!.like_count
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                ]),
+                                        GestureDetector(
+                                          onTap: () {
+                                            postController.Like(
+                                                postController.postid.value);
+                                            print("đã bấm nút like");
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 8, horizontal: 12),
+                                            child: Row(children: [
+                                              Icon(
+                                                snapshot.data!.user_liked
+                                                    ? Icons.thumb_up
+                                                    : Icons.thumb_up_outlined,
+                                                size: 20,
+                                                color: snapshot.data!.user_liked
+                                                    ? Colors.blue
+                                                    : Colors.black,
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                        Column(
-                                          children: [
-                                            GestureDetector(
-                                              onTap: () {},
-                                              child: Container(
-                                                padding: EdgeInsets.symmetric(
-                                                    vertical: 8,
-                                                    horizontal: 12),
-                                                child: GestureDetector(
-                                                  onTap: () {},
-                                                  child: Row(children: [
-                                                    Icon(
-                                                        false
-                                                            ? Icons
-                                                                .bookmark_outline
-                                                            : Icons
-                                                                .bookmark_border_outlined,
-                                                        size: 20,
-                                                        color: false
-                                                            ? Colors.blue
-                                                            : Colors.black),
-                                                    SizedBox(
-                                                      width: 2,
-                                                    ),
-                                                    Text(
-                                                      0.toString(),
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    ),
-                                                  ]),
-                                                ),
+                                              SizedBox(
+                                                width: 2,
                                               ),
-                                            ),
-                                          ],
+                                              Text(
+                                                snapshot.data!.like_count
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ]),
+                                          ),
                                         ),
                                       ],
                                     ),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.only(top: 20),
-                                    height: 5, // Chiều cao của thanh ngang
-                                    width: 400, // Độ dày của thanh ngang
-                                    color: Color(0xC0C0C0C0),
-                                  ),
-                                  // SingleChildScrollView(
-                                  //   child: Container(
-                                  //     height: double.maxFinite,
-                                  //     child: Column(
-                                  //       children: [
-                                  //         _buildComment(0),
-                                  //       ],
-                                  //     ),
-                                  //   ),
-                                  // )
-                                  _buildComment(0),
-                                ],
-                              );
-                            } else {
-                              return Container();
-                            }
-                          }),
-                    
+                                    Column(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {},
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 8, horizontal: 12),
+                                            child: GestureDetector(
+                                              onTap: () {},
+                                              child: Row(children: [
+                                                Icon(
+                                                    false
+                                                        ? Icons.bookmark_outline
+                                                        : Icons
+                                                            .bookmark_border_outlined,
+                                                    size: 20,
+                                                    color: false
+                                                        ? Colors.blue
+                                                        : Colors.black),
+                                                SizedBox(
+                                                  width: 2,
+                                                ),
+                                                Text(
+                                                  0.toString(),
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ]),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(top: 20),
+                                height: 5, // Chiều cao của thanh ngang
+                                width: 400, // Độ dày của thanh ngang
+                                color: Color(0xC0C0C0C0),
+                              ),
+                              // SingleChildScrollView(
+                              //   child: Container(
+                              //     height: double.maxFinite,
+                              //     child: Column(
+                              //       children: [
+                              //         _buildComment(0),
+                              //       ],
+                              //     ),
+                              //   ),
+                              // )
+                              _buildComment(0),
+                            ],
+                          );
+                        } else {
+                          return Container();
+                        }
+                      }),
                 ),
               ),
               SizedBox(
@@ -369,105 +362,115 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
     }
   }
 
-bool? reply  = false;
+  bool? reply = false;
   CommentEntity? cmtUserToReply;
+
   Widget _buildInputAllField() {
-    return post!.statusCmtPostEnum == 'ONLYME' ? Container(
-      color: Colors.grey[200],
-      padding: EdgeInsets.all(8),
-      child: Text("Chủ bài viết đã khóa bình luận hoặc lượt bình luân đã bị hạn chế!"),
-    ): Column(
-      children: [
-        reply == true ?
-            Container(
-              color: Colors.grey[200],
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Row(
-                    //crossAxisAlignment:  CrossAxisAlignment.end,
-                    children: [
-                      Text("Trả lời: "),
-                      _buildUserComment(cmtUserToReply!),
-                    ],
-                  ),
-
-                  GestureDetector(
-                    onTap: (){
-                      reply = false;
-                      _buildInputAllField();
-                    },
-                    child: Icon(Icons.close),
-                  )
-                ],
-              ),
-
-            ) : Container(),
-        Container(
-          color: Colors.grey[200],
-          padding: EdgeInsets.all(8),
-          child: Row(
+    return post!.statusCmtPostEnum == 'NOTUSER'
+        ? Container(
+            color: Colors.grey[200],
+            padding: EdgeInsets.all(8),
+            child: Center(
+                child: Text(
+              "Chủ bài viết đã khóa bình luận\nhoặc lượt bình luận đã bị hạn chế!",
+              textAlign: TextAlign.center,
+              style: TextStyle(),
+            )),
+          )
+        : Column(
             children: [
-              GestureDetector(
-                onTap: _pickImage,
-                child: Icon(Icons.image),
-              ),
-              SizedBox(width: 8),
-              Expanded(
-                child: Container(
-                  constraints: BoxConstraints(maxHeight: 200),
-                  padding: EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // TextField(
-                        //   controller: _textFirst,
-                        //   decoration: InputDecoration(
-                        //     hintText: 'Nhập nội dung của bạn...',
-                        //     border: InputBorder.none,
-                        //   ),
-                        // ),
-                        // SizedBox(height: 8),
-                        // ..._imageWidgets,
-                        ..._imageWidgets,
-                      ],
+              reply == true
+                  ? Container(
+                      color: Colors.grey[200],
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Row(
+                            //crossAxisAlignment:  CrossAxisAlignment.end,
+                            children: [
+                              Text("Trả lời: "),
+                              _buildUserComment(cmtUserToReply!),
+                            ],
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              reply = false;
+                              _buildInputAllField();
+                            },
+                            child: Icon(Icons.close),
+                          )
+                        ],
+                      ),
+                    )
+                  : Container(),
+              Container(
+                color: Colors.grey[200],
+                padding: EdgeInsets.all(8),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: _pickImage,
+                      child: Icon(Icons.image),
                     ),
-                  ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Container(
+                        constraints: BoxConstraints(maxHeight: 200),
+                        padding: EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          border: Border.all(),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              // TextField(
+                              //   controller: _textFirst,
+                              //   decoration: InputDecoration(
+                              //     hintText: 'Nhập nội dung của bạn...',
+                              //     border: InputBorder.none,
+                              //   ),
+                              // ),
+                              // SizedBox(height: 8),
+                              // ..._imageWidgets,
+                              ..._imageWidgets,
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () async {
+                        // Xử lý nút gửi bình luận
+                        await _goToListTypeContentComment();
+                        if (reply == false)
+                          postController.CommentToQuestion(
+                              context, listContent, false, 0);
+                        else
+                          postController.CommentToQuestion(context, listContent,
+                              true, cmtUserToReply!.comment_id!);
+                        _imageWidgets.clear();
+                        listContent.clear();
+                        _listController.clear();
+                        TextEditingController _textFirsts =
+                            TextEditingController();
+                        _listController.add(_textFirsts);
+                        _imageWidgets.add(_buildFirstTextFieldWidget());
+                        setState(() {
+                          reply = false;
+                          _buildInputAllField();
+                          _imageWidgets;
+                        });
+                      },
+                      child: Text('Đăng'),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: () async {
-                  // Xử lý nút gửi bình luận
-                  await _goToListTypeContentComment();
-                  if (reply == false)
-                  postController.CommentToQuestion(context, listContent, false,0);
-                  else
-                    postController.CommentToQuestion(context, listContent, true, cmtUserToReply!.comment_id!);
-                  _imageWidgets.clear();
-                  listContent.clear();
-                  _listController.clear();
-                  TextEditingController _textFirsts = TextEditingController();
-                  _listController.add(_textFirsts);
-                  _imageWidgets.add(_buildFirstTextFieldWidget());
-                  setState(() {
-                    reply = false;
-                    _buildInputAllField();
-                    _imageWidgets;
-                  });
-                },
-                child: Text('Đăng'),
-              ),
             ],
-          ),
-        ),
-      ],
-    );
+          );
   }
 
   final textController = TextEditingController();
@@ -709,38 +712,38 @@ bool? reply  = false;
 
   Widget _buildComment(int round0) {
     return StreamBuilder<List<CommentEntity>>(
-          stream: listCommentStream,
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.data != null) {
-              return ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  shrinkWrap: true, // Đảm bảo ListView.builder chỉ chiếm không gian cần thiết
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    if (snapshot.data![index].cmtReply != 0 && round0 == 0)
-                      return Container();
-                    List<ContentComment> content =
-                        parseContent(snapshot.data![index].content_cmt!);
-                    List<Widget> contentWg = [];
-                    for (int i = 0; i < content.length; i++) {
-                      if (content[i].type == 'TEXT') {
-                        contentWg.add(_buiText(content[i].content));
-                      } else if (content[i].type == 'IMAGE') {
-                        contentWg.add(_buiImage(content[i].content));
-                      }
+        stream: listCommentStream,
+        builder: (context, snapshot) {
+          if (snapshot.hasData && snapshot.data != null) {
+            return ListView.builder(
+                itemCount: snapshot.data!.length,
+                shrinkWrap: true,
+                // Đảm bảo ListView.builder chỉ chiếm không gian cần thiết
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  if (snapshot.data![index].cmtReply != 0 && round0 == 0)
+                    return Container();
+                  List<ContentComment> content =
+                      parseContent(snapshot.data![index].content_cmt!);
+                  List<Widget> contentWg = [];
+                  for (int i = 0; i < content.length; i++) {
+                    if (content[i].type == 'TEXT') {
+                      contentWg.add(_buiText(content[i].content));
+                    } else if (content[i].type == 'IMAGE') {
+                      contentWg.add(_buiImage(content[i].content));
                     }
-                    if (snapshot.data![index].is_reply == false)
-                      return _buildOneComment(
-                          snapshot.data![index], contentWg, round0);
-                    else
-                      return _buildOneCommentReply(
-                          snapshot.data![index], contentWg, round0);
-                  });
-            } else {
-              return CircularProgressIndicator();
-            }
+                  }
+                  if (snapshot.data![index].is_reply == false)
+                    return _buildOneComment(
+                        snapshot.data![index], contentWg, round0);
+                  else
+                    return _buildOneCommentReply(
+                        snapshot.data![index], contentWg, round0);
+                });
+          } else {
+            return CircularProgressIndicator();
           }
-    );
+        });
   }
 
   Widget _buildComment2(int round0) {
@@ -754,7 +757,7 @@ bool? reply  = false;
                   if (snapshot.data![index].cmtReply != 0 && round0 == 0)
                     return Container();
                   List<ContentComment> content =
-                  parseContent(snapshot.data![index].content_cmt!);
+                      parseContent(snapshot.data![index].content_cmt!);
                   List<Widget> contentWg = [];
                   for (int i = 0; i < content.length; i++) {
                     if (content[i].type == 'TEXT') {

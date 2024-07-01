@@ -18,6 +18,9 @@ class LoginController extends GetxController
 
   RxString role = 'USER'.obs ;
   RxInt idMe = 0.obs;
+  RxString firstname = ''.obs;
+  RxString lastname = ''.obs;
+  RxString avatar = ''.obs;
   RxBool checkHeadDepartment = false.obs;
   final pass = RxString('');
   final email = RxString('');
@@ -122,6 +125,7 @@ class LoginController extends GetxController
     prefs.setString("role", user.roleEnum!.toString());
     role.value = user.roleEnum.toString();
     idMe.value = user.id!;
+    avatar.value = user.avatar!;
 
   }
   static Future<void> Logout() async {

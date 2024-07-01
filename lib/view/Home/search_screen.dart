@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:askute/controller/HomeGroupController.dart';
+import 'package:askute/controller/LoginController.dart';
 import 'package:askute/controller/SearchController.dart';
 import 'package:askute/model/GroupModel.dart';
 import 'package:askute/model/PostModel.dart';
@@ -22,12 +23,15 @@ class SearchResultScreen extends StatefulWidget {
   State<SearchResultScreen> createState() => _SearchResultScreenState();
 }
 
-class _SearchResultScreenState extends State<SearchResultScreen> with SingleTickerProviderStateMixin {
-
-  final SearchPostController _searchPostController = Get.put(SearchPostController());
-  final HomeGroupController _homeGroupController = Get.put(HomeGroupController());
+class _SearchResultScreenState extends State<SearchResultScreen>
+    with SingleTickerProviderStateMixin {
+  final SearchPostController _searchPostController =
+      Get.put(SearchPostController());
+  final HomeGroupController _homeGroupController =
+      Get.put(HomeGroupController());
+  final LoginController _loginController = Get.put(LoginController());
   Stream<List<PostModel>>? listPostCurrent;
-List<PostModel>? allPost;
+  List<PostModel>? allPost;
 
   Stream<List<GroupModel>>? listGroupCurrent;
   List<GroupModel>? allGroupSearch;
@@ -43,6 +47,7 @@ List<PostModel>? allPost;
     'Chat',
   ];
   late TabController _tabController;
+
   @override
   void initState() {
     super.initState();
@@ -51,14 +56,16 @@ List<PostModel>? allPost;
     setState(() {
       _searchPostController.loadHistoryKeywords(context);
     });
-_startTimer();
+    _startTimer();
   }
+
   late Timer _timer;
+
   void _startTimer() {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       _searchPostController.loadListResultController(context);
       // Gọi hàm cần thiết ở đây
-      listPostCurrent =_searchPostController.allSearchPostStream;
+      listPostCurrent = _searchPostController.allSearchPostStream;
       // Đây là Stream mà bạn cần theo dõi
       listPostCurrent?.listen((List<PostModel>? updatedGroups) {
         if (updatedGroups != null) {
@@ -77,7 +84,6 @@ _startTimer();
         }
       });
 
-
       listUserCurrent = _searchPostController.allSearchUserStream;
       listUserCurrent?.listen((List<UserEnity>? updatedGroups) {
         if (updatedGroups != null) {
@@ -86,16 +92,18 @@ _startTimer();
           });
         }
       });
-
     });
   }
+
   @override
   void dispose() {
     _timer.cancel();
     _tabController.dispose();
     super.dispose();
   }
+
   bool _shouldRebuildTabBarView = false;
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -111,10 +119,10 @@ _startTimer();
                   padding: EdgeInsets.all(10),
                   child: Row(
                     children: [
-
                       Expanded(
                         child: TextField(
-                          controller: _searchPostController.textControllerKeyword,
+                          controller:
+                              _searchPostController.textControllerKeyword,
                           onTap: () {
                             // _showSearchSuggestions();
                           },
@@ -134,18 +142,22 @@ _startTimer();
                       GestureDetector(
                         onTap: () {
                           // handle search icon tapped
-                          final check = _searchPostController.textControllerKeyword.text;
-                          if (check.trim()!= '')
-                         { _searchPostController.loadListResultController(context);
-                         _searchPostController.addSearchKeywords(_searchPostController.textControllerKeyword.text);
-                         _searchPostController.loadHistoryKeywords(context);
-                          _scrollController.animateTo(
-                            0.0,
-                            duration: Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                          FocusScope.of(context).unfocus();}
-
+                          final check =
+                              _searchPostController.textControllerKeyword.text;
+                          if (check.trim() != '') {
+                            _searchPostController
+                                .loadListResultController(context);
+                            _searchPostController.addSearchKeywords(
+                                _searchPostController
+                                    .textControllerKeyword.text);
+                            _searchPostController.loadHistoryKeywords(context);
+                            _scrollController.animateTo(
+                              0.0,
+                              duration: Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                            FocusScope.of(context).unfocus();
+                          }
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -160,15 +172,16 @@ _startTimer();
                   tabs: [
                     _buildTab('Bài viết'),
                     _buildTab('Khoa'),
-                    _buildTab('Người dùng'),_buildTab('Chat'),
-
+                    _buildTab('Người dùng'),
+                    _buildTab('Chat'),
                   ],
                 ),
               ),
             ];
           },
-          body: _shouldRebuildTabBarView ? _buildTabBarView() : _buildTabBarView(),
-
+          body: _shouldRebuildTabBarView
+              ? _buildTabBarView()
+              : _buildTabBarView(),
         ),
       ),
     );
@@ -185,6 +198,7 @@ _startTimer();
       ],
     );
   }
+
   Widget _buildCategoryContent(String category) {
     // Kiểm tra loại category và trả về nội dung tương ứng
     switch (category) {
@@ -217,7 +231,8 @@ _startTimer();
       ),
     );
   }
-  Widget _buildInfomationAccount(){
+
+  Widget _buildInfomationAccount() {
     return Container(
       child: Column(
         children: [
@@ -239,30 +254,41 @@ _startTimer();
                               width: 30,
                               height: 30,
                             ),
-                            SizedBox(width: 15,),
+                            SizedBox(
+                              width: 15,
+                            ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SizedBox(height: 5,),
-                                Text('Email',
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  'Email',
                                   style: TextStyle(
                                       fontSize: 16,
-                                      fontWeight: FontWeight.bold
-                                  ),),
-                                SizedBox(height: 10,),
-                                Text('myProfileController.email.toString()',
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  'myProfileController.email.toString()',
                                   style: TextStyle(
                                     color: Color(0xFF4F4F4F),
-                                  ),),
+                                  ),
+                                ),
                               ],
-                            ),]),
+                            ),
+                          ]),
                       GestureDetector(
                         //onTap: _showEditEmailDialog,
                         child: Text(
                           'Chỉnh sửa',
                           style: TextStyle(
                             fontSize: 12,
-                            fontWeight: FontWeight.bold, // Màu sắc của Text khi chưa được nhấn
+                            fontWeight: FontWeight
+                                .bold, // Màu sắc của Text khi chưa được nhấn
                           ),
                         ),
                       ),
@@ -290,30 +316,41 @@ _startTimer();
                               width: 30,
                               height: 30,
                             ),
-                            SizedBox(width: 15,),
+                            SizedBox(
+                              width: 15,
+                            ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SizedBox(height: 5,),
-                                Text('Số điện thoại',
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  'Số điện thoại',
                                   style: TextStyle(
                                       fontSize: 16,
-                                      fontWeight: FontWeight.bold
-                                  ),),
-                                SizedBox(height: 10,),
-                                Text('myProfileController.phone.toString()',
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  'myProfileController.phone.toString()',
                                   style: TextStyle(
                                     color: Color(0xFF4F4F4F),
-                                  ),),
+                                  ),
+                                ),
                               ],
-                            ),]),
+                            ),
+                          ]),
                       GestureDetector(
                         //onTap: _showEditPhoneDialog,
                         child: Text(
                           'Chỉnh sửa',
                           style: TextStyle(
                             fontSize: 12,
-                            fontWeight: FontWeight.bold, // Màu sắc của Text khi chưa được nhấn
+                            fontWeight: FontWeight
+                                .bold, // Màu sắc của Text khi chưa được nhấn
                           ),
                         ),
                       ),
@@ -341,30 +378,41 @@ _startTimer();
                               width: 30,
                               height: 30,
                             ),
-                            SizedBox(width: 15,),
+                            SizedBox(
+                              width: 15,
+                            ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SizedBox(height: 5,),
-                                Text('Mật khẩu',
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  'Mật khẩu',
                                   style: TextStyle(
                                       fontSize: 16,
-                                      fontWeight: FontWeight.bold
-                                  ),),
-                                SizedBox(height: 10,),
-                                Text('Chạm để thay đổi mật khẩu',
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  'Chạm để thay đổi mật khẩu',
                                   style: TextStyle(
                                     color: Color(0xFF4F4F4F),
-                                  ),),
+                                  ),
+                                ),
                               ],
-                            ),]),
+                            ),
+                          ]),
                       GestureDetector(
-                     //   onTap: _showEditPasswordDialog,
+                        //   onTap: _showEditPasswordDialog,
                         child: Text(
                           'Chỉnh sửa',
                           style: TextStyle(
                             fontSize: 12,
-                            fontWeight: FontWeight.bold, // Màu sắc của Text khi chưa được nhấn
+                            fontWeight: FontWeight
+                                .bold, // Màu sắc của Text khi chưa được nhấn
                           ),
                         ),
                       ),
@@ -392,31 +440,41 @@ _startTimer();
                               width: 30,
                               height: 30,
                             ),
-                            SizedBox(width: 15,),
+                            SizedBox(
+                              width: 15,
+                            ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SizedBox(height: 5,),
-                                Text('Phương thức thanh toán',
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  'Phương thức thanh toán',
                                   style: TextStyle(
                                       fontSize: 16,
-                                      fontWeight: FontWeight.bold
-                                  ),),
-                                SizedBox(height: 10,),
-                                Text('ZaloPay',
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  'ZaloPay',
                                   style: TextStyle(
                                     color: Color(0xFF4F4F4F),
-                                  ),),
+                                  ),
+                                ),
                               ],
-                            ),]),
+                            ),
+                          ]),
                       GestureDetector(
-                        onTap: () {
-                        },
+                        onTap: () {},
                         child: Text(
                           'Chỉnh sửa',
                           style: TextStyle(
                             fontSize: 12,
-                            fontWeight: FontWeight.bold, // Màu sắc của Text khi chưa được nhấn
+                            fontWeight: FontWeight
+                                .bold, // Màu sắc của Text khi chưa được nhấn
                           ),
                         ),
                       ),
@@ -431,7 +489,7 @@ _startTimer();
     );
   }
 
-  Widget _buildPostSearch(){
+  Widget _buildPostSearch() {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -466,11 +524,12 @@ _startTimer();
                         width: 18,
                         height: 18,
                       ),
-                      SizedBox(width: 10,),
-                      Text('Bộ lọc',
-                        style: TextStyle(
-                            fontSize: 15
-                        ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        'Bộ lọc',
+                        style: TextStyle(fontSize: 15),
                       ),
                     ],
                   ),
@@ -506,11 +565,12 @@ _startTimer();
                           width: 18,
                           height: 18,
                         ),
-                        SizedBox(width: 10,),
-                        Text('Sắp xếp',
-                          style: TextStyle(
-                              fontSize: 15
-                          ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          'Sắp xếp',
+                          style: TextStyle(fontSize: 15),
                         ),
                       ],
                     ),
@@ -521,63 +581,109 @@ _startTimer();
           ),
           Container(
             margin: EdgeInsets.only(top: 5),
-            height: 1, // Chiều cao của thanh ngang
-            width: 500, // Độ dày của thanh ngang
+            height: 1,
+            // Chiều cao của thanh ngang
+            width: 500,
+            // Độ dày của thanh ngang
             color: Color(0xC0C0C0C0),
             alignment: Alignment.center,
           ),
-
           _ListPostResult()
-
         ],
       ),
     );
   }
 
-  Widget _ListPostResult(){
-    return Expanded(child: StreamBuilder<List<PostModel>>(
-      stream:listPostCurrent,
-        builder: (context, snapshot){
-          if (snapshot.hasData && snapshot.data != null){
-            return HotPostQuestionScreen(listPost: snapshot.data!);
-          }
-          else
-            return Container(child: Text('Không có kết quả tìm kiếm phù hợp'),);
-        },
-    ));
-  }
-
-  Widget _ListGroupResult(){
-    return Expanded(child: StreamBuilder<List<GroupModel>>(
-      stream:listGroupCurrent,
-      builder: (context, snapshot){
-        if (snapshot.hasData && snapshot.data != null){
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                onTap: () {
-                },
-                leading: CircleAvatar(
-                  backgroundImage: NetworkImage(snapshot.data![index].avatar.toString()),
-                ),
-                title: Text(snapshot.data![index].name.toString()),
-              );
-            },
-          );
-        }
-        else
+  Widget _ListPostResult() {
+    return Expanded(
+        child: StreamBuilder<List<PostModel>>(
+      stream: listPostCurrent,
+      builder: (context, snapshot) {
+        if (snapshot.hasData && snapshot.data != null) {
+          return HotPostQuestionScreen(listPost: snapshot.data!);
+        } else
           return Container(
             child: Text('Không có kết quả tìm kiếm phù hợp'),
           );
       },
     ));
   }
-  Widget _ListUserResult(){
-    return Expanded(child: StreamBuilder<List<UserEnity>>(
-      stream:listUserCurrent,
-      builder: (context, snapshot){
-        if (snapshot.hasData && snapshot.data != null){
+
+  Widget _ListGroupResult() {
+    return Expanded(
+        child: StreamBuilder<List<GroupModel>>(
+      stream: listGroupCurrent,
+      builder: (context, snapshot) {
+        if (snapshot.hasData && snapshot.data != null) {
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                onTap: () {},
+                leading: CircleAvatar(
+                  backgroundImage:
+                      NetworkImage(snapshot.data![index].avatar.toString()),
+                ),
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        snapshot.data![index].name.toString(),
+                        overflow: TextOverflow
+                            .ellipsis, // Để tên không bị tràn ra ngoài
+                      ),
+                    ),
+                    1 == 1
+                        ? ElevatedButton(
+                            onPressed: () async {
+                              // Hành động khi nhấn nút thứ hai
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 4),
+                              backgroundColor: Colors.blueAccent,
+                            ),
+                            child: Text(
+                              "Theo dõi",
+                              style:
+                                  TextStyle(fontSize: 15, color: Colors.black),
+                            ),
+                          )
+                        : ElevatedButton(
+                            onPressed: () async {
+                              // Hành động khi nhấn nút thứ hai
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 4),
+                              backgroundColor: Colors.blueAccent,
+                            ),
+                            child: Text(
+                              "Theo dõi",
+                              style:
+                                  TextStyle(fontSize: 15, color: Colors.black),
+                            ),
+                          ),
+                  ],
+                ),
+              );
+            },
+          );
+        } else
+          return Container(
+            child: Text('Không có kết quả tìm kiếm phù hợp'),
+          );
+      },
+    ));
+  }
+
+  Widget _ListUserResult() {
+    return Expanded(
+        child: StreamBuilder<List<UserEnity>>(
+      stream: listUserCurrent,
+      builder: (context, snapshot) {
+        if (snapshot.hasData && snapshot.data != null) {
           return ListView.builder(
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
@@ -585,19 +691,25 @@ _startTimer();
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ProfileUserOther(id: snapshot.data![index].user_id)),
+                    MaterialPageRoute(
+                        builder: (context) => ProfileUserOther(
+                            id: snapshot.data![index].user_id)),
                   );
                 },
                 leading: CircleAvatar(
-                  backgroundImage: NetworkImage(snapshot.data![index].avatarUrl.toString()),
+                  backgroundImage:
+                      NetworkImage(snapshot.data![index].avatarUrl.toString()),
                 ),
-                title: Text(snapshot.data![index].first_name.toString()+ ' '+ snapshot.data![index].last_name.toString()),
+                title: Text(snapshot.data![index].first_name.toString() +
+                    ' ' +
+                    snapshot.data![index].last_name.toString()),
               );
             },
           );
-        }
-        else
-          return Container(child: Text('Không có kết quả tìm kiếm phù hợp'),);
+        } else
+          return Container(
+            child: Text('Không có kết quả tìm kiếm phù hợp'),
+          );
       },
     ));
   }
@@ -615,7 +727,7 @@ _startTimer();
                 title: Text('Sắp xếp theo thời gian gần nhất'),
                 onTap: () {
                   // Sắp xếp danh sách theo thời gian gần nhất
-                  _searchPostController.filterTheLikest.value= false;
+                  _searchPostController.filterTheLikest.value = false;
                   _searchPostController.loadListResultController(context);
                   Navigator.of(context).pop();
                 },
@@ -625,7 +737,7 @@ _startTimer();
                 onTap: () async {
                   // Sắp xếp danh sách theo lượt thích
 
-                  _searchPostController.filterTheLikest.value= true;
+                  _searchPostController.filterTheLikest.value = true;
                   _searchPostController.loadListResultController(context);
                   Navigator.of(context).pop();
                 },
@@ -642,7 +754,9 @@ _startTimer();
           ],
         );
       },
-    );}
+    );
+  }
+
   void _showFilterKhoaDialog(List<GroupModel> khoaList) {
     showDialog(
       context: context,
@@ -667,9 +781,11 @@ _startTimer();
                   );
                 } else {
                   // Hiển thị các khoa khác
-                  final khoa = khoaList[index - 1]; // -1 để bỏ qua lựa chọn "Tất cả"
+                  final khoa =
+                      khoaList[index - 1]; // -1 để bỏ qua lựa chọn "Tất cả"
                   return ListTile(
-                    title: Text(khoa.name.toString()), // Hiển thị tên khoa trong ListTile
+                    title: Text(khoa.name.toString()),
+                    // Hiển thị tên khoa trong ListTile
                     onTap: () {
                       // Xử lý khi người dùng chọn một khoa
                       // Ví dụ: Navigator.of(context).pop(khoa);
@@ -694,6 +810,7 @@ _startTimer();
       },
     );
   }
+
   Widget _toolSearch() {
     return Container(
       child: TextField(
@@ -712,6 +829,7 @@ _startTimer();
     );
   }
 }
+
 Widget _buildPopup(BuildContext context, List<String> categories) {
   return Container(
     margin: EdgeInsets.only(bottom: 350),

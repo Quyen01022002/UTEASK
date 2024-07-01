@@ -653,7 +653,7 @@ void _showBottomSheetVP(BuildContext context,CreatePostController createPostCont
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
-                primary: Colors.blue,
+                backgroundColor: Colors.blue,
               ),
               child: Text(
                 'Tiếp tục',

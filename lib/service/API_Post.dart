@@ -5,12 +5,14 @@ import 'dart:ffi';
 import 'package:askute/model/ApiReponse.dart';
 import 'package:askute/model/Class.dart';
 import 'package:askute/model/CommentResponse.dart';
+import 'package:askute/model/GroupModel.dart';
 import 'package:askute/model/InteractionsResponse.dart';
 import 'package:askute/model/PostEnity.dart';
 import 'package:askute/model/PostModel.dart';
 import 'package:askute/model/ReportPostResponse.dart';
 import 'package:askute/model/UserProgress.dart';
 import 'package:askute/service/API_Class.dart';
+import 'package:askute/service/API_Group.dart';
 import 'package:askute/service/const.dart';
 import 'package:askute/view/teacher/Home/Class/ClassDetailTeacher.dart';
 import 'package:flutter/cupertino.dart';
@@ -236,6 +238,37 @@ class API_Post {
     }
   }
 
+  static Future<PostEntity?> postHotPost(PostEntity post, List<String> img,
+      String token, int groupId, int hotday, BuildContext context) async {
+    final url = Uri.parse('$baseUrl/post/post/important');
+
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+    List<Map<String, String>> listAnh =
+    img.map((imageUrl) => {'linkPicture': imageUrl}).toList();
+
+    final Map<String, dynamic> data = {
+      "groups": groupId,
+      "contentPost": post.content_post,
+      "listAnh": listAnh,
+      "hotinday": hotday,
+    };
+
+    await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(data),
+    );
+    final GroupModel? classModel = await API_Group.loadGroupMeDepartment(post.user_id!, token);
+    if (classModel != null) {
+      Navigator.of(context).pop();
+    } else {
+      // Handle the case where classModel is null
+    }
+  }
+
   static Future<PostEntity?> upatePost(PostEntity post, List<String> img,
       String token) async {
     final url = Uri.parse('$baseUrl/post/update');
@@ -256,6 +289,32 @@ class API_Post {
       url,
       headers: headers,
       body: jsonEncode(data),
+    );
+  }
+  static Future<PostEntity?> bloakCmtOfPost(int postid,
+      String token) async {
+    final url = Uri.parse('$baseUrl/post/$postid/blockCmt');
+
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+    await http.put(
+      url,
+      headers: headers,
+    );
+  }
+  static Future<PostEntity?> unblockCmtOfPost(int postid,
+      String token) async {
+    final url = Uri.parse('$baseUrl/post/$postid/unblockCmt');
+
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+    await http.put(
+      url,
+      headers: headers,
     );
   }
 
