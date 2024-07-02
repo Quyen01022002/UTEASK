@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:askute/controller/HomeController.dart';
 import 'package:askute/controller/LoginController.dart';
 import 'package:askute/model/CommentEntity.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -48,6 +49,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
 
   final PostController postController = Get.put(PostController());
   final LoginController loginController = Get.put(LoginController());
+  final HomeController homeController = Get.put(HomeController());
   Offset _tapPosition = Offset.zero;
   Stream<PostModel>? postCurrent;
   Stream<List<CommentEntity>>? listCommentStream;
@@ -55,6 +57,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
   PostModel? post;
   bool _isKeyboardVisible = false;
   int cmtIsSelect = 0;
+  bool check_reply = false;
 
   @override
   void initState() {
@@ -120,6 +123,20 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
           });
         }
       });
+      for (int i = 0; i < listCmt!.length; i++) {
+        if (listCmt![i].is_reply == true) {
+          check_reply = true;
+          setState(() {
+            _buildInputAllField();
+          });
+          break;
+        } else {
+          check_reply = false;
+          setState(() {
+            _buildInputAllField();
+          });
+        }
+      }
     });
   }
 
@@ -227,7 +244,10 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                                     Column(
                                       children: [
                                         GestureDetector(
-                                          onTap: () {},
+                                          onTap: () {
+                                            homeController.postid.value = widget.post.id;
+                                            homeController.Saved();
+                                          },
                                           child: Container(
                                             padding: EdgeInsets.symmetric(
                                                 vertical: 8, horizontal: 12),
@@ -235,19 +255,19 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                                               onTap: () {},
                                               child: Row(children: [
                                                 Icon(
-                                                    false
+                                                    snapshot.data!.user_saved
                                                         ? Icons.bookmark_outline
                                                         : Icons
                                                             .bookmark_border_outlined,
                                                     size: 20,
-                                                    color: false
+                                                    color: snapshot.data!.user_saved
                                                         ? Colors.blue
                                                         : Colors.black),
                                                 SizedBox(
                                                   width: 2,
                                                 ),
                                                 Text(
-                                                  0.toString(),
+                                                  snapshot.data!.save_count.toString(),
                                                   style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold),
@@ -366,16 +386,22 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
   CommentEntity? cmtUserToReply;
 
   Widget _buildInputAllField() {
-    return post!.statusCmtPostEnum == 'NOTUSER'
+    return post!.statusCmtPostEnum == 'NOTUSER' || check_reply == true
         ? Container(
             color: Colors.grey[200],
             padding: EdgeInsets.all(8),
             child: Center(
-                child: Text(
-              "Chủ bài viết đã khóa bình luận\nhoặc lượt bình luận đã bị hạn chế!",
-              textAlign: TextAlign.center,
-              style: TextStyle(),
-            )),
+                child: check_reply == true
+                    ? Text(
+                        "Bài viết đã có câu trả lời rồi,\nbạn không thể trả lời thêm.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(),
+                      )
+                    : Text(
+                        "Chủ bài viết đã khóa bình luận\nhoặc lượt bình luận đã bị hạn chế!",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(),
+                      )),
           )
         : Column(
             children: [
@@ -447,10 +473,10 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                         await _goToListTypeContentComment();
                         if (reply == false)
                           postController.CommentToQuestion(
-                              context, listContent, false, 0);
+                              context, listContent, post!.id, false, 0);
                         else
                           postController.CommentToQuestion(context, listContent,
-                              true, cmtUserToReply!.comment_id!);
+                              post!.id, true, cmtUserToReply!.comment_id!);
                         _imageWidgets.clear();
                         listContent.clear();
                         _listController.clear();
@@ -797,7 +823,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
   Widget _buildOneComment(
       CommentEntity cmt, List<Widget> contentWidget, int round) {
     return round == 0
-        ? Column(children: [
+        ? Column(children:  [
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
@@ -808,7 +834,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                 ),
               ),
               padding: EdgeInsets.all(5),
-              margin: EdgeInsets.all(5.0),
+              margin: EdgeInsets.all(2),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -819,8 +845,11 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                   GestureDetector(
                     onTapDown: _getTapPosition,
                     onLongPress: () {
-                      cmtIsSelect = cmt.comment_id!;
-                      _showContextMenu(context, cmt);
+                      if (check_reply != true &&
+                          post!.statusCmtPostEnum != 'NOTUSER') {
+                        cmtIsSelect = cmt.comment_id!;
+                        _showContextMenu(context, cmt);
+                      }
                     },
                     child: Container(
                         padding: EdgeInsets.only(left: 38, right: 10),
@@ -831,55 +860,59 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                           ],
                         )),
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 8,
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: 38,
-                            ),
-                            Icon(Icons.reply_outlined, size: 15),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            Icon(Icons.thumb_up_outlined, size: 15),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            Icon(Icons.thumb_down_outlined, size: 15),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Icon(Icons.bookmarks_outlined, size: 15),
-                      ),
-                    ],
-                  )
+                  // SizedBox(
+                  //   height: 20,
+                  // ),
+                  // Row(
+                  //   children: [
+                  //     Expanded(
+                  //       flex: 8,
+                  //       child: Row(
+                  //         children: [
+                  //           SizedBox(
+                  //             width: 38,
+                  //           ),
+                  //           Icon(Icons.reply_outlined, size: 15),
+                  //           SizedBox(
+                  //             width: 20,
+                  //           ),
+                  //           Icon(Icons.thumb_up_outlined, size: 15),
+                  //           SizedBox(
+                  //             width: 20,
+                  //           ),
+                  //           Icon(Icons.thumb_down_outlined, size: 15),
+                  //         ],
+                  //       ),
+                  //     ),
+                  //     Expanded(
+                  //       flex: 2,
+                  //       child: Icon(Icons.bookmarks_outlined, size: 15),
+                  //     ),
+                  //   ],
+                  // )
                 ],
               ),
             ),
-            cmt.listCommentReply!.length != 0
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: List.generate(
-                      cmt.listCommentReply!.length,
-                      (index) => Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8.0),
-                        child: _buildOneComment(
-                            cmt.listCommentReply![index]!,
-                            toWidget(
-                                cmt.listCommentReply![index]!.content_cmt!),
-                            1),
-                      ),
-                    ),
-                  )
-                : Container()
+      cmt.listCommentReply!.length != 0
+          ? Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: List.generate(
+          cmt.listCommentReply!.length,
+              (index) => Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            child: cmt.listCommentReply![index]!.is_reply == false ? _buildOneComment(
+                cmt.listCommentReply![index]!,
+                toWidget(
+                    cmt.listCommentReply![index]!.content_cmt!),
+                1) : _buildOneCommentReply(
+                cmt.listCommentReply![index]!,
+                toWidget(
+                    cmt.listCommentReply![index]!.content_cmt!),
+                1),
+          ),
+        ),
+      )
+          : Container()
           ])
         : Column(children: [
             Row(
@@ -901,7 +934,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                     ),
                     padding: EdgeInsets.all(5),
                     margin:
-                        EdgeInsets.only(top: 5, bottom: 5, right: 5, left: 5),
+                        EdgeInsets.all(2),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -912,8 +945,11 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                         GestureDetector(
                           onTapDown: _getTapPosition,
                           onLongPress: () {
-                            cmtIsSelect = cmt.comment_id!;
-                            _showContextMenu(context, cmt);
+                            if (check_reply != true &&
+                                post!.statusCmtPostEnum != 'NOTUSER') {
+                              cmtIsSelect = cmt.comment_id!;
+                              _showContextMenu(context, cmt);
+                            }
                           },
                           child: Container(
                               padding: EdgeInsets.only(left: 38, right: 10),
@@ -924,58 +960,62 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                                 ],
                               )),
                         ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 8,
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    width: 38,
-                                  ),
-                                  Icon(Icons.reply_outlined, size: 15),
-                                  SizedBox(
-                                    width: 20,
-                                  ),
-                                  Icon(Icons.thumb_up_outlined, size: 15),
-                                  SizedBox(
-                                    width: 20,
-                                  ),
-                                  Icon(Icons.thumb_down_outlined, size: 15),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Icon(Icons.bookmarks_outlined, size: 15),
-                            ),
-                          ],
-                        )
+                        // SizedBox(
+                        //   height: 20,
+                        // ),
+                        // Row(
+                        //   children: [
+                        //     Expanded(
+                        //       flex: 8,
+                        //       child: Row(
+                        //         children: [
+                        //           SizedBox(
+                        //             width: 38,
+                        //           ),
+                        //           Icon(Icons.reply_outlined, size: 15),
+                        //           SizedBox(
+                        //             width: 20,
+                        //           ),
+                        //           Icon(Icons.thumb_up_outlined, size: 15),
+                        //           SizedBox(
+                        //             width: 20,
+                        //           ),
+                        //           Icon(Icons.thumb_down_outlined, size: 15),
+                        //         ],
+                        //       ),
+                        //     ),
+                        //     Expanded(
+                        //       flex: 2,
+                        //       child: Icon(Icons.bookmarks_outlined, size: 15),
+                        //     ),
+                        //   ],
+                        // )
                       ],
                     ),
                   ),
                 ),
               ],
             ),
-            cmt.listCommentReply!.length != 0
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: List.generate(
-                      cmt.listCommentReply!.length,
-                      (index) => Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8.0),
-                        child: _buildOneComment(
-                            cmt.listCommentReply![index]!,
-                            toWidget(
-                                cmt.listCommentReply![index]!.content_cmt!),
-                            1),
-                      ),
-                    ),
-                  )
-                : Container()
+      cmt.listCommentReply!.length != 0
+          ? Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: List.generate(
+          cmt.listCommentReply!.length,
+              (index) => Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            child: cmt.listCommentReply![index]!.is_reply == false ? _buildOneComment(
+                cmt.listCommentReply![index]!,
+                toWidget(
+                    cmt.listCommentReply![index]!.content_cmt!),
+                1) : _buildOneCommentReply(
+                cmt.listCommentReply![index]!,
+                toWidget(
+                    cmt.listCommentReply![index]!.content_cmt!),
+                1),
+          ),
+        ),
+      )
+          : Container()
           ]);
   }
 
@@ -1120,71 +1160,202 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
 
   Widget _buildOneCommentReply(
       CommentEntity cmt, List<Widget> contentWidget, int round) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.green[50],
-        borderRadius: BorderRadius.circular(10), // Đặt bán kính của viền tròn
-        border: Border.all(
-          color: Colors.green, // Màu sắc của viền tròn
-          width: 1, // Độ dày của viền tròn
-        ),
-      ),
-      padding: EdgeInsets.all(5),
-      margin: EdgeInsets.all(5.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildUserComment(cmt),
-          SizedBox(
-            height: 10,
+    return round == 0?
+    Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.green[50],
+            borderRadius: BorderRadius.circular(10), // Đặt bán kính của viền tròn
+            border: Border.all(
+              color: Colors.green, // Màu sắc của viền tròn
+              width: 1, // Độ dày của viền tròn
+            ),
           ),
-          GestureDetector(
-            onTapDown: _getTapPosition,
-            onLongPress: () {
-              cmtIsSelect = cmt.comment_id!;
-              _showContextMenu(context, cmt);
-            },
-            child: Container(
-                padding: EdgeInsets.only(left: 38, right: 10),
+          padding: EdgeInsets.all(5),
+          margin: EdgeInsets.all(2),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildUserComment(cmt),
+              SizedBox(
+                height: 10,
+              ),
+              GestureDetector(
+                onTapDown: _getTapPosition,
+                onLongPress: () {
+                  if (check_reply != true &&
+                      post!.statusCmtPostEnum != 'NOTUSER') {
+                    cmtIsSelect = cmt.comment_id!;
+                    _showContextMenu(context, cmt);
+                  }
+                },
+                child: Container(
+                    padding: EdgeInsets.only(left: 38, right: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ...contentWidget,
+                      ],
+                    )),
+              ),
+              // SizedBox(
+              //   height: 20,
+              // ),
+              // Row(
+              //   children: [
+              //     Expanded(
+              //       flex: 8,
+              //       child: Row(
+              //         children: [
+              //           SizedBox(
+              //             width: 38,
+              //           ),
+              //           Icon(Icons.reply_outlined, size: 15),
+              //           SizedBox(
+              //             width: 20,
+              //           ),
+              //           Icon(Icons.thumb_up_outlined, size: 15),
+              //           SizedBox(
+              //             width: 20,
+              //           ),
+              //           Icon(Icons.thumb_down_outlined, size: 15),
+              //         ],
+              //       ),
+              //     ),
+              //     Expanded(
+              //       flex: 2,
+              //       child: Icon(Icons.bookmarks_outlined, size: 15),
+              //     ),
+              //   ],
+              // )
+            ],
+          ),
+        ),
+        cmt.listCommentReply!.length != 0
+            ? Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: List.generate(
+            cmt.listCommentReply!.length,
+                (index) => Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: cmt.listCommentReply![index]!.is_reply == false ? _buildOneComment(
+                  cmt.listCommentReply![index]!,
+                  toWidget(
+                      cmt.listCommentReply![index]!.content_cmt!),
+                  1) : _buildOneCommentReply(
+                  cmt.listCommentReply![index]!,
+                  toWidget(
+                      cmt.listCommentReply![index]!.content_cmt!),
+                  1),
+            ),
+          ),
+        )
+            : Container()
+      ],
+    )
+        :
+    Row(
+      children: [
+        Expanded(
+            flex: 2,
+            child: Container()),
+        Expanded(
+          flex: 8,
+          child: Column(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.green[50],
+                  borderRadius: BorderRadius.circular(10), // Đặt bán kính của viền tròn
+                  border: Border.all(
+                    color: Colors.green, // Màu sắc của viền tròn
+                    width: 1, // Độ dày của viền tròn
+                  ),
+                ),
+                padding: EdgeInsets.all(5),
+                margin: EdgeInsets.all(2),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ...contentWidget,
-                  ],
-                )),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          Row(
-            children: [
-              Expanded(
-                flex: 8,
-                child: Row(
-                  children: [
+                    _buildUserComment(cmt),
                     SizedBox(
-                      width: 38,
+                      height: 10,
                     ),
-                    Icon(Icons.reply_outlined, size: 15),
-                    SizedBox(
-                      width: 20,
+                    GestureDetector(
+                      onTapDown: _getTapPosition,
+                      onLongPress: () {
+                        if (true == true) {
+                          cmtIsSelect = cmt.comment_id!;
+                          _showContextMenu(context, cmt);
+                        }
+                      },
+                      child: Container(
+                          padding: EdgeInsets.only(left: 38, right: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ...contentWidget,
+                            ],
+                          )),
                     ),
-                    Icon(Icons.thumb_up_outlined, size: 15),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    Icon(Icons.thumb_down_outlined, size: 15),
+                    // SizedBox(
+                    //   height: 20,
+                    // ),
+                    // Row(
+                    //   children: [
+                    //     Expanded(
+                    //       flex: 8,
+                    //       child: Row(
+                    //         children: [
+                    //           SizedBox(
+                    //             width: 38,
+                    //           ),
+                    //           Icon(Icons.reply_outlined, size: 15),
+                    //           SizedBox(
+                    //             width: 20,
+                    //           ),
+                    //           Icon(Icons.thumb_up_outlined, size: 15),
+                    //           SizedBox(
+                    //             width: 20,
+                    //           ),
+                    //           Icon(Icons.thumb_down_outlined, size: 15),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //     Expanded(
+                    //       flex: 2,
+                    //       child: Icon(Icons.bookmarks_outlined, size: 15),
+                    //     ),
+                    //   ],
+                    // )
                   ],
                 ),
               ),
-              Expanded(
-                flex: 2,
-                child: Icon(Icons.bookmarks_outlined, size: 15),
-              ),
+              cmt.listCommentReply!.length != 0
+                  ? Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: List.generate(
+                  cmt.listCommentReply!.length,
+                      (index) => Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                    child: cmt.listCommentReply![index]!.is_reply == false ? _buildOneComment(
+                        cmt.listCommentReply![index]!,
+                        toWidget(
+                            cmt.listCommentReply![index]!.content_cmt!),
+                        1) : _buildOneCommentReply(
+                        cmt.listCommentReply![index]!,
+                        toWidget(
+                            cmt.listCommentReply![index]!.content_cmt!),
+                        1),
+                  ),
+                ),
+              )
+                  : Container()
             ],
-          )
-        ],
-      ),
+          ),
+        ),
+      ],
     );
   }
 

@@ -305,8 +305,9 @@ class _PostScreenState extends State<PostScreenNew> {
                               },
                               child: Row(
                                   children: [
-                                    Icon(Icons.bookmark_outline, size: 20,),
-                                    SizedBox(width: 2,),Text(postHT!.like_count.toString(),
+                                    Icon(postHT!.user_saved ? Icons.bookmark_outline : Icons.bookmark_outline, size: 20,
+                                      color: postHT!.user_saved ? Colors.blue : Colors.black,),
+                                    SizedBox(width: 2,),Text(postHT!.save_count.toString(),
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold
                                       ),),
