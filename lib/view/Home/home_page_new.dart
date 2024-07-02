@@ -61,23 +61,26 @@ class _HomeScreen3State extends State<HomeScreen3> {
     else if (selectedValue == 'Theo lớp')
       response = await homeGroupController.morePostsClass(context);
     else
-      response = await homeController.load10post(context);
+      response = await homeController.loadHotPost(context);
 
     if (response!= null && response.length!=0) {
       setState(() {
         if (selectedValue == 'Đang theo dõi')
         {
           homeGroupController.pagenumber4.value = 0;
+          homeController.pagenumberHotPost.value =0;
           homeGroupController.pagenumber3.value++;}
         else if (selectedValue == 'Theo lớp')
           {
             homeGroupController.pagenumber4.value++;
             homeGroupController.pagenumber3.value =0;
+            homeController.pagenumberHotPost.value =0;
           }
           else
             {
               homeGroupController.pagenumber4.value = 0;
               homeGroupController.pagenumber3.value = 0;
+              homeController.pagenumberHotPost.value ++;
             }
         _posts.addAll(response!);
         _isLoading = false;
@@ -162,7 +165,7 @@ class _HomeScreen3State extends State<HomeScreen3> {
                                                 //'Tất cả',
                                                 'Đang theo dõi',
                                                 'Theo lớp',
-                                                'Nổi bật'
+                                                'Quan trọng'
                                               ].map((String value) {
                                                 return DropdownMenuItem<String>(
                                                   value: value,

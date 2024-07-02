@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:askute/model/CommentResponse.dart';
 import 'package:askute/model/UserProgress.dart';
 import 'package:askute/service/API_Profile.dart';
@@ -128,6 +130,17 @@ class HomeController extends GetxController {
       myId.value = userId;
       final token = prefs.getString('token') ?? "";
       return await API_Post.LoadTop10(userId, token);
+  }
+  RxInt pagenumberHotPost = 0.obs;
+  Future<List<PostModel>?> loadHotPost(BuildContext context) async
+  {
+    final prefs = await SharedPreferences.getInstance();
+    isloaded(true);
+    print("load");
+    final userId = prefs.getInt('id') ?? 0;
+    myId.value = userId;
+    final token = prefs.getString('token') ?? "";
+    return await API_Post.LoadHotPost(userId, pagenumberHotPost.value, token);
   }
 
   Stream<List<PostModel>>? allPostHotClassStream;

@@ -58,7 +58,7 @@ class PostController extends GetxController {
   }
 
   void CommentToQuestion(
-      BuildContext context, List<ContentComment> list, bool reply, int idCmt) async {
+      BuildContext context, List<ContentComment> list, int idpostt, bool reply, int idCmt) async {
     //final prefs = await SharedPreferences.getInstance();
     String content = "";
     for (int i = 0; i < list.length; i++) {
@@ -69,7 +69,7 @@ class PostController extends GetxController {
     sendFriendRequestNotification(token);
     if (reply == false)
     await API_Post.Comments(
-        userid.value, postid.value, content, tokenString.value);
+        userid.value, idpostt, content, tokenString.value);
     else
       await API_Post.ReplyComments(
           userid.value, idCmt, content, tokenString.value);
