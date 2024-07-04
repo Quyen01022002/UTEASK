@@ -6,6 +6,7 @@ import 'package:askute/controller/SearchController.dart';
 import 'package:askute/model/GroupModel.dart';
 import 'package:askute/model/PostModel.dart';
 import 'package:askute/view/Home/hot_post_screen.dart';
+import 'package:askute/view/Home/new%20home/home_screen_3.dart';
 import 'package:askute/view/user/user_proflie_other.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -619,7 +620,15 @@ class _SearchResultScreenState extends State<SearchResultScreen>
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               return ListTile(
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                      type: PageTransitionType.rightToLeft,
+                      child: HomeGroup(groupModel: snapshot.data![index],),
+                    ),
+                  );
+                },
                 leading: CircleAvatar(
                   backgroundImage:
                       NetworkImage(snapshot.data![index].avatar.toString()),
@@ -634,37 +643,40 @@ class _SearchResultScreenState extends State<SearchResultScreen>
                             .ellipsis, // Để tên không bị tràn ra ngoài
                       ),
                     ),
-                    1 == 1
-                        ? ElevatedButton(
+                    _homeGroupController.checkUserInGroup(_loginController.idMe.value, snapshot.data![index], context) == true
+                        ?
+                    ElevatedButton(
                             onPressed: () async {
                               // Hành động khi nhấn nút thứ hai
+                              _homeGroupController.unfollowGroup(_loginController.idMe.value, snapshot.data![index].id!, context);
                             },
                             style: ElevatedButton.styleFrom(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 20, vertical: 4),
-                              backgroundColor: Colors.blueAccent,
+                              backgroundColor: Colors.white12,
                             ),
                             child: Text(
-                              "Theo dõi",
+                              "Hủy theo dõi",
                               style:
                                   TextStyle(fontSize: 15, color: Colors.black),
                             ),
-                          )
-                        : ElevatedButton(
-                            onPressed: () async {
-                              // Hành động khi nhấn nút thứ hai
-                            },
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 4),
-                              backgroundColor: Colors.blueAccent,
-                            ),
-                            child: Text(
-                              "Theo dõi",
-                              style:
-                                  TextStyle(fontSize: 15, color: Colors.black),
-                            ),
-                          ),
+                          ) : ElevatedButton(
+                      onPressed: () async {
+                        // Hành động khi nhấn nút thứ hai
+                        _homeGroupController.followGroup(_loginController.idMe.value,snapshot.data![index].id!, context);
+
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 4),
+                        backgroundColor: Colors.blueAccent,
+                      ),
+                      child: Text(
+                        "Theo dõi",
+                        style:
+                        TextStyle(fontSize: 15, color: Colors.black),
+                      ),
+                    ),
                   ],
                 ),
               );

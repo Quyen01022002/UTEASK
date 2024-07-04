@@ -122,8 +122,9 @@ class API_Group{
       final responseData = response.body;
 
       if (responseData.isNotEmpty){
+        String utf8Data = utf8.decode(responseData.runes.toList());
         ApiReponse<GroupModel> group = ApiReponse<GroupModel>.fromJson(
-          responseData,
+          utf8Data,
               (dynamic json) => GroupModel.fromJson(json),
         );
         return group.payload;
@@ -283,6 +284,24 @@ class API_Group{
 
 
   }
+  static Future<void> followGroup(GroupMemberRequest groupMemberRequest, String token) async {
+    int? iduser= groupMemberRequest.user_id;
+    int? idgroup = groupMemberRequest.group_id;
+    final url = Uri.parse('$baseUrl/group/members/?groupID=$idgroup&userID=$iduser');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+    final Map<String, dynamic> data = {
+      "user_id": groupMemberRequest.user_id,
+      "group_id": groupMemberRequest.group_id
+    };
+    final response = await http.post(
+      url,
+      headers: headers,
+    );
+    int a=0;
+  }
   static Future<void> deleteMemberOutGroupById(GroupMemberRequest groupMemberRequest, String token) async {
     int? iduser= groupMemberRequest.user_id;
     int? idgroup = groupMemberRequest.group_id;
@@ -299,8 +318,6 @@ class API_Group{
       url,
       headers: headers,
     );
-
-
   }
   static Future<List<UserEnity>?> LoadListFriendsToAdd(int groupid, int userid, String token) async {
 
