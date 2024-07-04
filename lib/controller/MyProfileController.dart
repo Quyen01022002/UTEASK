@@ -262,7 +262,7 @@ class MyProfileController extends GetxController {
     final prefs = await SharedPreferences.getInstance();
     final adminId = prefs.getInt('id') ?? 0;
     final token = prefs.getString('token') ?? "";
-    return await API_Profile.LoadOtherPost(ortherId.value, token, pagenumber.value);
+    return await API_Profile.LoadOtherPost(ortherId.value, adminId, token, pagenumber.value);
   }
 
 }
