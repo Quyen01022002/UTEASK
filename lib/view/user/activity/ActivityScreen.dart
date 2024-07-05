@@ -264,7 +264,11 @@ class _ActivityScreenState extends State<ActivityScreen>
             children: [
               Expanded(
                 flex: 2,
-                child: CircleAvatar(
+                child: like.post_id!.listAnh.length==0 ? CircleAvatar(
+                  backgroundImage: NetworkImage(
+                      like.post_id!.avatar),
+                  radius: 30.0,
+                ): CircleAvatar(
                   backgroundImage: NetworkImage(
                       like.post_id!.listAnh[0]),
                   radius: 30.0,
@@ -355,7 +359,11 @@ class _ActivityScreenState extends State<ActivityScreen>
             children: [
               Expanded(
                 flex: 2,
-                child: CircleAvatar(
+                child: comment.post_id!.listAnh.length == 0? CircleAvatar(
+                  backgroundImage: NetworkImage(
+                      comment.post_id!.avatar),
+                  radius: 30.0,
+                ) :CircleAvatar(
                   backgroundImage: NetworkImage(
                       comment.post_id!.listAnh[0].toString()),
                   radius: 30.0,
@@ -374,7 +382,7 @@ class _ActivityScreenState extends State<ActivityScreen>
                           style: TextStyle(),
                           children: <TextSpan>[
                             TextSpan(
-                              text: 'Trần Bửu Quến',
+                              text: "${comment.post_id!.firstName} ${comment.post_id!.lastName}",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),

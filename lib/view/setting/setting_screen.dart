@@ -217,13 +217,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         children: [
                            GestureDetector(
                              onTap: (){
-                               Navigator.push(
-                                 context,
-                                 PageTransition(
-                                   type: PageTransitionType.rightToLeft,
-                                   child: HomePage(),
-                                 ),
-                               );
+
                              },
                              child: CircleAvatar(
                               radius: 20,

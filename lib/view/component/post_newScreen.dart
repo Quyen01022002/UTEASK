@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:askute/controller/HomeController.dart';
+import 'package:askute/controller/HomeGroupController.dart';
 import 'package:askute/controller/LoginController.dart';
 import 'package:askute/controller/PostController.dart';
+import 'package:askute/view/Home/new%20home/home_screen_3.dart';
 import 'package:askute/view/report/report_post_screen2.dart';
 import 'package:askute/view/user/user_proflie_other.dart';
 import 'package:flutter/cupertino.dart';
@@ -30,6 +32,7 @@ class _PostScreenState extends State<PostScreenNew> {
   late String formattedTime = '';
   final PostController postController = Get.put(PostController());
   final HomeController homeController = Get.put(HomeController());
+  final HomeGroupController homeGroupController = Get.put(HomeGroupController());
   MyProfileController myProfileController = Get.put(MyProfileController());
   LoginController loginController = Get.put(LoginController());
   late bool statelike=false;
@@ -86,13 +89,23 @@ class _PostScreenState extends State<PostScreenNew> {
                 child: GestureDetector(
                   onTap: ()
                   {
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                        type: PageTransitionType.rightToLeft,
-                        child: ProfileUserOther(id: postHT!.createBy?.id,),
-                      ),
-                    );
+                    if (loginController.idMe.value != postHT!.createBy?.id){
+                      myProfileController.ortherId.value = postHT!.createBy!.id;
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                          type: PageTransitionType.rightToLeft,
+                          child: ProfileUserOther(id: postHT!.createBy!.id,),
+                        ),
+                      );}
+                    else
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                          type: PageTransitionType.rightToLeft,
+                          child: ProfileUserScreen(id: postHT!.createBy!.id,),
+                        ),
+                      );
                   },
                   child: Row(
                     children: [
@@ -132,17 +145,29 @@ class _PostScreenState extends State<PostScreenNew> {
                             onTap: (){
 
                             },
-                            child: Text(
-                              postHT!.createBy!.firstName+" " + postHT!.createBy!.lastName,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            child: Row(
+                              children: [
+                                Text(
+                                  postHT!.createBy!.firstName+" " + postHT!.createBy!.lastName,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+
+                                Text(
+                                  " đã đăng ${formattedTime}",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black45,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
 
                           Text(
-                            formattedTime,
+                            postHT!.name_group,
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
@@ -150,12 +175,23 @@ class _PostScreenState extends State<PostScreenNew> {
                             ),
                           ),                              ],
                       ),
+
                       Spacer(),
                       PopupMenuButton<String>(
                         icon: Icon(Icons.more_vert),
-                        onSelected: (String value) {
-                          if (value == 'Xem thêm') {
-                            // Hành động khi chọn "Xem thêm"
+                        onSelected: (String value) async {
+                          if (value == 'Truy cập Khoa') {
+                            final group = await homeGroupController.GetGroup(context, postHT!.groupid);
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: HomeGroup(groupModel: group,),
+                              ),
+                            );
+
+
+
                           } else if (value == 'Báo cáo') {
                             // Hành động khi chọn "Báo cáo"
                             Navigator.push(
@@ -168,7 +204,7 @@ class _PostScreenState extends State<PostScreenNew> {
                           }
                         },
                         itemBuilder: (BuildContext context) {
-                          return {'Xem thêm', 'Báo cáo'}.map((String choice) {
+                          return {'Truy cập Khoa', 'Báo cáo'}.map((String choice) {
                             return PopupMenuItem<String>(
                               value: choice,
                               child: Text(choice),
@@ -305,8 +341,9 @@ class _PostScreenState extends State<PostScreenNew> {
                               },
                               child: Row(
                                   children: [
-                                    Icon(Icons.bookmark_outline, size: 20,),
-                                    SizedBox(width: 2,),Text(postHT!.like_count.toString(),
+                                    Icon(postHT!.user_saved ? Icons.bookmark_outline : Icons.bookmark_outline, size: 20,
+                                      color: postHT!.user_saved ? Colors.blue : Colors.black,),
+                                    SizedBox(width: 2,),Text(postHT!.save_count.toString(),
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold
                                       ),),

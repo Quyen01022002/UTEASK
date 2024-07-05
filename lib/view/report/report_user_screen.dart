@@ -24,7 +24,7 @@ class _ReportUserState extends State<ReportUser> {
         title: Row(
           children: [
             SizedBox(width: 8.0),
-            Text('Báo cáo tài khoản người dùng'),
+            Text('Báo cáo tài khoản'),
           ],
         ),
       ),

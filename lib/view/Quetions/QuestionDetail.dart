@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:askute/controller/HomeController.dart';
 import 'package:askute/controller/LoginController.dart';
 import 'package:askute/model/CommentEntity.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -48,6 +49,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
 
   final PostController postController = Get.put(PostController());
   final LoginController loginController = Get.put(LoginController());
+  final HomeController homeController = Get.put(HomeController());
   Offset _tapPosition = Offset.zero;
   Stream<PostModel>? postCurrent;
   Stream<List<CommentEntity>>? listCommentStream;
@@ -55,6 +57,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
   PostModel? post;
   bool _isKeyboardVisible = false;
   int cmtIsSelect = 0;
+  bool check_reply = false;
 
   @override
   void initState() {
@@ -120,6 +123,20 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
           });
         }
       });
+      for (int i = 0; i < listCmt!.length; i++) {
+        if (listCmt![i].is_reply == true) {
+          check_reply = true;
+          setState(() {
+            _buildInputAllField();
+          });
+          break;
+        } else {
+          check_reply = false;
+          setState(() {
+            _buildInputAllField();
+          });
+        }
+      }
     });
   }
 
@@ -149,8 +166,9 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-          appBar: AppBar(
-              title: Text('Bài đăng thảo luận của ${widget.post.createBy?.lastName}')),
+      appBar: AppBar(
+          title:
+              Text('Bài đăng thảo luận của ${widget.post.createBy?.lastName}')),
       body: Stack(
         children: [
           Column(
@@ -158,139 +176,134 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
             children: [
               Expanded(
                 child: SingleChildScrollView(
-                      child: StreamBuilder<PostModel>(
-                          stream: postCurrent,
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  _buildOwnerUser(),
-                                  _buildContent(),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  Container(
-                                    alignment: Alignment.center,
-                                    child: Container(
-                                      margin: EdgeInsets.only(top: 5),
-                                      height: 0.5,
-                                      // Chiều cao của thanh ngang
-                                      width: 330,
-                                      // Độ dày của thanh ngang
-                                      color: Color(0xC0C0C0C0),
-                                    ),
-                                  ),
-                                  Container(
-                                    margin:
-                                        EdgeInsets.only(top: 10, bottom: 10),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
+                  child: StreamBuilder<PostModel>(
+                      stream: postCurrent,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              _buildOwnerUser(),
+                              _buildContent(),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Container(
+                                alignment: Alignment.center,
+                                child: Container(
+                                  margin: EdgeInsets.only(top: 5),
+                                  height: 0.5,
+                                  // Chiều cao của thanh ngang
+                                  width: 330,
+                                  // Độ dày của thanh ngang
+                                  color: Color(0xC0C0C0C0),
+                                ),
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(top: 10, bottom: 10),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Column(
                                       children: [
-                                        Column(
-                                          children: [
-                                            GestureDetector(
-                                              onTap: () {
-                                                postController.Like(
-                                                    postController
-                                                        .postid.value);
-                                                print("đã bấm nút like");
-                                              },
-                                              child: Container(
-                                                padding: EdgeInsets.symmetric(
-                                                    vertical: 8,
-                                                    horizontal: 12),
-                                                child: Row(children: [
-                                                  Icon(
-                                                    snapshot.data!.user_liked
-                                                        ? Icons.thumb_up
-                                                        : Icons
-                                                            .thumb_up_outlined,
-                                                    size: 20,
-                                                    color: snapshot
-                                                            .data!.user_liked
-                                                        ? Colors.blue
-                                                        : Colors.black,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 2,
-                                                  ),
-                                                  Text(
-                                                    snapshot.data!.like_count
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                ]),
+                                        GestureDetector(
+                                          onTap: () {
+                                            postController.Like(
+                                                postController.postid.value);
+                                            print("đã bấm nút like");
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 8, horizontal: 12),
+                                            child: Row(children: [
+                                              Icon(
+                                                snapshot.data!.user_liked
+                                                    ? Icons.thumb_up
+                                                    : Icons.thumb_up_outlined,
+                                                size: 20,
+                                                color: snapshot.data!.user_liked
+                                                    ? Colors.blue
+                                                    : Colors.black,
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                        Column(
-                                          children: [
-                                            GestureDetector(
-                                              onTap: () {},
-                                              child: Container(
-                                                padding: EdgeInsets.symmetric(
-                                                    vertical: 8,
-                                                    horizontal: 12),
-                                                child: GestureDetector(
-                                                  onTap: () {},
-                                                  child: Row(children: [
-                                                    Icon(
-                                                        false
-                                                            ? Icons
-                                                                .bookmark_outline
-                                                            : Icons
-                                                                .bookmark_border_outlined,
-                                                        size: 20,
-                                                        color: false
-                                                            ? Colors.blue
-                                                            : Colors.black),
-                                                    SizedBox(
-                                                      width: 2,
-                                                    ),
-                                                    Text(
-                                                      0.toString(),
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    ),
-                                                  ]),
-                                                ),
+                                              SizedBox(
+                                                width: 2,
                                               ),
-                                            ),
-                                          ],
+                                              Text(
+                                                snapshot.data!.like_count
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ]),
+                                          ),
                                         ),
                                       ],
                                     ),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.only(top: 20),
-                                    height: 5, // Chiều cao của thanh ngang
-                                    width: 400, // Độ dày của thanh ngang
-                                    color: Color(0xC0C0C0C0),
-                                  ),
-                                  // SingleChildScrollView(
-                                  //   child: Container(
-                                  //     height: double.maxFinite,
-                                  //     child: Column(
-                                  //       children: [
-                                  //         _buildComment(0),
-                                  //       ],
-                                  //     ),
-                                  //   ),
-                                  // )
-                                  _buildComment(0),
-                                ],
-                              );
-                            } else {
-                              return Container();
-                            }
-                          }),
-                    
+                                    Column(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            homeController.postid.value = widget.post.id;
+                                            homeController.Saved();
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 8, horizontal: 12),
+                                            child: GestureDetector(
+                                              onTap: () {},
+                                              child: Row(children: [
+                                                Icon(
+                                                    snapshot.data!.user_saved
+                                                        ? Icons.bookmark_outline
+                                                        : Icons
+                                                            .bookmark_border_outlined,
+                                                    size: 20,
+                                                    color: snapshot.data!.user_saved
+                                                        ? Colors.blue
+                                                        : Colors.black),
+                                                SizedBox(
+                                                  width: 2,
+                                                ),
+                                                Text(
+                                                  snapshot.data!.save_count.toString(),
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ]),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(top: 20),
+                                height: 5, // Chiều cao của thanh ngang
+                                width: 400, // Độ dày của thanh ngang
+                                color: Color(0xC0C0C0C0),
+                              ),
+                              // SingleChildScrollView(
+                              //   child: Container(
+                              //     height: double.maxFinite,
+                              //     child: Column(
+                              //       children: [
+                              //         _buildComment(0),
+                              //       ],
+                              //     ),
+                              //   ),
+                              // )
+                              _buildComment(0),
+                            ],
+                          );
+                        } else {
+                          return Container();
+                        }
+                      }),
                 ),
               ),
               SizedBox(
@@ -369,105 +382,121 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
     }
   }
 
-bool? reply  = false;
+  bool? reply = false;
   CommentEntity? cmtUserToReply;
+
   Widget _buildInputAllField() {
-    return post!.statusCmtPostEnum == 'ONLYME' ? Container(
-      color: Colors.grey[200],
-      padding: EdgeInsets.all(8),
-      child: Text("Chủ bài viết đã khóa bình luận hoặc lượt bình luân đã bị hạn chế!"),
-    ): Column(
-      children: [
-        reply == true ?
-            Container(
-              color: Colors.grey[200],
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Row(
-                    //crossAxisAlignment:  CrossAxisAlignment.end,
-                    children: [
-                      Text("Trả lời: "),
-                      _buildUserComment(cmtUserToReply!),
-                    ],
-                  ),
-
-                  GestureDetector(
-                    onTap: (){
-                      reply = false;
-                      _buildInputAllField();
-                    },
-                    child: Icon(Icons.close),
-                  )
-                ],
-              ),
-
-            ) : Container(),
-        Container(
-          color: Colors.grey[200],
-          padding: EdgeInsets.all(8),
-          child: Row(
+    return post!.statusCmtPostEnum == 'NOTUSER' || check_reply == true
+        ? Container(
+            color: Colors.grey[200],
+            padding: EdgeInsets.all(8),
+            child: Center(
+                child: check_reply == true
+                    ? Text(
+                        "Bài viết đã có câu trả lời rồi,\nbạn không thể trả lời thêm.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(),
+                      )
+                    : Text(
+                        "Chủ bài viết đã khóa bình luận\nhoặc lượt bình luận đã bị hạn chế!",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(),
+                      )),
+          )
+        : Column(
             children: [
-              GestureDetector(
-                onTap: _pickImage,
-                child: Icon(Icons.image),
-              ),
-              SizedBox(width: 8),
-              Expanded(
-                child: Container(
-                  constraints: BoxConstraints(maxHeight: 200),
-                  padding: EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // TextField(
-                        //   controller: _textFirst,
-                        //   decoration: InputDecoration(
-                        //     hintText: 'Nhập nội dung của bạn...',
-                        //     border: InputBorder.none,
-                        //   ),
-                        // ),
-                        // SizedBox(height: 8),
-                        // ..._imageWidgets,
-                        ..._imageWidgets,
-                      ],
+              reply == true
+                  ? Container(
+                      color: Colors.grey[200],
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Row(
+                            //crossAxisAlignment:  CrossAxisAlignment.end,
+                            children: [
+                              Text("Trả lời: "),
+                              _buildUserComment(cmtUserToReply!),
+                            ],
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              reply = false;
+                              _buildInputAllField();
+                            },
+                            child: Icon(Icons.close),
+                          )
+                        ],
+                      ),
+                    )
+                  : Container(),
+              Container(
+                color: Colors.grey[200],
+                padding: EdgeInsets.all(8),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: _pickImage,
+                      child: Icon(Icons.image),
                     ),
-                  ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Container(
+                        constraints: BoxConstraints(maxHeight: 200),
+                        padding: EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          border: Border.all(),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              // TextField(
+                              //   controller: _textFirst,
+                              //   decoration: InputDecoration(
+                              //     hintText: 'Nhập nội dung của bạn...',
+                              //     border: InputBorder.none,
+                              //   ),
+                              // ),
+                              // SizedBox(height: 8),
+                              // ..._imageWidgets,
+                              ..._imageWidgets,
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () async {
+                        // Xử lý nút gửi bình luận
+                        await _goToListTypeContentComment();
+                        if (reply == false)
+                          postController.CommentToQuestion(
+                              context, listContent, post!.id, false, 0);
+                        else
+                          postController.CommentToQuestion(context, listContent,
+                              post!.id, true, cmtUserToReply!.comment_id!);
+                        _imageWidgets.clear();
+                        listContent.clear();
+                        _listController.clear();
+                        TextEditingController _textFirsts =
+                            TextEditingController();
+                        _listController.add(_textFirsts);
+                        _imageWidgets.add(_buildFirstTextFieldWidget());
+                        setState(() {
+                          reply = false;
+                          _buildInputAllField();
+                          _imageWidgets;
+                        });
+                      },
+                      child: Text('Đăng'),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: () async {
-                  // Xử lý nút gửi bình luận
-                  await _goToListTypeContentComment();
-                  if (reply == false)
-                  postController.CommentToQuestion(context, listContent, false,0);
-                  else
-                    postController.CommentToQuestion(context, listContent, true, cmtUserToReply!.comment_id!);
-                  _imageWidgets.clear();
-                  listContent.clear();
-                  _listController.clear();
-                  TextEditingController _textFirsts = TextEditingController();
-                  _listController.add(_textFirsts);
-                  _imageWidgets.add(_buildFirstTextFieldWidget());
-                  setState(() {
-                    reply = false;
-                    _buildInputAllField();
-                    _imageWidgets;
-                  });
-                },
-                child: Text('Đăng'),
-              ),
             ],
-          ),
-        ),
-      ],
-    );
+          );
   }
 
   final textController = TextEditingController();
@@ -709,38 +738,38 @@ bool? reply  = false;
 
   Widget _buildComment(int round0) {
     return StreamBuilder<List<CommentEntity>>(
-          stream: listCommentStream,
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.data != null) {
-              return ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  shrinkWrap: true, // Đảm bảo ListView.builder chỉ chiếm không gian cần thiết
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    if (snapshot.data![index].cmtReply != 0 && round0 == 0)
-                      return Container();
-                    List<ContentComment> content =
-                        parseContent(snapshot.data![index].content_cmt!);
-                    List<Widget> contentWg = [];
-                    for (int i = 0; i < content.length; i++) {
-                      if (content[i].type == 'TEXT') {
-                        contentWg.add(_buiText(content[i].content));
-                      } else if (content[i].type == 'IMAGE') {
-                        contentWg.add(_buiImage(content[i].content));
-                      }
+        stream: listCommentStream,
+        builder: (context, snapshot) {
+          if (snapshot.hasData && snapshot.data != null) {
+            return ListView.builder(
+                itemCount: snapshot.data!.length,
+                shrinkWrap: true,
+                // Đảm bảo ListView.builder chỉ chiếm không gian cần thiết
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  if (snapshot.data![index].cmtReply != 0 && round0 == 0)
+                    return Container();
+                  List<ContentComment> content =
+                      parseContent(snapshot.data![index].content_cmt!);
+                  List<Widget> contentWg = [];
+                  for (int i = 0; i < content.length; i++) {
+                    if (content[i].type == 'TEXT') {
+                      contentWg.add(_buiText(content[i].content));
+                    } else if (content[i].type == 'IMAGE') {
+                      contentWg.add(_buiImage(content[i].content));
                     }
-                    if (snapshot.data![index].is_reply == false)
-                      return _buildOneComment(
-                          snapshot.data![index], contentWg, round0);
-                    else
-                      return _buildOneCommentReply(
-                          snapshot.data![index], contentWg, round0);
-                  });
-            } else {
-              return CircularProgressIndicator();
-            }
+                  }
+                  if (snapshot.data![index].is_reply == false)
+                    return _buildOneComment(
+                        snapshot.data![index], contentWg, round0);
+                  else
+                    return _buildOneCommentReply(
+                        snapshot.data![index], contentWg, round0);
+                });
+          } else {
+            return CircularProgressIndicator();
           }
-    );
+        });
   }
 
   Widget _buildComment2(int round0) {
@@ -754,7 +783,7 @@ bool? reply  = false;
                   if (snapshot.data![index].cmtReply != 0 && round0 == 0)
                     return Container();
                   List<ContentComment> content =
-                  parseContent(snapshot.data![index].content_cmt!);
+                      parseContent(snapshot.data![index].content_cmt!);
                   List<Widget> contentWg = [];
                   for (int i = 0; i < content.length; i++) {
                     if (content[i].type == 'TEXT') {
@@ -794,7 +823,7 @@ bool? reply  = false;
   Widget _buildOneComment(
       CommentEntity cmt, List<Widget> contentWidget, int round) {
     return round == 0
-        ? Column(children: [
+        ? Column(children:  [
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
@@ -805,7 +834,7 @@ bool? reply  = false;
                 ),
               ),
               padding: EdgeInsets.all(5),
-              margin: EdgeInsets.all(5.0),
+              margin: EdgeInsets.all(2),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -816,8 +845,11 @@ bool? reply  = false;
                   GestureDetector(
                     onTapDown: _getTapPosition,
                     onLongPress: () {
-                      cmtIsSelect = cmt.comment_id!;
-                      _showContextMenu(context, cmt);
+                      if (check_reply != true &&
+                          post!.statusCmtPostEnum != 'NOTUSER') {
+                        cmtIsSelect = cmt.comment_id!;
+                        _showContextMenu(context, cmt);
+                      }
                     },
                     child: Container(
                         padding: EdgeInsets.only(left: 38, right: 10),
@@ -828,55 +860,59 @@ bool? reply  = false;
                           ],
                         )),
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 8,
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: 38,
-                            ),
-                            Icon(Icons.reply_outlined, size: 15),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            Icon(Icons.thumb_up_outlined, size: 15),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            Icon(Icons.thumb_down_outlined, size: 15),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Icon(Icons.bookmarks_outlined, size: 15),
-                      ),
-                    ],
-                  )
+                  // SizedBox(
+                  //   height: 20,
+                  // ),
+                  // Row(
+                  //   children: [
+                  //     Expanded(
+                  //       flex: 8,
+                  //       child: Row(
+                  //         children: [
+                  //           SizedBox(
+                  //             width: 38,
+                  //           ),
+                  //           Icon(Icons.reply_outlined, size: 15),
+                  //           SizedBox(
+                  //             width: 20,
+                  //           ),
+                  //           Icon(Icons.thumb_up_outlined, size: 15),
+                  //           SizedBox(
+                  //             width: 20,
+                  //           ),
+                  //           Icon(Icons.thumb_down_outlined, size: 15),
+                  //         ],
+                  //       ),
+                  //     ),
+                  //     Expanded(
+                  //       flex: 2,
+                  //       child: Icon(Icons.bookmarks_outlined, size: 15),
+                  //     ),
+                  //   ],
+                  // )
                 ],
               ),
             ),
-            cmt.listCommentReply!.length != 0
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: List.generate(
-                      cmt.listCommentReply!.length,
-                      (index) => Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8.0),
-                        child: _buildOneComment(
-                            cmt.listCommentReply![index]!,
-                            toWidget(
-                                cmt.listCommentReply![index]!.content_cmt!),
-                            1),
-                      ),
-                    ),
-                  )
-                : Container()
+      cmt.listCommentReply!.length != 0
+          ? Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: List.generate(
+          cmt.listCommentReply!.length,
+              (index) => Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            child: cmt.listCommentReply![index]!.is_reply == false ? _buildOneComment(
+                cmt.listCommentReply![index]!,
+                toWidget(
+                    cmt.listCommentReply![index]!.content_cmt!),
+                1) : _buildOneCommentReply(
+                cmt.listCommentReply![index]!,
+                toWidget(
+                    cmt.listCommentReply![index]!.content_cmt!),
+                1),
+          ),
+        ),
+      )
+          : Container()
           ])
         : Column(children: [
             Row(
@@ -898,7 +934,7 @@ bool? reply  = false;
                     ),
                     padding: EdgeInsets.all(5),
                     margin:
-                        EdgeInsets.only(top: 5, bottom: 5, right: 5, left: 5),
+                        EdgeInsets.all(2),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -909,8 +945,11 @@ bool? reply  = false;
                         GestureDetector(
                           onTapDown: _getTapPosition,
                           onLongPress: () {
-                            cmtIsSelect = cmt.comment_id!;
-                            _showContextMenu(context, cmt);
+                            if (check_reply != true &&
+                                post!.statusCmtPostEnum != 'NOTUSER') {
+                              cmtIsSelect = cmt.comment_id!;
+                              _showContextMenu(context, cmt);
+                            }
                           },
                           child: Container(
                               padding: EdgeInsets.only(left: 38, right: 10),
@@ -921,58 +960,62 @@ bool? reply  = false;
                                 ],
                               )),
                         ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 8,
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    width: 38,
-                                  ),
-                                  Icon(Icons.reply_outlined, size: 15),
-                                  SizedBox(
-                                    width: 20,
-                                  ),
-                                  Icon(Icons.thumb_up_outlined, size: 15),
-                                  SizedBox(
-                                    width: 20,
-                                  ),
-                                  Icon(Icons.thumb_down_outlined, size: 15),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Icon(Icons.bookmarks_outlined, size: 15),
-                            ),
-                          ],
-                        )
+                        // SizedBox(
+                        //   height: 20,
+                        // ),
+                        // Row(
+                        //   children: [
+                        //     Expanded(
+                        //       flex: 8,
+                        //       child: Row(
+                        //         children: [
+                        //           SizedBox(
+                        //             width: 38,
+                        //           ),
+                        //           Icon(Icons.reply_outlined, size: 15),
+                        //           SizedBox(
+                        //             width: 20,
+                        //           ),
+                        //           Icon(Icons.thumb_up_outlined, size: 15),
+                        //           SizedBox(
+                        //             width: 20,
+                        //           ),
+                        //           Icon(Icons.thumb_down_outlined, size: 15),
+                        //         ],
+                        //       ),
+                        //     ),
+                        //     Expanded(
+                        //       flex: 2,
+                        //       child: Icon(Icons.bookmarks_outlined, size: 15),
+                        //     ),
+                        //   ],
+                        // )
                       ],
                     ),
                   ),
                 ),
               ],
             ),
-            cmt.listCommentReply!.length != 0
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: List.generate(
-                      cmt.listCommentReply!.length,
-                      (index) => Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8.0),
-                        child: _buildOneComment(
-                            cmt.listCommentReply![index]!,
-                            toWidget(
-                                cmt.listCommentReply![index]!.content_cmt!),
-                            1),
-                      ),
-                    ),
-                  )
-                : Container()
+      cmt.listCommentReply!.length != 0
+          ? Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: List.generate(
+          cmt.listCommentReply!.length,
+              (index) => Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            child: cmt.listCommentReply![index]!.is_reply == false ? _buildOneComment(
+                cmt.listCommentReply![index]!,
+                toWidget(
+                    cmt.listCommentReply![index]!.content_cmt!),
+                1) : _buildOneCommentReply(
+                cmt.listCommentReply![index]!,
+                toWidget(
+                    cmt.listCommentReply![index]!.content_cmt!),
+                1),
+          ),
+        ),
+      )
+          : Container()
           ]);
   }
 
@@ -1117,71 +1160,202 @@ bool? reply  = false;
 
   Widget _buildOneCommentReply(
       CommentEntity cmt, List<Widget> contentWidget, int round) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.green[50],
-        borderRadius: BorderRadius.circular(10), // Đặt bán kính của viền tròn
-        border: Border.all(
-          color: Colors.green, // Màu sắc của viền tròn
-          width: 1, // Độ dày của viền tròn
-        ),
-      ),
-      padding: EdgeInsets.all(5),
-      margin: EdgeInsets.all(5.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildUserComment(cmt),
-          SizedBox(
-            height: 10,
+    return round == 0?
+    Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.green[50],
+            borderRadius: BorderRadius.circular(10), // Đặt bán kính của viền tròn
+            border: Border.all(
+              color: Colors.green, // Màu sắc của viền tròn
+              width: 1, // Độ dày của viền tròn
+            ),
           ),
-          GestureDetector(
-            onTapDown: _getTapPosition,
-            onLongPress: () {
-              cmtIsSelect = cmt.comment_id!;
-              _showContextMenu(context, cmt);
-            },
-            child: Container(
-                padding: EdgeInsets.only(left: 38, right: 10),
+          padding: EdgeInsets.all(5),
+          margin: EdgeInsets.all(2),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildUserComment(cmt),
+              SizedBox(
+                height: 10,
+              ),
+              GestureDetector(
+                onTapDown: _getTapPosition,
+                onLongPress: () {
+                  if (check_reply != true &&
+                      post!.statusCmtPostEnum != 'NOTUSER') {
+                    cmtIsSelect = cmt.comment_id!;
+                    _showContextMenu(context, cmt);
+                  }
+                },
+                child: Container(
+                    padding: EdgeInsets.only(left: 38, right: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ...contentWidget,
+                      ],
+                    )),
+              ),
+              // SizedBox(
+              //   height: 20,
+              // ),
+              // Row(
+              //   children: [
+              //     Expanded(
+              //       flex: 8,
+              //       child: Row(
+              //         children: [
+              //           SizedBox(
+              //             width: 38,
+              //           ),
+              //           Icon(Icons.reply_outlined, size: 15),
+              //           SizedBox(
+              //             width: 20,
+              //           ),
+              //           Icon(Icons.thumb_up_outlined, size: 15),
+              //           SizedBox(
+              //             width: 20,
+              //           ),
+              //           Icon(Icons.thumb_down_outlined, size: 15),
+              //         ],
+              //       ),
+              //     ),
+              //     Expanded(
+              //       flex: 2,
+              //       child: Icon(Icons.bookmarks_outlined, size: 15),
+              //     ),
+              //   ],
+              // )
+            ],
+          ),
+        ),
+        cmt.listCommentReply!.length != 0
+            ? Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: List.generate(
+            cmt.listCommentReply!.length,
+                (index) => Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: cmt.listCommentReply![index]!.is_reply == false ? _buildOneComment(
+                  cmt.listCommentReply![index]!,
+                  toWidget(
+                      cmt.listCommentReply![index]!.content_cmt!),
+                  1) : _buildOneCommentReply(
+                  cmt.listCommentReply![index]!,
+                  toWidget(
+                      cmt.listCommentReply![index]!.content_cmt!),
+                  1),
+            ),
+          ),
+        )
+            : Container()
+      ],
+    )
+        :
+    Row(
+      children: [
+        Expanded(
+            flex: 2,
+            child: Container()),
+        Expanded(
+          flex: 8,
+          child: Column(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.green[50],
+                  borderRadius: BorderRadius.circular(10), // Đặt bán kính của viền tròn
+                  border: Border.all(
+                    color: Colors.green, // Màu sắc của viền tròn
+                    width: 1, // Độ dày của viền tròn
+                  ),
+                ),
+                padding: EdgeInsets.all(5),
+                margin: EdgeInsets.all(2),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ...contentWidget,
-                  ],
-                )),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          Row(
-            children: [
-              Expanded(
-                flex: 8,
-                child: Row(
-                  children: [
+                    _buildUserComment(cmt),
                     SizedBox(
-                      width: 38,
+                      height: 10,
                     ),
-                    Icon(Icons.reply_outlined, size: 15),
-                    SizedBox(
-                      width: 20,
+                    GestureDetector(
+                      onTapDown: _getTapPosition,
+                      onLongPress: () {
+                        if (true == true) {
+                          cmtIsSelect = cmt.comment_id!;
+                          _showContextMenu(context, cmt);
+                        }
+                      },
+                      child: Container(
+                          padding: EdgeInsets.only(left: 38, right: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ...contentWidget,
+                            ],
+                          )),
                     ),
-                    Icon(Icons.thumb_up_outlined, size: 15),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    Icon(Icons.thumb_down_outlined, size: 15),
+                    // SizedBox(
+                    //   height: 20,
+                    // ),
+                    // Row(
+                    //   children: [
+                    //     Expanded(
+                    //       flex: 8,
+                    //       child: Row(
+                    //         children: [
+                    //           SizedBox(
+                    //             width: 38,
+                    //           ),
+                    //           Icon(Icons.reply_outlined, size: 15),
+                    //           SizedBox(
+                    //             width: 20,
+                    //           ),
+                    //           Icon(Icons.thumb_up_outlined, size: 15),
+                    //           SizedBox(
+                    //             width: 20,
+                    //           ),
+                    //           Icon(Icons.thumb_down_outlined, size: 15),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //     Expanded(
+                    //       flex: 2,
+                    //       child: Icon(Icons.bookmarks_outlined, size: 15),
+                    //     ),
+                    //   ],
+                    // )
                   ],
                 ),
               ),
-              Expanded(
-                flex: 2,
-                child: Icon(Icons.bookmarks_outlined, size: 15),
-              ),
+              cmt.listCommentReply!.length != 0
+                  ? Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: List.generate(
+                  cmt.listCommentReply!.length,
+                      (index) => Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                    child: cmt.listCommentReply![index]!.is_reply == false ? _buildOneComment(
+                        cmt.listCommentReply![index]!,
+                        toWidget(
+                            cmt.listCommentReply![index]!.content_cmt!),
+                        1) : _buildOneCommentReply(
+                        cmt.listCommentReply![index]!,
+                        toWidget(
+                            cmt.listCommentReply![index]!.content_cmt!),
+                        1),
+                  ),
+                ),
+              )
+                  : Container()
             ],
-          )
-        ],
-      ),
+          ),
+        ),
+      ],
     );
   }
 

@@ -37,6 +37,7 @@ class PostRp {
   final int id;
   final String firstName;
   final String lastName;
+  final String avatar;
   final String contentPost;
   final List<String> listAnh;
 
@@ -46,6 +47,7 @@ class PostRp {
     required this.lastName,
     required this.contentPost,
     required this.listAnh,
+    required this.avatar
   });
 
   factory PostRp.fromJson(Map<String, dynamic> json) {
@@ -56,6 +58,7 @@ class PostRp {
       id: json['id'] ?? 0,
       firstName: json['createBy']['firstName'] ?? "",
       lastName: json['createBy']['lastName'] ?? "",
+      avatar: json['createBy']['profilePicture'] ?? "",
       contentPost: json['contentPost'] ?? "",
       listAnh: listImg,
     );

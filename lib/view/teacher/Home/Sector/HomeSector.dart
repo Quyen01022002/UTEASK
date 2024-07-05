@@ -1,8 +1,10 @@
 import 'package:askute/controller/HomeGroupController.dart';
+import 'package:askute/controller/LoginController.dart';
 import 'package:askute/model/PostModel.dart';
 import 'package:askute/model/UserProgress.dart';
 import 'package:askute/view/Home/hot_post_screen.dart';
 import 'package:askute/view/Home/list_post_screen.dart';
+import 'package:askute/view/teacher/Home/Sector/CreateHotPost.dart';
 import 'package:askute/view/teacher/Home/Sector/ListPostReport.dart';
 import 'package:askute/view/teacher/Home/Sector/ListSector.dart';
 import 'package:askute/view/teacher/Home/Sector/ListTeacherInGroup.dart';
@@ -40,11 +42,28 @@ class UserSEC {
 class _HomeSectorState extends State<HomeSector> {
   final HomeGroupController homeGroupController =
       Get.put(HomeGroupController());
+  final LoginController loginController =
+  Get.put(LoginController());
   final ScrollController _scrollController = ScrollController();
-
+  final FocusNode _focusNode = FocusNode();
   @override
   void initState() {
     super.initState();
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        FocusScope.of(context).requestFocus(new FocusNode());
+        Navigator.push(
+          context,
+          PageTransition(
+            type: PageTransitionType.bottomToTop,
+            child: CreateHotQuestion(
+              statepost: false,
+              groupid: homeGroupController.group_id.value,
+            ),
+          ),
+        );
+      }
+    });
     _scrollController.addListener(_scrollListener);
   }
 
@@ -69,7 +88,7 @@ class _HomeSectorState extends State<HomeSector> {
     return homeGroupController.loadGroup(context);
   }
   Future<List<PostModel>?> fetchDataPost() async {
-    // Đây là ví dụ về việc tải dữ liệu từ cơ sở dữ liệu hoặc một API
+    // Đây là ví dụ về việc tải dữ liệu từ cơ sở dữ lisệu hoặc một API
     // Thay thế phần này bằng hàm thực sự để tải dữ liệu của bạn
     return homeGroupController.loadPostOfGroup(context);
   }
@@ -102,13 +121,24 @@ class _HomeSectorState extends State<HomeSector> {
                         automaticallyImplyLeading: false,
                         pinned: true,
                         floating: true,
-                        title: Text(
-                          snapshot.data!.name!,
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
                         expandedHeight: 120,
-                        // Đặt pinned thành true
+                        title: LayoutBuilder(
+                          builder: (context, constraints) {
+                            // Thay đổi giá trị ngưỡng theo yêu cầu của bạn
+                            final bool isCollapsed = constraints.maxHeight < 130;
+                            return AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 300),
+                              child: Text(
+                                snapshot.data!.name!,
+                                key: ValueKey<bool>(isCollapsed),
+                                style: TextStyle(
+                                  color: isCollapsed ? Colors.black : Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                         flexibleSpace: FlexibleSpaceBar(
                           background: Image.network(
                             snapshot.data!.avatar!,
@@ -377,6 +407,37 @@ class _HomeSectorState extends State<HomeSector> {
                   ),
                 ),
               ],
+            ),
+            SizedBox(height: 10,),
+            Card(
+              surfaceTintColor: Colors.white,
+              elevation: 3,
+              margin: EdgeInsets.all(8),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundImage: NetworkImage(loginController.avatar.value),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: TextFormField(
+                            focusNode: _focusNode,
+                            decoration: InputDecoration(
+                              fillColor:Colors.white,
+                              hintText: "Đăng thông báo lên nhóm?",
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),

@@ -18,10 +18,13 @@ class PostModel {
   final bool status;
   final int comment_count;
   final int like_count;
+  final int save_count;
   final bool user_liked;
+  final bool user_saved;
   final List<String>? listAnh;
   final CreateBy? createBy;
   final int groupid;
+  final String name_group;
   final String statusViewPostEnum;
   final String statusCmtPostEnum;
 
@@ -32,10 +35,13 @@ class PostModel {
     required this.status,
     required this.comment_count,
     required this.like_count,
+    required this.save_count,
     required this.user_liked,
+    required this.user_saved,
     this.createBy,
     this.listAnh,
     required this.groupid,
+    required this.name_group,
     required this.statusViewPostEnum,
     required this.statusCmtPostEnum,
   });
@@ -58,10 +64,13 @@ class PostModel {
       status: json['status'] == true,
       comment_count: json['comment_count'] ?? 0,
       like_count: json['like_count'] ?? 0,
+      save_count: json['save_count']?? 0,
       user_liked: json['user_liked'] ?? false,
+      user_saved: json['user_saved'] ?? false,
       listAnh: listImg,
       createBy: createBy,
       groupid: json['groupid'] ?? 0,
+      name_group: json['groupname'] ?? '',
       statusViewPostEnum: json['statusViewPostEnum'] ?? '',
       statusCmtPostEnum: json['statusCmtPostEnum'] ?? '',
     );

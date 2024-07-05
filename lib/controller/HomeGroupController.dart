@@ -98,6 +98,12 @@ class HomeGroupController extends GetxController {
     }
     groupCurrent = Stream.fromIterable([groupModel!]);
   }
+  Future<GroupModel?> GetGroup(BuildContext context, int idgroup) async {
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+    return await API_Group.getGroupById(idgroup, token);
+  }
 
   RxInt pagenumber = 0.obs;
   RxInt pagenumber3 = 0.obs;
@@ -176,6 +182,21 @@ class HomeGroupController extends GetxController {
     final adminId = prefs.getInt('id') ?? 0;
     final token = prefs.getString('token') ?? "";
     return await API_Group.LoadPostClass(adminId, token, pagenumber4.value);
+  }
+
+  void followGroup(int userid, int groupid, BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+    GroupMemberRequest groupMemberRequest = GroupMemberRequest(user_id: userid, group_id: groupid);
+    await API_Group.followGroup(groupMemberRequest, token);
+  }
+  void unfollowGroup(int userid, int groupid, BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+    GroupMemberRequest groupMemberRequest = GroupMemberRequest(user_id: userid, group_id: groupid);
+    await API_Group.deleteMemberOutGroupById(groupMemberRequest, token);
   }
 
   void addlistMembers(List<int> listuserid) {}
@@ -527,13 +548,28 @@ update();
     update();
   }
 
+  RxInt numberGroupPage = 0.obs;
   Future<List<PostModel>?> loadPostOfGroup(BuildContext context) async
   {
     try {
       final prefs = await SharedPreferences.getInstance();
       final adminId = prefs.getInt('id') ?? 0;
       final token = prefs.getString('token') ?? "";
-      final rs = await API_Post.LoadPostOfGroup(group_id.value, 0, adminId, token);
+      final rs = await API_Post.LoadPostOfGroup(group_id.value, numberGroupPage.value, adminId, token);
+      return rs;
+
+    }
+    finally {
+
+    }
+  }
+  Future<List<PostModel>?> loadPostOfGroupView(int idgroup,BuildContext context) async
+  {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final adminId = prefs.getInt('id') ?? 0;
+      final token = prefs.getString('token') ?? "";
+      final rs = await API_Post.LoadPostOfGroup(idgroup, numberGroupPage.value, adminId, token);
       return rs;
 
     }
@@ -572,5 +608,16 @@ update();
     }
   }
 
+  bool checkUserInGroup(int myId,GroupModel group,BuildContext context){
+    if (group.listMembers.length != 0)
+      {
+        for (int i=0; i<group.listMembers.length; i++)
+          {
+            if (group.listMembers[i].id == myId)
+              return true;
+          }
+      }
+    return false;
+  }
 
 }

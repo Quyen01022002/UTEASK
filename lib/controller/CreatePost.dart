@@ -121,6 +121,18 @@ class CreatePostController extends GetxController {
     final token = prefs.getString('token') ?? "";
     await API_Post.postClass(userEnity, imagePaths.value, token, id, context);
   }
+  void createHotPost(BuildContext context, int groupid, int hotday) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('id') ?? 0;
+
+    PostEntity userEnity = PostEntity(
+        user_id: userId,
+        content_post: textControllerContent.text,
+        timestamp: DateTime.now(),
+        status: true);
+    final token = prefs.getString('token') ?? "";
+    await API_Post.postHotPost(userEnity, imagePaths.value, token, groupid, hotday, context);
+  }
 
   void updatePost(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();

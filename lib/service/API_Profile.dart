@@ -310,9 +310,9 @@ class API_Profile
     }
   }
 
-  static Future<List<PostModel>?> LoadOtherPost(int userid, String token, int pagenumber) async {
+  static Future<List<PostModel>?> LoadOtherPost(int userid, int myId, String token, int pagenumber) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/user/other/$userid/posts/$pagenumber'),
+      Uri.parse('$baseUrl/user/other/$userid/posts/$myId/$pagenumber'),
       headers: {
         'Authorization': 'Bearer $token',
       },
