@@ -11,7 +11,7 @@ import '../model/UserProfile.dart';
 import '../service/API_Group.dart';
 import '../service/API_Post.dart';
 
-class SearchPostController extends GetxController{
+class SearchPostController extends GetxController {
   RxBool isloaded = false.obs;
   RxList<PostModel> topSearch = List<PostModel>.empty(growable: true).obs;
   final textControllerKeyword = TextEditingController();
@@ -20,54 +20,62 @@ class SearchPostController extends GetxController{
   Stream<List<PostModel>>? allSearchPostStream;
   Stream<List<GroupModel>>? allSearchGroupStream;
   Stream<List<UserEnity>>? allSearchUserStream;
-void loadListResultController(BuildContext context) async{
-  try {
+
+  void loadListResultController(BuildContext context) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      isloaded(true);
+      final userId = prefs.getInt('id') ?? 0;
+      final token = prefs.getString('token') ?? "";
+      final keyword = textControllerKeyword.text;
+      //addSearchKeywords(textControllerKeyword.text);
+      List<PostModel>? result =
+          await API_Post.searchPost(userId, token, keyword);
+      List<GroupModel>? resultKhoa =
+          await API_Group.searchGroup(token, keyword);
+      List<UserEnity>? resultUser =
+          await API_Profile.Search(userId, keyword, token);
+      if (result != null) {
+        if (filterTheLikest.value == false && idKhoa.value == 0) {
+          topSearch.clear();
+          topSearch.addAll(result);
+          update();
+        } else if (filterTheLikest.value == false && idKhoa.value != 0) {
+          List<PostModel> sortedResult = sortResultByKhoa(result, idKhoa.value);
+          topSearch.clear();
+          topSearch.addAll(sortedResult);
+          update();
+        } else if (filterTheLikest.value == true && idKhoa.value == 0) {
+          List<PostModel> sortedResult = sortResultByCountLike(result);
+          topSearch.clear();
+          topSearch.addAll(sortedResult);
+          update();
+        } else if (filterTheLikest.value == true && idKhoa.value != 0) {
+          List<PostModel> sortedResult = sortResultByCountLike(result);
+          sortedResult = sortResultByKhoa(sortedResult, idKhoa.value);
+          topSearch.clear();
+          topSearch.addAll(sortedResult);
+          update();
+        }
+      }
+      allSearchPostStream = Stream.fromIterable([topSearch.value]);
+      allSearchGroupStream = Stream.fromIterable([resultKhoa!]);
+      allSearchUserStream = Stream.fromIterable([resultUser!]);
+    } finally {
+      isloaded(false);
+    }
+  }
+
+  RxInt pageSearchPost = 0.obs;
+  Future<List<PostModel>?> searchPost(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
-    isloaded(true);
     final userId = prefs.getInt('id') ?? 0;
     final token = prefs.getString('token') ?? "";
     final keyword = textControllerKeyword.text;
-    //addSearchKeywords(textControllerKeyword.text);
-    List<PostModel>? result = await API_Post.searchPost(userId, token, keyword);
-    List<GroupModel>? resultKhoa = await API_Group.searchGroup(token, keyword);
-    List<UserEnity>? resultUser = await API_Profile.Search(userId, keyword, token);
-    if (result != null) {
-      if (filterTheLikest.value == false && idKhoa.value == 0){
-      topSearch.clear();
-      topSearch.addAll(result);
-      update();}
-      else if (filterTheLikest.value == false && idKhoa.value != 0){
-        List<PostModel> sortedResult = sortResultByKhoa(result, idKhoa.value);
-        topSearch.clear();
-        topSearch.addAll(sortedResult);
-        update();}
-      else if (filterTheLikest.value == true && idKhoa.value == 0){
-        List<PostModel> sortedResult = sortResultByCountLike(result);
-        topSearch.clear();
-        topSearch.addAll(sortedResult);
-        update();
-      }
-      else if (filterTheLikest.value == true && idKhoa.value !=0){
-        List<PostModel> sortedResult = sortResultByCountLike(result);
-        sortedResult = sortResultByKhoa(sortedResult, idKhoa.value);
-        topSearch.clear();
-        topSearch.addAll(sortedResult);
-        update();
-      }
-    }
-    allSearchPostStream= Stream.fromIterable([topSearch.value]);
-    allSearchGroupStream = Stream.fromIterable([resultKhoa!]);
-    allSearchUserStream = Stream.fromIterable([resultUser!]);
 
+
+    return await API_Post.searchPost2(userId, pageSearchPost.value, token, keyword);
   }
-  finally {
-    isloaded(false);
-  }
-}
-
-
-
-
 
   List<PostModel> sortResultByCountLike(List<PostModel> originalList) {
     // Sao chép danh sách ban đầu để tránh ảnh hưởng đến danh sách gốc
@@ -78,17 +86,17 @@ void loadListResultController(BuildContext context) async{
 
     return sortedList;
   }
+
   List<PostModel> sortResultByKhoa(List<PostModel> originalList, int idkhoa) {
     // Sao chép danh sách ban đầu để tránh ảnh hưởng đến danh sách gốc
     List<PostModel> filteredList = List.from(originalList);
 
     // Lọc danh sách theo idKhoa
-    filteredList = filteredList.where((post) => post.groupid == idkhoa).toList();
+    filteredList =
+        filteredList.where((post) => post.groupid == idkhoa).toList();
 
     return filteredList;
   }
-
-
 
   Future<void> addSearchKeywords(String newKeywords) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -100,16 +108,16 @@ void loadListResultController(BuildContext context) async{
     currentKeywords.add(newKeywords);
     prefs.setStringList('search_keywords', currentKeywords);
   }
+
   List<String> lastFiveKeywords = [];
+
   Future<void> loadHistoryKeywords(context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs = await SharedPreferences.getInstance();
-    List<String> historyKeywords =
-        prefs.getStringList('search_keywords') ?? [];
+    List<String> historyKeywords = prefs.getStringList('search_keywords') ?? [];
     // Lấy 5 từ khóa cuối cùng từ danh sách lịch sử
     lastFiveKeywords = historyKeywords.length > 5
         ? historyKeywords.sublist(historyKeywords.length - 5).reversed.toList()
         : historyKeywords.reversed.toList();
   }
-
 }

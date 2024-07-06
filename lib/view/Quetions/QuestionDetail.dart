@@ -19,6 +19,7 @@ import '../../model/PostModel.dart';
 import 'package:http/http.dart' as http;
 
 import '../../service/SendMessage.dart';
+import '../Notification/notification_item.dart';
 
 class QuestionDetailScreen extends StatefulWidget {
   final PostModel post;
@@ -60,12 +61,13 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
   bool _isKeyboardVisible = false;
   int cmtIsSelect = 0;
   bool check_reply = false;
-
+  late String formattedTime = '';
   @override
   void initState() {
     super.initState();
     post = widget.post;
     _startTimer();
+    formattedTime = formatTimeDifference(widget.post.timeStamp);
     _listController.add(_textFirst);
     _imageWidgets.add(_buildFirstTextFieldWidget());
     _initKeyboardListener();
@@ -810,20 +812,31 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                 SizedBox(
                   width: 10,
                 ),
-                Text(
-                  widget.post.createBy!.firstName +
-                      ' ' +
-                      widget.post.createBy!.lastName,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      widget.post.createBy!.firstName +
+                          ' ' +
+                          widget.post.createBy!.lastName,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      " đã đăng ${formattedTime}",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.black45,
+                      ),
+                    ),
+                  ],
                 ),
                 Text(
-                  'cách đây 2 phút',
+                  widget.post.name_group,
                   style: TextStyle(
-                    fontSize: 10,
-                    color: Color(0xFFCECECE),
+                    fontSize: 12,
+                    color: Colors.black54,
                   ),
                 ),
               ],

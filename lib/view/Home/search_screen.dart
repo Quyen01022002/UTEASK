@@ -7,6 +7,7 @@ import 'package:askute/model/GroupModel.dart';
 import 'package:askute/model/PostModel.dart';
 import 'package:askute/view/Home/hot_post_screen.dart';
 import 'package:askute/view/Home/new%20home/home_screen_3.dart';
+import 'package:askute/view/component/post_newScreen.dart';
 import 'package:askute/view/user/user_proflie_other.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +42,9 @@ class _SearchResultScreenState extends State<SearchResultScreen>
   List<UserEnity>? allUserSearch;
 
   ScrollController _scrollController = ScrollController();
+  ScrollController _scrollControllerPost = ScrollController();
+  List<PostModel> _posts = [];
+  bool _isLoading = false;
   List<String> categories = [
     'Bài viết',
     'Khoa',
@@ -53,7 +57,14 @@ class _SearchResultScreenState extends State<SearchResultScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this, initialIndex: 0);
+    _controller.text = "Từ khóa: ${_searchPostController.textControllerKeyword.text}";
     _homeGroupController.loadGroupsOfAdmin();
+    _fetchPosts();
+    _scrollControllerPost.addListener(() {
+      if (_scrollControllerPost.position.pixels == _scrollControllerPost.position.maxScrollExtent) {
+        _fetchPosts();
+      }
+    });
     setState(() {
       _searchPostController.loadHistoryKeywords(context);
     });
@@ -94,11 +105,55 @@ class _SearchResultScreenState extends State<SearchResultScreen>
         }
       });
     });
+
   }
+
+  TextEditingController _controller = TextEditingController();
+  String _currentText = '';
+  bool _isShowingSearchText = true;
+
+  void _onSearchPressed() {
+    setState(() {
+      _currentText = _controller.text;
+      _isShowingSearchText = true;
+      _controller.text = 'Từ khóa: $_currentText';
+    });
+  }
+
+  void _onTextFieldTap() {
+    if (_isShowingSearchText) {
+      setState(() {
+        _controller.text = _currentText;
+        _isShowingSearchText = false;
+      });
+    }
+  }
+  Future<void> _fetchPosts() async {
+    if (_isLoading) return;
+    setState(() {
+      _isLoading = true;
+    });
+    List<PostModel>? response;
+    response = await _searchPostController.searchPost(context);
+    if (response!= null && response.length!=0) {
+      setState(() {
+        _searchPostController.pageSearchPost.value++;
+        _posts.addAll(response!);
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+      throw Exception('Failed to load posts');
+    }
+  }
+
 
   @override
   void dispose() {
     _timer.cancel();
+    _searchPostController.pageSearchPost.value=0;
     _tabController.dispose();
     super.dispose();
   }
@@ -123,9 +178,9 @@ class _SearchResultScreenState extends State<SearchResultScreen>
                       Expanded(
                         child: TextField(
                           controller:
-                              _searchPostController.textControllerKeyword,
+                              _controller,
                           onTap: () {
-                            // _showSearchSuggestions();
+                            _onTextFieldTap();
                           },
                           decoration: InputDecoration(
                             hintText: 'Search for.....',
@@ -141,8 +196,10 @@ class _SearchResultScreenState extends State<SearchResultScreen>
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {
+                        onTap: ()  async {
+                          _onSearchPressed();
                           // handle search icon tapped
+                          _searchPostController.textControllerKeyword.text=_currentText;
                           final check =
                               _searchPostController.textControllerKeyword.text;
                           if (check.trim() != '') {
@@ -152,7 +209,13 @@ class _SearchResultScreenState extends State<SearchResultScreen>
                                 _searchPostController
                                     .textControllerKeyword.text);
                             _searchPostController.loadHistoryKeywords(context);
-                            _scrollController.animateTo(
+                          _posts.clear();
+                          _searchPostController.pageSearchPost.value=0;
+                          _fetchPosts();
+                           setState(() {
+                             _buildPost();
+                           });
+                           _scrollController.animateTo(
                               0.0,
                               duration: Duration(milliseconds: 300),
                               curve: Curves.easeInOut,
@@ -204,7 +267,7 @@ class _SearchResultScreenState extends State<SearchResultScreen>
     // Kiểm tra loại category và trả về nội dung tương ứng
     switch (category) {
       case 'Bài viết':
-        return _buildPostSearch();
+        return _buildPost();
       case 'Khoa':
         return _ListGroupResult();
       case 'Người dùng':
@@ -594,7 +657,30 @@ class _SearchResultScreenState extends State<SearchResultScreen>
       ),
     );
   }
-
+  Widget _buildPost(){
+    return Container(
+      child: ListView.builder(
+        controller: _scrollControllerPost,
+        itemCount: _posts.length + 1,
+        itemBuilder: (context, index) {
+          if (index == _posts.length) {
+            return _isLoading ? Center(child: CircularProgressIndicator()) : SizedBox.shrink();
+          }
+          return Column(
+            children: [
+              PostScreenNew(post: _posts[index]),
+              Container(
+                margin: EdgeInsets.only(top: 5),
+                height: 10, // Chiều cao của thanh ngang
+                width: 500, // Độ dày của thanh ngang
+                color: Colors.black12,
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
   Widget _ListPostResult() {
     return Expanded(
         child: StreamBuilder<List<PostModel>>(

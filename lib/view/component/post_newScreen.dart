@@ -302,10 +302,12 @@ class _PostScreenState extends State<PostScreenNew> {
                         GestureDetector(
                           onTap: () {
                             postController.loadOnePost(context, postHT!.id);
-                            // Thực hiện hành động khi người dùng nhấn vào văn bản
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => QuestionDetailScreen(post: postHT!, checkUserReply: 0)),
+                              PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: QuestionDetailScreen(post: postHT!, checkUserReply: 0),
+                              ),
                             );
                           },
                           child: Container(

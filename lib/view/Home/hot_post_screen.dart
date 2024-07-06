@@ -1,3 +1,4 @@
+import 'package:askute/view/component/post_newScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -32,7 +33,7 @@ class _HotPostQuestionScreenState extends State<HotPostQuestionScreen> {
             opacity: 1,
             child: Column(
               children: [
-                PostScreen(post: post),
+                PostScreenNew(post: post),
                 Container(
                   margin: EdgeInsets.only(top: 5),
                   height: 10, // Chiều cao của thanh ngang
