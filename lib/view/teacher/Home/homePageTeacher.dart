@@ -1,5 +1,6 @@
 import 'package:askute/controller/HomeController.dart';
 import 'package:askute/controller/HomeGroupController.dart';
+import 'package:askute/controller/LoginController.dart';
 import 'package:askute/controller/PostController.dart';
 import 'package:askute/model/UserProgress.dart';
 import 'package:askute/view/component/one_comment.dart';
@@ -25,6 +26,7 @@ class HomePageTeacher extends StatefulWidget {
 class _HomePageTeacherState extends State<HomePageTeacher> {
   final HomeController _homeController = Get.put(HomeController());
 final PostController _postController = Get.put(PostController());
+final LoginController _loginController = Get.put(LoginController());
   @override
   void initState() {
     super.initState();
@@ -53,8 +55,9 @@ final PostController _postController = Get.put(PostController());
   Future<UserProgress?> fetchData() async {
     // Đây là ví dụ về việc tải dữ liệu từ cơ sở dữ liệu hoặc một API
     // Thay thế phần này bằng hàm thực sự để tải dữ liệu của bạn
-    _homeController.loadCommentByMe(context);
-    return _homeController.loadMyProgress(context);
+    await _homeController.loadCommentByMe(context);
+    await _homeController.loadPostNotReplyValue(context);
+    return await _homeController.loadMyProgress(context);
   }
 
   @override
@@ -141,9 +144,17 @@ final PostController _postController = Get.put(PostController());
                               context,
                               PageTransition(
                                 type: PageTransitionType.rightToLeft,
-                                child: QuestionDetailScreen(post: item,),
+                                child: QuestionDetailScreen(post: item,checkUserReply: _loginController.idMe.value,),
                               ),
-                            );
+                            ).then((_) {
+                              // This block runs when returning to this page
+                              // Place your reload logic here
+                              setState(() {
+                                // Call the method to reload the page
+                                fetchData();
+                                build(context);
+                              });
+                            });
                           },
                               child: Container(
                                   width: MediaQuery.of(context).size.width,
@@ -166,9 +177,17 @@ final PostController _postController = Get.put(PostController());
                               context,
                               PageTransition(
                                 type: PageTransitionType.rightToLeft,
-                                child: QuestionDetailScreen(post: item,),
+                                child: QuestionDetailScreen(post: item,checkUserReply: _loginController.idMe.value,),
                               ),
-                            );
+                            ).then((_) {
+                              // This block runs when returning to this page
+                              // Place your reload logic here
+                              setState(() {
+                                // Call the method to reload the page
+                                fetchData();
+                                build(context);
+                              });
+                            });
                           },
                               child: Container(
                                   width: MediaQuery.of(context).size.width,
@@ -206,9 +225,17 @@ final PostController _postController = Get.put(PostController());
                                   context,
                                   PageTransition(
                                     type: PageTransitionType.rightToLeft,
-                                    child: QuestionDetailScreen(post: item,),
+                                    child: QuestionDetailScreen(post: item,checkUserReply: _loginController.idMe.value,),
                                   ),
-                                );
+                                ).then((_) {
+                                  // This block runs when returning to this page
+                                  // Place your reload logic here
+                                  setState(() {
+                                    // Call the method to reload the page
+                                    fetchData();
+                                    build(context);
+                                  });
+                                });
                               },
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
@@ -327,9 +354,17 @@ final PostController _postController = Get.put(PostController());
                               context,
                               PageTransition(
                                 type: PageTransitionType.rightToLeft,
-                                child: QuestionDetailScreen(post: post!,),
+                                child: QuestionDetailScreen(post: post!,checkUserReply: _loginController.idMe.value),
                               ),
-                            );
+                            ).then((_) {
+                              // This block runs when returning to this page
+                              // Place your reload logic here
+                              setState(() {
+                                // Call the method to reload the page
+                                fetchData();
+                                build(context);
+                              });
+                            });
                           },
                           child: Container(
                             width: cmt.post_id!.listAnh.length!=0 ? 100 : 300,

@@ -189,9 +189,6 @@ class _PostScreenState extends State<PostScreenNew> {
                                 child: HomeGroup(groupModel: group,),
                               ),
                             );
-
-
-
                           } else if (value == 'Báo cáo') {
                             // Hành động khi chọn "Báo cáo"
                             Navigator.push(
@@ -230,7 +227,7 @@ class _PostScreenState extends State<PostScreenNew> {
                          context,
                          PageTransition(
                            type: PageTransitionType.rightToLeft,
-                           child: QuestionDetailScreen(post: postHT!,),
+                           child: QuestionDetailScreen(post: postHT!, checkUserReply: 0,),
                          ),
                        );
                       },
@@ -308,7 +305,7 @@ class _PostScreenState extends State<PostScreenNew> {
                             // Thực hiện hành động khi người dùng nhấn vào văn bản
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => QuestionDetailScreen(post: postHT!)),
+                              MaterialPageRoute(builder: (context) => QuestionDetailScreen(post: postHT!, checkUserReply: 0)),
                             );
                           },
                           child: Container(

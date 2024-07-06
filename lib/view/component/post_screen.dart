@@ -165,7 +165,7 @@ class _PostScreenState extends State<PostScreen> {
                       // Thực hiện hành động khi người dùng nhấn vào văn bản
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => QuestionDetailScreen(post: widget.post)),
+                        MaterialPageRoute(builder: (context) => QuestionDetailScreen(post: widget.post, checkUserReply: 0,)),
                       );
                     },
                     child: Container(
@@ -242,7 +242,7 @@ SizedBox(width: 2,),Text(widget.post.like_count.toString(),
                           // Thực hiện hành động khi người dùng nhấn vào văn bản
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => QuestionDetailScreen(post: widget.post)),
+                            MaterialPageRoute(builder: (context) => QuestionDetailScreen(post: widget.post, checkUserReply: 0,)),
                           );
                         },
                         child: Container(

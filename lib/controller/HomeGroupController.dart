@@ -44,6 +44,7 @@ class HomeGroupController extends GetxController {
   final name_Group = RxString('');
   RxList<SectorResponse> listSt = List<SectorResponse>.empty(growable: true).obs;
   RxList<SectorMembers> listTC = List<SectorMembers>.empty(growable: true).obs;
+  RxList<SectorMembers> listTeacherNow = List<SectorMembers>.empty(growable: true).obs;
 
   // void CreateGroup(BuildContext context) async{
   //   final description = textControllerMota.text;
@@ -607,6 +608,21 @@ update();
 
     }
   }
+  RxInt pageNotReply = 0.obs;
+  Future<List<PostModel>?> loadListNotReplyPost(BuildContext context) async
+  {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final adminId = prefs.getInt('id') ?? 0;
+      final token = prefs.getString('token') ?? "";
+      final rs = await API_Post.LoadPostInGroupNotUserReply(group_id.value, pageNotReply.value, token);
+      return rs;
+
+    }
+    finally {
+
+    }
+  }
 
   bool checkUserInGroup(int myId,GroupModel group,BuildContext context){
     if (group.listMembers.length != 0)
@@ -620,4 +636,24 @@ update();
     return false;
   }
 
+  Future<List<SectorMembers>?> loadTeacherInOneSector(int sectorid, BuildContext context) async
+  {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final adminId = prefs.getInt('id') ?? 0;
+      final token = prefs.getString('token') ?? "";
+
+      final rs = await API_Group.getTeacherInOneSector(sectorid, token);
+      if (rs!=null)
+        {
+          listTeacherNow.clear();
+          listTeacherNow.addAll(rs);
+        }
+      return rs;
+
+    }
+    finally {
+
+    }
+  }
 }
