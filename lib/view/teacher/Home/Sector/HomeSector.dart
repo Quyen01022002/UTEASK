@@ -8,6 +8,7 @@ import 'package:askute/view/teacher/Home/Sector/CreateHotPost.dart';
 import 'package:askute/view/teacher/Home/Sector/ListPostReport.dart';
 import 'package:askute/view/teacher/Home/Sector/ListSector.dart';
 import 'package:askute/view/teacher/Home/Sector/ListTeacherInGroup.dart';
+import 'package:askute/view/teacher/Home/Sector/NotReplyPost.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -365,7 +366,7 @@ class _HomeSectorState extends State<HomeSector> {
                       context,
                       PageTransition(
                         type: PageTransitionType.rightToLeft,
-                        child: GroupTeacher(),
+                        child: NotReplyScreen(),
                       ),
                     );
                   },
@@ -394,7 +395,7 @@ class _HomeSectorState extends State<HomeSector> {
                           //   ),
                           // ),
                           Text(
-                            'Thống kê',
+                            'Chưa Trả lời',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 14,

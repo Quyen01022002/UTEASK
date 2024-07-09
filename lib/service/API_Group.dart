@@ -632,6 +632,34 @@ class API_Group{
     }
   }
 
+  static Future<List<SectorMembers>?> getTeacherInOneSector(int sector, String token) async {
+    final url = Uri.parse('$baseUrl/sector/$sector/teacher');
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token',
+    };
+    final response = await http.get(
+      url,
+      headers: headers,
+    );
+    if (response.statusCode == 200) {
+      final responseData = response.body;
+      if (responseData.isNotEmpty){
+        String utf8Data = utf8.decode(responseData.runes.toList());
+        ApiReponse<List<SectorMembers>> listgroup = ApiReponse<List<SectorMembers>>.fromJson(utf8Data, (dynamic json) => List<SectorMembers>.from(json.map((x) => SectorMembers.fromJson(x))),
+        );
+        return listgroup.payload;
+      }
+      else
+      {
+        return null;
+      }
+    } else {
+      // Handle error scenarios here
+      return null;
+    }
+  }
+
   static Future<List<ReportPostResponse>?> loadListReportPostInGroup(int groupid, int pagenumber, String token) async {
     final url = Uri.parse('$baseUrl/report/getInGroup/${groupid}/${pagenumber}');
     final headers = {
@@ -659,4 +687,6 @@ class API_Group{
       return null;
     }
   }
+
+
 }

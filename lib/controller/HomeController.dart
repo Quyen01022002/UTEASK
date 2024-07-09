@@ -193,6 +193,27 @@ class HomeController extends GetxController {
       isloaded(false);
     }
   }
+  Future<List<PostModel>?> loadPostNotReplyValue(BuildContext context) async
+  {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      isloaded(true);
+      print("load");
+      final userId = prefs.getInt('id') ?? 0;
+      myId.value = userId;
+      final token = prefs.getString('token') ?? "";
+      List<PostModel>? result = await API_Post.LoadPostNotReply(userId, token);
+      if (result != null) {
+        listPostNotReply.clear();
+        listPostNotReply.addAll(result);
+        update();
+      }
+      return result;
+    }
+    finally {
+      isloaded(false);
+    }
+  }
 
   Future<List<PostModel>?> loadTop5OnMonth(BuildContext context) async
   {

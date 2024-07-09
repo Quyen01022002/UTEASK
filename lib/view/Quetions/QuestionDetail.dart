@@ -5,23 +5,26 @@ import 'dart:io';
 import 'package:askute/controller/HomeController.dart';
 import 'package:askute/controller/LoginController.dart';
 import 'package:askute/model/CommentEntity.dart';
+import 'package:askute/view/report/report_post_screen2.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:page_transition/page_transition.dart';
 
 import '../../controller/PostController.dart';
 import '../../model/PostModel.dart';
 import 'package:http/http.dart' as http;
 
 import '../../service/SendMessage.dart';
+import '../Notification/notification_item.dart';
 
 class QuestionDetailScreen extends StatefulWidget {
   final PostModel post;
-
-  const QuestionDetailScreen({Key? key, required this.post}) : super(key: key);
+  final int checkUserReply;
+  const QuestionDetailScreen({Key? key, required this.post, required this.checkUserReply}) : super(key: key);
 
   @override
   State<QuestionDetailScreen> createState() => _QuestionDetailScreenState();
@@ -58,12 +61,13 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
   bool _isKeyboardVisible = false;
   int cmtIsSelect = 0;
   bool check_reply = false;
-
+  late String formattedTime = '';
   @override
   void initState() {
     super.initState();
     post = widget.post;
     _startTimer();
+    formattedTime = formatTimeDifference(widget.post.timeStamp);
     _listController.add(_textFirst);
     _imageWidgets.add(_buildFirstTextFieldWidget());
     _initKeyboardListener();
@@ -386,6 +390,102 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
   CommentEntity? cmtUserToReply;
 
   Widget _buildInputAllField() {
+    if (widget.checkUserReply != 0)
+      return Column(
+        children: [
+          reply == true
+              ? Container(
+            color: Colors.grey[200],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Row(
+                  //crossAxisAlignment:  CrossAxisAlignment.end,
+                  children: [
+                    Text("Trả lời: "),
+                    _buildUserComment(cmtUserToReply!),
+                  ],
+                ),
+                GestureDetector(
+                  onTap: () {
+                    reply = false;
+                    _buildInputAllField();
+                  },
+                  child: Icon(Icons.close),
+                )
+              ],
+            ),
+          )
+              : Container(),
+          Container(
+            color: Colors.grey[200],
+            padding: EdgeInsets.all(8),
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: _pickImage,
+                  child: Icon(Icons.image),
+                ),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Container(
+                    constraints: BoxConstraints(maxHeight: 200),
+                    padding: EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // TextField(
+                          //   controller: _textFirst,
+                          //   decoration: InputDecoration(
+                          //     hintText: 'Nhập nội dung của bạn...',
+                          //     border: InputBorder.none,
+                          //   ),
+                          // ),
+                          // SizedBox(height: 8),
+                          // ..._imageWidgets,
+                          ..._imageWidgets,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: () async {
+                    // Xử lý nút gửi bình luận
+                    await _goToListTypeContentComment();
+                    if (reply == false)
+                      postController.CommentToQuestion(
+                          context, listContent, post!.id, false, 0);
+                    else
+                      postController.CommentToQuestion(context, listContent,
+                          post!.id, true, cmtUserToReply!.comment_id!);
+                    _imageWidgets.clear();
+                    listContent.clear();
+                    _listController.clear();
+                    TextEditingController _textFirsts =
+                    TextEditingController();
+                    _listController.add(_textFirsts);
+                    _imageWidgets.add(_buildFirstTextFieldWidget());
+                    setState(() {
+                      reply = false;
+                      _buildInputAllField();
+                      _imageWidgets;
+                    });
+                  },
+                  child: Text('Đăng'),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+
     return post!.statusCmtPostEnum == 'NOTUSER' || check_reply == true
         ? Container(
             color: Colors.grey[200],
@@ -712,24 +812,63 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                 SizedBox(
                   width: 10,
                 ),
-                Text(
-                  widget.post.createBy!.firstName +
-                      ' ' +
-                      widget.post.createBy!.lastName,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      widget.post.createBy!.firstName +
+                          ' ' +
+                          widget.post.createBy!.lastName,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      " đã đăng ${formattedTime}",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.black45,
+                      ),
+                    ),
+                  ],
                 ),
                 Text(
-                  'cách đây 2 phút',
+                  widget.post.name_group,
                   style: TextStyle(
-                    fontSize: 10,
-                    color: Color(0xFFCECECE),
+                    fontSize: 12,
+                    color: Colors.black54,
                   ),
                 ),
               ],
             ),
+            Spacer(),
+            widget.checkUserReply!=0 ?
+            PopupMenuButton<String>(
+              icon: Icon(Icons.more_vert),
+              onSelected: (String value) async {
+                if (value == 'Không thuộc lĩnh vực') {
+                  postController.NotMeSector(context, widget.post.id);
+                  Navigator.of(context).pop();
+                } else if (value == 'Báo cáo') {
+                  // Hành động khi chọn "Báo cáo"
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                      type: PageTransitionType.rightToLeft,
+                      child: ReportPost(post: widget.post),
+                    ),
+                  );
+                }
+              },
+              itemBuilder: (BuildContext context) {
+                return {'Không thuộc lĩnh vực', 'Báo cáo'}.map((String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(choice),
+                  );
+                }).toList();
+              },
+            ) : Container(),
           ],
         ),
       ),
@@ -1184,8 +1323,9 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
               GestureDetector(
                 onTapDown: _getTapPosition,
                 onLongPress: () {
-                  if (check_reply != true &&
-                      post!.statusCmtPostEnum != 'NOTUSER') {
+
+                  if ((check_reply != true &&
+                      post!.statusCmtPostEnum != 'NOTUSER') || widget.checkUserReply!=0) {
                     cmtIsSelect = cmt.comment_id!;
                     _showContextMenu(context, cmt);
                   }
@@ -1285,7 +1425,8 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                     GestureDetector(
                       onTapDown: _getTapPosition,
                       onLongPress: () {
-                        if (true == true) {
+                        if ((check_reply != true &&
+                            post!.statusCmtPostEnum != 'NOTUSER') || widget.checkUserReply!=0) {
                           cmtIsSelect = cmt.comment_id!;
                           _showContextMenu(context, cmt);
                         }

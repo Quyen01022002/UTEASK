@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/CommentEntity.dart';
@@ -132,8 +133,24 @@ class PostController extends GetxController {
     await API_Post.DuyetPost(idreport, token);
     update();
   }
+  void PhanCongPost(BuildContext context, int idpost, int iduser, int sectorid) async{
+    final prefs = await SharedPreferences.getInstance();
+    final adminId = prefs.getInt('id') ?? 0;
+    userid.value = adminId;
+    final token = prefs.getString('token') ?? "";
+    await API_Post.PhanCongPost(idpost, iduser, sectorid, token);
+    update();
+  }
 
+void NotMeSector(BuildContext context, int postid) async{
+  final prefs = await SharedPreferences.getInstance();
+  final adminId = prefs.getInt('id') ?? 0;
+  userid.value = adminId;
+  final token = prefs.getString('token') ?? "";
+  await API_Post.NotSectorMe(postid, token);
+  update();
 
+}
 
 
 }
