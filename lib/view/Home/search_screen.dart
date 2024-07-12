@@ -149,6 +149,15 @@ class _SearchResultScreenState extends State<SearchResultScreen>
     }
   }
 
+  void _refreshPage(){
+    setState(() {
+      _searchPostController.pageSearchPost.value =0;
+      _posts.clear();
+      _isLoading = false;
+      _fetchPosts();
+      _buildPost();
+    });
+  }
 
   @override
   void dispose() {
@@ -668,7 +677,8 @@ class _SearchResultScreenState extends State<SearchResultScreen>
           }
           return Column(
             children: [
-              PostScreenNew(post: _posts[index]),
+              PostScreenNew(post: _posts[index],
+                onReportAction: _refreshPage,),
               Container(
                 margin: EdgeInsets.only(top: 5),
                 height: 10, // Chiều cao của thanh ngang

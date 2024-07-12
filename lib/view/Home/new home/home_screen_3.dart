@@ -56,6 +56,14 @@ class _HomeGroupState extends State<HomeGroup> {
       throw Exception('Failed to load posts');
     }
   }
+  void _refreshPage(){
+    setState(() {
+      homeGroupController.numberGroupPage.value = 0;
+      _posts.clear();
+      _isLoading = false;
+      _fetchPosts();
+    });
+  }
 
   @override
   void dispose() {
@@ -108,7 +116,8 @@ class _HomeGroupState extends State<HomeGroup> {
             }
             return Column(
               children: [
-                PostScreenNew(post: _posts[index]),
+                PostScreenNew(post: _posts[index],
+                  onReportAction: _refreshPage,),
                 Container(
                   margin: EdgeInsets.only(top: 5),
                   height: 10, // Chiều cao của thanh ngang

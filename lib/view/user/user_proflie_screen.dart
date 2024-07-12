@@ -71,6 +71,15 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
       throw Exception('Failed to load posts');
     }
   }
+  void _refreshPage(){
+    setState(() {
+      myProfileController.pagenumber.value = 0;
+      _posts.clear();
+      _isLoading = false;
+      _fetchPosts();
+      _buildPost();
+    });
+  }
   @override
   void dispose() {
     _scrollController.dispose();
@@ -275,7 +284,8 @@ class _ProfileUserScreenState extends State<ProfileUserScreen> {
         }
         return Column(
           children: [
-            PostScreenNew(post: _posts[index]),
+            PostScreenNew(post: _posts[index],
+              onReportAction: _refreshPage,),
             Container(
               margin: EdgeInsets.only(top: 5),
               height: 10, // Chiều cao của thanh ngang
