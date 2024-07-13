@@ -92,13 +92,24 @@ class _HomeScreen3State extends State<HomeScreen3> {
       throw Exception('Failed to load posts');
     }
   }
-
+  void _refreshPage(){
+    setState(() {
+      homeGroupController.pagenumber3.value = 0;
+      homeGroupController.pagenumber4.value = 0;
+      homeController.pagenumberHotPost.value = 0;
+      _posts.clear();
+      _isLoading = false;
+      _fetchPosts();
+      _buildPost();
+    });
+  }
 
   @override
   void dispose() {
     _scrollController.dispose();
     homeGroupController.pagenumber3.value = 0;
     homeGroupController.pagenumber4.value = 0;
+    homeController.pagenumberHotPost.value = 0;
     super.dispose();
   }
 
@@ -307,7 +318,8 @@ class _HomeScreen3State extends State<HomeScreen3> {
           }
           return Column(
             children: [
-              PostScreenNew(post: _posts[index]),
+              PostScreenNew(post: _posts[index],
+                onReportAction: _refreshPage,),
               Container(
                 margin: EdgeInsets.only(top: 5),
                 height: 10, // Chiều cao của thanh ngang

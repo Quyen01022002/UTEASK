@@ -425,7 +425,7 @@ class API_Post {
     }
   }
 
-  static void deletePost(int? postid, String token) async {
+  static Future<void> deletePost(int? postid, String token) async {
     await http.delete(
       Uri.parse('$baseUrl/post/$postid'),
       headers: {

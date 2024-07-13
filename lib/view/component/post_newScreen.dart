@@ -23,7 +23,8 @@ import '../user/user_proflie_screen.dart';
 class PostScreenNew extends StatefulWidget {
   //const PostScreen({super.key});
   final PostModel post;
-  const PostScreenNew({Key? key, required this.post}) : super(key: key);
+  final VoidCallback onReportAction;
+  const PostScreenNew({Key? key, required this.post, required this.onReportAction}) : super(key: key);
   @override
   State<PostScreenNew> createState() => _PostScreenState();
 }
@@ -199,9 +200,45 @@ class _PostScreenState extends State<PostScreenNew> {
                               ),
                             );
                           }
+                          else if (value == 'Xóa câu hỏi') {
+                            // Hiển thị hộp thoại xác nhận
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text("Xác nhận"),
+                                  content: Text("Bạn có chắc chắn muốn xóa câu hỏi này không?"),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: Text("Hủy"),
+                                      onPressed: () {
+                                        Navigator.of(context).pop(); // Đóng hộp thoại và hủy hành động
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: Text("Xóa"),
+                                      onPressed: () async {
+                                        Navigator.of(context).pop(); // Đóng hộp thoại
+                                        // Thực hiện hành động xóa
+                                        await postController.deletePost(postHT!.id, context);
+                                        // Gửi biến về cho trang trước đó load lại
+                                        widget.onReportAction();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+
                         },
                         itemBuilder: (BuildContext context) {
-                          return {'Truy cập Khoa', 'Báo cáo'}.map((String choice) {
+                          return postHT!.createBy!.id! == loginController.idMe.value ?{'Truy cập Khoa', 'Xóa câu hỏi'}.map((String choice) {
+                            return PopupMenuItem<String>(
+                              value: choice,
+                              child: Text(choice),
+                            );
+                          }).toList() : {'Truy cập Khoa', 'Báo cáo'}.map((String choice) {
                             return PopupMenuItem<String>(
                               value: choice,
                               child: Text(choice),

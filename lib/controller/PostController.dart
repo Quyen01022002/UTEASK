@@ -151,6 +151,15 @@ void NotMeSector(BuildContext context, int postid) async{
   update();
 
 }
+ Future<void> deletePost(int postid, BuildContext context) async {
 
+   final prefs = await SharedPreferences.getInstance();
+   final adminId = prefs.getInt('id') ?? 0;
+   userid.value = adminId;
+   final token = prefs.getString('token') ?? "";
+   await API_Post.deletePost(postid, token);
+   update();
+
+ }
 
 }

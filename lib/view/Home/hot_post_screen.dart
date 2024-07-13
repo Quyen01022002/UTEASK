@@ -18,6 +18,11 @@ class HotPostQuestionScreen extends StatefulWidget {
 
 class _HotPostQuestionScreenState extends State<HotPostQuestionScreen> {
   final PostController postController = Get.put(PostController());
+  void _refreshPage(){
+    setState(() {
+
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -33,7 +38,8 @@ class _HotPostQuestionScreenState extends State<HotPostQuestionScreen> {
             opacity: 1,
             child: Column(
               children: [
-                PostScreenNew(post: post),
+                PostScreenNew(post: post,
+                  onReportAction: _refreshPage,),
                 Container(
                   margin: EdgeInsets.only(top: 5),
                   height: 10, // Chiều cao của thanh ngang
