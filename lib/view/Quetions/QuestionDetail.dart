@@ -1218,15 +1218,6 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
                         value: 4,
                         child: Text('Trả lời'),
                       ),
-                      cmt.is_reply == false
-                          ? PopupMenuItem<int>(
-                              value: 1,
-                              child: Text('Đánh dấu là câu trả lời đúng'),
-                            )
-                          : PopupMenuItem<int>(
-                              value: 3,
-                              child: Text('Không phải câu trả lời đúng'),
-                            ),
                       PopupMenuItem<int>(
                         value: 2,
                         child: Text('Xóa câu trả lời'),
