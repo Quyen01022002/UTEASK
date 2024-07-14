@@ -200,7 +200,7 @@ class API_Post {
 
   static Future<PostEntity?> postClass(PostEntity post, List<String> img,
       String token, int groupId, BuildContext context) async {
-    final url = Uri.parse('$baseUrl/post/post');
+    final url = Uri.parse('$baseUrl/post/post/class');
 
     final headers = {
       "Content-Type": "application/json",
