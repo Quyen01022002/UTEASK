@@ -4,6 +4,7 @@ import 'package:askute/model/UserProfile.dart';
 import 'package:askute/model/UsersEnity.dart';
 import 'package:askute/service/API_Profile.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -247,8 +248,35 @@ class MyProfileController extends GetxController {
       reason2 = reasonText.text.trim();
     else
       reason2 = reason;
-    await API_Profile.reportUser(adminId, iduser, reason2, token);
+    final rep = await API_Profile.reportUser(adminId, iduser, reason2, token);
     reasonText.text = "";
+    if (int.parse(rep.toString()) == 1)
+      Fluttertoast.showToast(
+          msg: "Báo cáo thành công",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    else if (int.parse(rep.toString()) == 2)
+      Fluttertoast.showToast(
+          msg: "Bạn đã báo cáo rồi!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    else
+      Fluttertoast.showToast(
+          msg: "Thất bại",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          fontSize: 16.0);
   }
 
 
