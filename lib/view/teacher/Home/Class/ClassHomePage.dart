@@ -23,31 +23,47 @@ class _ThongKeState extends State<ClassHomePage> {
     classController.loadClassOfTeacher();
   }
 
+  Future<List<ClassModel>?> fetchClass() async {
+    return classController.loadClassOfTeacherValue();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body:ListView.builder(
-        itemCount: classController.classes!.length, // Assuming _homeController.groups is the list you want to iterate over
-        itemBuilder: (context, index) {
-          var item = classController.classes![index]; // Assuming each item in _homeController.groups is an instance of ClassItem
-          return GestureDetector(
-            onTap: (){
-              Navigator.push(
-                context,
-                PageTransition(
-                  type: PageTransitionType.leftToRightWithFade,
-                  child: ClassDetailTeacher(classes: item,
-                  ),
+    return FutureBuilder(
+      future: fetchClass(),
+      builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+    // Hiển thị màn hình chờ khi dữ liệu đang được tải
+    return Container(child: Center(child: CircularProgressIndicator()));
+    } else if (snapshot.hasError) {
+    // Hiển thị lỗi nếu có lỗi xảy ra trong quá trình tải dữ liệu
+    return Text('Error: ${snapshot.error}');
+    } else if (snapshot.hasData) { return Scaffold(
+          body:ListView.builder(
+            itemCount: classController.classes!.length, // Assuming _homeController.groups is the list you want to iterate over
+            itemBuilder: (context, index) {
+              var item = classController.classes![index]; // Assuming each item in _homeController.groups is an instance of ClassItem
+              return GestureDetector(
+                onTap: (){
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                      type: PageTransitionType.leftToRightWithFade,
+                      child: ClassDetailTeacher(classes: item,
+                      ),
+                    ),
+                  );
+                },
+                child: ClassItem(classModel: item,
+
                 ),
               );
             },
-            child: ClassItem(classModel: item,
-
-            ),
-          );
-        },
-      )
+          )
+        );}
+    else
+      return Container();
+      }
     );
   }
 }
@@ -75,8 +91,8 @@ class _SavedPostItemState extends State<ClassItem> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(20.0), // Điều chỉnh độ cong ở đây
-            child: Image.asset(
-              "assets/images/login.png",
+            child: Image.network(
+              widget.classModel.avatar!,
               width: MediaQuery.of(context).size.width,
               height: 100,
               fit: BoxFit.cover,
@@ -84,7 +100,8 @@ class _SavedPostItemState extends State<ClassItem> {
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(widget.classModel.name!,style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500),),
+            child: Text(widget.classModel.name!,style:
+            TextStyle(color: Colors.black,fontWeight: FontWeight.bold, ),),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(8.0,65,8,8),
