@@ -39,9 +39,9 @@ class ClassController extends GetxController{
         avatar: 'https://vinabook.edu.vn/wp-content/uploads/2020/11/hop-nhom-can-su-dung.png'
 
     );
-
+final iduser = prefs.getInt('id') ?? 0;
     final token = prefs.getString('token')??"";
-    ClassModel? groupModel = await API_Class.addGroup(newGroup, token);
+    ClassModel? groupModel = await API_Class.addGroup(newGroup, iduser, token);
     Future.delayed(Duration(milliseconds: 100), () {
       Navigator.pushReplacement(
         context,
@@ -61,6 +61,14 @@ class ClassController extends GetxController{
     List<ClassModel>? result = await API_Class.getAllGroups(token,userId);
     if (result != null) classes = result;
   }
+  Future<List<ClassModel>?> loadClassOfTeacherValue() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+    List<ClassModel>? result = await API_Class.getAllGroups(token,userId);
+    if (result != null) classes = result;
+    return result;
+  }
   Future<void> loadClassOfMembers() async {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('id') ?? 0;
@@ -76,6 +84,14 @@ class ClassController extends GetxController{
 
 
     await API_Class.deleteMemberOutClassById(idMembers, classID,token,context);
+  }
+
+  Future<ClassModel?> findClassById(int id, BuildContext context) async{
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('id') ?? 0;
+    final token = prefs.getString('token') ?? "";
+    return await API_Class.getClassById(id, token);
+
   }
 
 

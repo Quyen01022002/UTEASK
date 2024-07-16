@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:askute/controller/Class/ClassController.dart';
 import 'package:askute/model/Class.dart';
 import 'package:askute/model/GroupModel.dart';
+import 'package:askute/service/API_Class.dart';
 import 'package:askute/view/Class/createQuetionsClasses.dart';
 import 'package:askute/view/component/Drawer.dart';
 import 'package:askute/view/component/headerTeacher.dart';
@@ -26,54 +27,67 @@ class ClassDetailTeacher extends StatefulWidget {
 
 class _ClassDetailTeacherState extends State<ClassDetailTeacher> {
   late RxString curnetUser = "".obs;
+  ClassModel? _classModel;
+  final ClassController _classController = Get.put(ClassController());
+
   @override
   void initState() {
     super.initState();
-
-    initCurrentUser();
   }
 
-  void initCurrentUser() async {
+  Future<ClassModel?> initCurrentUser() async {
     final prefs = await SharedPreferences.getInstance();
-    curnetUser = (prefs.getString('Avatar') ??
-            "https://inkythuatso.com/uploads/thumbnails/800/2023/03/10-anh-dai-dien-trang-inkythuatso-03-15-27-10.jpg")
-        .obs;
+    curnetUser.value = prefs.getString('Avatar')??"";
+    final cla =  await _classController.findClassById(widget.classes.id!, context);
+    _classModel = cla;
     print(curnetUser);
+    return cla;
   }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          title: HeaderTeacher(),
-          automaticallyImplyLeading: false,
-          bottom: TabBar(
-            tabs: [
-              Tab(text: 'Bảng Tin'),
-              Tab(text: 'Mọi Người'),
-            ],
-
-          ),
-
-        ),
-        endDrawer: Drawer(
-          child: DrawerScreen(),
-        ),
-        body: TabBarView(
-          children: [
-            Tab1(
-              curentUser: curnetUser,
-              classes: widget.classes,
-            ),
-            Tab3(
-              classes: widget.classes,
-            ),
-          ],
-        ),
-      ),
-    );
+    return FutureBuilder(
+        future: initCurrentUser(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // Hiển thị màn hình chờ khi dữ liệu đang được tải
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            // Hiển thị lỗi nếu có lỗi xảy ra trong quá trình tải dữ liệu
+            return Text('Error: ${snapshot.error}');
+          } else if (snapshot.hasData) {
+            return DefaultTabController(
+              length: 3,
+              child: Scaffold(
+                appBar: AppBar(
+                  title: HeaderTeacher(),
+                  automaticallyImplyLeading: false,
+                  bottom: TabBar(
+                    tabs: [
+                      Tab(text: 'Bảng Tin'),
+                      Tab(text: 'Mọi Người'),
+                    ],
+                  ),
+                ),
+                endDrawer: Drawer(
+                  child: DrawerScreen(),
+                ),
+                body: TabBarView(
+                  children: [
+                    Tab1(
+                      curentUser: curnetUser,
+                      classes: snapshot.data!,
+                    ),
+                    Tab3(
+                      classes: snapshot.data!,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          } else
+            return Container();
+        });
   }
 }
 
@@ -94,8 +108,8 @@ class Tab1 extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(15.0),
                 // Điều chỉnh độ cong ở đây
-                child: Image.asset(
-                  "assets/images/login.png",
+                child: Image.network(
+                  classes.avatar!,
                   width: MediaQuery.of(context).size.width,
                   height: 150,
                   fit: BoxFit.cover,
@@ -104,7 +118,7 @@ class Tab1 extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(8.0, 100, 0, 0),
                 child: Text(
-                  "Lớp A",
+                  classes.name!,
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
@@ -129,7 +143,7 @@ class Tab1 extends StatelessWidget {
                         Text(
                           "Tùy Chỉnh",
                           style: TextStyle(
-                              color:  Colors.blue,
+                              color: Colors.blue,
                               fontWeight: FontWeight.w400,
                               fontSize: 15),
                         ),
@@ -169,8 +183,8 @@ class Tab1 extends StatelessWidget {
                             );
                           },
                           decoration: InputDecoration(
-                            fillColor:Colors.white,
-                            hintText: "Bạn nghĩ gì?",
+                            fillColor: Colors.white,
+                            hintText: "Đăng tin lên lớp....",
                             border: InputBorder.none,
                           ),
                         ),
@@ -224,7 +238,7 @@ class Tab3 extends StatelessWidget {
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
-                      color:  Colors.blue,
+                      color: Colors.blue,
                       width: 2.0,
                     ),
                   ),
@@ -237,7 +251,7 @@ class Tab3 extends StatelessWidget {
                       child: Text(
                         "Giáo Viên",
                         style: TextStyle(
-                          color:  Colors.blue,
+                          color: Colors.blue,
                           fontSize: 25,
                         ),
                       ),
@@ -245,7 +259,7 @@ class Tab3 extends StatelessWidget {
                     Icon(
                       Icons.person_add_outlined,
                       size: 30,
-                      color:  Colors.blue,
+                      color: Colors.blue,
                     ),
                   ],
                 ),
@@ -285,7 +299,7 @@ class Tab3 extends StatelessWidget {
                     decoration: BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
-                          color:  Colors.blue,
+                          color: Colors.blue,
                           width: 2.0,
                         ),
                       ),
@@ -318,7 +332,7 @@ class Tab3 extends StatelessWidget {
                           child: Icon(
                             Icons.person_add_outlined,
                             size: 30,
-                            color:  Colors.blue,
+                            color: Colors.blue,
                           ),
                         ),
                       ],
@@ -328,10 +342,9 @@ class Tab3 extends StatelessWidget {
                     children: classes.listMembers.map((post) {
                       print(classes.listMembers);
                       return GestureDetector(
-                        onLongPress: ()
-                        {
-
-                          _showBottomSheet(context,post,classController,this.classes);
+                        onLongPress: () {
+                          _showBottomSheet(
+                              context, post, classController, this.classes);
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -371,7 +384,8 @@ class Tab3 extends StatelessWidget {
   }
 }
 
-void _showBottomSheet(BuildContext context,UserMember classID, ClassController classController,ClassModel classModel) {
+void _showBottomSheet(BuildContext context, UserMember classID,
+    ClassController classController, ClassModel classModel) {
   showModalBottomSheet(
     context: context,
     builder: (BuildContext builderContext) {
@@ -382,15 +396,14 @@ void _showBottomSheet(BuildContext context,UserMember classID, ClassController c
               leading: Icon(Icons.delete),
               title: Text('Xóa thành viên'),
               onTap: () {
-               classController.deleteMemberOutGroup(context, classID.idMembers,classModel.id);
+                classController.deleteMemberOutGroup(
+                    context, classID.idMembers, classModel.id);
               },
             ),
             ListTile(
               leading: Icon(Icons.message),
               title: Text('Liên Hệ'),
-              onTap: () {
-
-              },
+              onTap: () {},
             ),
             // Add more items as needed
           ],

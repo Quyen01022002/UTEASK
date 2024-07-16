@@ -18,7 +18,7 @@ import 'package:page_transition/page_transition.dart';
 
 class API_Class{
 
-  static Future<ClassModel?> addGroup(ClassModel newModel, String token) async{
+  static Future<ClassModel?> addGroup(ClassModel newModel, int id, String token) async{
     final url = Uri.parse('$baseUrl/class/');
     final headers = {
       "Content-Type": "application/json",
@@ -28,8 +28,8 @@ class API_Class{
       "name": newModel.name,
       "description": newModel.description,
       "groups":newModel.groups,
-      "Avatar":"",
-      "BackAvatar":""
+      "avatar":newModel.avatar,
+      "backavatar":newModel.backAvatar
     };
     final response = await http.post(
       url,
